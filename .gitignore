@@ -39,3 +39,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# project documentation & viva guide (private)
+PROJECT_DOCUMENTATION_AND_VIVA_QA.md
