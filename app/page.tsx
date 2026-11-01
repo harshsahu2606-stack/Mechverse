@@ -26,6 +26,7 @@ import FanSimulationControls from "@/components/ui/FanSimulationControls";
 import BottomToolbar from "@/components/ui/BottomToolbar";
 import SavedDesignsModal from "@/components/ui/SavedDesignsModal";
 import ComponentHierarchyTree from "@/components/ui/ComponentHierarchyTree";
+import WebARModal from "@/components/ar/WebARModal";
 import { CameraPreset } from "@/components/3d/SceneViewer";
 
 // Walking Robot Dedicated Workshop Components
@@ -180,6 +181,29 @@ export default function Home() {
   const [viewMode, setViewMode] = useState<ViewMode>("view");
   const [theme, setTheme] = useState<AppTheme>("dark");
   const [showElectronicOverlay, setShowElectronicOverlay] = useState<boolean>(false);
+
+  // Web AR Interactive Studio State
+  const [isWebAROpen, setIsWebAROpen] = useState<boolean>(false);
+  const [arTargetMachineId, setArTargetMachineId] = useState<MachineId>("drone-b");
+
+  // Deep-link direct AR launcher via URL: ?ar=machineId
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      const arParam = params.get("ar") as MachineId;
+      if (arParam && MACHINES_DATA[arParam]) {
+        setArTargetMachineId(arParam);
+        setSelectedMachineId(arParam);
+        setIsWebAROpen(true);
+      }
+    }
+  }, []);
+
+  const handleOpenAR = (machineId?: MachineId) => {
+    const target = machineId || selectedMachineId || "drone-b";
+    setArTargetMachineId(target);
+    setIsWebAROpen(true);
+  };
 
   // Walking Robot Workshop Project Tab
   const [robotProjectTab, setRobotProjectTab] = useState<RobotProjectTab>("simulator");
@@ -466,16 +490,31 @@ export default function Home() {
   // Render Full-Page Mechverse Landing Page if active
   if (currentTab === "landing") {
     return (
-      <LandingPage
-        theme={theme}
-        onToggleTheme={() => setTheme((t) => (t === "dark" ? "light" : "dark"))}
-        onLaunchStudio={(machineId) => {
-          if (machineId) {
-            handleSelectMachine(machineId);
-          }
-          setCurrentTab("explore");
-        }}
-      />
+      <>
+        <LandingPage
+          theme={theme}
+          onToggleTheme={() => setTheme((t) => (t === "dark" ? "light" : "dark"))}
+          onLaunchStudio={(machineId) => {
+            if (machineId) {
+              handleSelectMachine(machineId);
+            }
+            setCurrentTab("explore");
+          }}
+          onOpenAR={handleOpenAR}
+        />
+
+        {/* Global Interactive Web AR Modal */}
+        <WebARModal
+          isOpen={isWebAROpen}
+          machineId={arTargetMachineId}
+          customization={customization}
+          onClose={() => setIsWebAROpen(false)}
+          onSelectMachine={(id) => {
+            setArTargetMachineId(id);
+            setSelectedMachineId(id);
+          }}
+        />
+      </>
     );
   }
 
@@ -503,6 +542,7 @@ export default function Home() {
         savedCount={savedDesigns.length}
         theme={theme}
         onToggleTheme={() => setTheme((t) => (t === "dark" ? "light" : "dark"))}
+        onOpenAR={() => handleOpenAR(selectedMachineId)}
       />
 
       {/* Main Full-Height Viewport Container */}
@@ -815,6 +855,7 @@ export default function Home() {
                           : activeMachine.name
                       }
                       theme={theme}
+                      onOpenAR={() => handleOpenAR(selectedMachineId)}
                     />
 
                     {/* 3D Scene Viewer occupying 100% of the screen */}
@@ -1024,6 +1065,18 @@ export default function Home() {
         savedDesigns={savedDesigns}
         onLoadDesign={handleApplySavedDesign}
         onDeleteDesign={handleDeleteDesign}
+      />
+
+      {/* Global Interactive Web AR Modal */}
+      <WebARModal
+        isOpen={isWebAROpen}
+        machineId={arTargetMachineId}
+        customization={customization}
+        onClose={() => setIsWebAROpen(false)}
+        onSelectMachine={(id) => {
+          setArTargetMachineId(id);
+          setSelectedMachineId(id);
+        }}
       />
     </div>
   );

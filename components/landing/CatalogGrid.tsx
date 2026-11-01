@@ -8,6 +8,7 @@ import MachineCard, { CatalogMachineItem } from "./MachineCard";
 
 interface CatalogGridProps {
   onLaunchStudio: (machineId: MachineId) => void;
+  onOpenAR?: (machineId: MachineId) => void;
 }
 
 const CATALOG_ITEMS: CatalogMachineItem[] = [
@@ -134,7 +135,7 @@ const CATALOG_ITEMS: CatalogMachineItem[] = [
 
 type CategoryFilter = "all" | "drones" | "robotics" | "vehicles" | "aerial" | "industrial";
 
-export default function CatalogGrid({ onLaunchStudio }: CatalogGridProps) {
+export default function CatalogGrid({ onLaunchStudio, onOpenAR }: CatalogGridProps) {
   const [filter, setFilter] = useState<CategoryFilter>("all");
   const [showRequestModal, setShowRequestModal] = useState<boolean>(false);
   const [requestText, setRequestText] = useState<string>("");
@@ -210,7 +211,12 @@ export default function CatalogGrid({ onLaunchStudio }: CatalogGridProps) {
         {/* Catalog Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredItems.map((item) => (
-            <MachineCard key={item.id} item={item} onLaunch={onLaunchStudio} />
+            <MachineCard
+              key={item.id}
+              item={item}
+              onLaunch={onLaunchStudio}
+              onOpenAR={onOpenAR}
+            />
           ))}
 
           {/* Request a Machine Card */}

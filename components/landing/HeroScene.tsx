@@ -4,7 +4,7 @@ import React, { useState, useRef, Suspense } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
 import * as THREE from "three";
-import { ArrowRight, ChevronDown } from "lucide-react";
+import { ArrowRight, ChevronDown, Camera } from "lucide-react";
 import { CustomizationSettings, MachineId, RobotSimulationState } from "@/types/machine";
 import { TOKENS } from "@/constants/designTokens";
 import DroneBModel from "@/components/3d/DroneBModel";
@@ -13,6 +13,7 @@ import WalkingRobotModel from "@/components/3d/WalkingRobotModel";
 
 interface HeroSceneProps {
   onLaunchStudio: (machineId?: MachineId) => void;
+  onOpenAR?: (machineId?: MachineId) => void;
 }
 
 // Customizations matching the reference composition
@@ -261,7 +262,7 @@ function IndustrialStudioStage({
   );
 }
 
-export default function HeroScene({ onLaunchStudio }: HeroSceneProps) {
+export default function HeroScene({ onLaunchStudio, onOpenAR }: HeroSceneProps) {
   const [hoveredMachine, setHoveredMachine] = useState<MachineId | null>(null);
 
   return (
@@ -444,7 +445,7 @@ export default function HeroScene({ onLaunchStudio }: HeroSceneProps) {
 
       {/* ================= 4. REAL FUNCTIONAL CTA BUTTONS & SCROLL INDICATOR ================= */}
       <div className="relative z-30 w-full pb-8 flex flex-col items-center gap-5 pointer-events-auto">
-        <div className="flex flex-wrap items-center justify-center gap-4">
+        <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4">
           {/* Primary Orange Button: EXPLORE MACHINES → */}
           <a
             href="#catalog"
@@ -461,9 +462,18 @@ export default function HeroScene({ onLaunchStudio }: HeroSceneProps) {
           {/* Secondary Dark Glass Button: ENTER 3D STUDIO */}
           <button
             onClick={() => onLaunchStudio()}
-            className="px-8 py-3.5 rounded-full text-xs font-mono-tech font-medium tracking-wider text-white bg-[#0F1114]/85 backdrop-blur-md border border-white/20 hover:border-white/50 hover:bg-[#161A1F] transition-all transform active:scale-95 cursor-pointer uppercase shadow-lg"
+            className="px-7 py-3.5 rounded-full text-xs font-mono-tech font-medium tracking-wider text-white bg-[#0F1114]/85 backdrop-blur-md border border-white/20 hover:border-white/50 hover:bg-[#161A1F] transition-all transform active:scale-95 cursor-pointer uppercase shadow-lg"
           >
             <span>ENTER 3D STUDIO</span>
+          </button>
+
+          {/* Web AR Interactive Experience Button */}
+          <button
+            onClick={() => (onOpenAR ? onOpenAR("drone-b") : onLaunchStudio("drone-b"))}
+            className="px-6 py-3.5 rounded-full text-xs font-mono-tech font-semibold tracking-wider text-[#FF6A1A] bg-[#0F1114]/90 backdrop-blur-md border border-[#FF6A1A]/40 hover:border-[#FF6A1A] hover:bg-[#FF6A1A]/10 transition-all transform active:scale-95 cursor-pointer uppercase shadow-lg flex items-center gap-2"
+          >
+            <Camera size={14} />
+            <span>VIEW IN AR</span>
           </button>
         </div>
 

@@ -18,12 +18,14 @@ interface LandingPageProps {
   theme?: AppTheme;
   onToggleTheme?: () => void;
   onLaunchStudio: (machineId?: MachineId) => void;
+  onOpenAR?: (machineId?: MachineId) => void;
 }
 
 export default function LandingPage({
   theme = "dark",
   onToggleTheme,
   onLaunchStudio,
+  onOpenAR,
 }: LandingPageProps) {
   const isLight = theme === "light";
 
@@ -39,11 +41,12 @@ export default function LandingPage({
         theme={theme}
         onToggleTheme={onToggleTheme}
         onLaunchStudio={onLaunchStudio}
+        onOpenAR={onOpenAR}
       />
 
       <main className="flex-1 w-full flex flex-col">
         {/* 2. Real Interactive 3D Hero Scene with actual WebGL machines */}
-        <HeroScene onLaunchStudio={onLaunchStudio} />
+        <HeroScene onLaunchStudio={onLaunchStudio} onOpenAR={onOpenAR} />
 
         {/* 3. Signature Machine Reveal (Drag-to-reveal orbital arc slider) */}
         <MachineReveal onLaunchStudio={onLaunchStudio} />
@@ -55,7 +58,7 @@ export default function LandingPage({
         <ExplodedView onLaunchStudio={onLaunchStudio} />
 
         {/* 6. Machine Catalog Grid (Verified Indian BOMs and component specs) */}
-        <CatalogGrid onLaunchStudio={onLaunchStudio} />
+        <CatalogGrid onLaunchStudio={onLaunchStudio} onOpenAR={onOpenAR} />
 
         {/* 7. Structured 4-Stage Build Workflow */}
         <BuildProcess />

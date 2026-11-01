@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Camera } from "lucide-react";
 import { AppTheme, MachineId } from "@/types/machine";
 import { TOKENS } from "@/constants/designTokens";
 
@@ -9,10 +9,12 @@ interface LandingNavbarProps {
   theme?: AppTheme;
   onToggleTheme?: () => void;
   onLaunchStudio: (machineId?: MachineId) => void;
+  onOpenAR?: (machineId?: MachineId) => void;
 }
 
 export default function LandingNavbar({
   onLaunchStudio,
+  onOpenAR,
 }: LandingNavbarProps) {
   const [showSignInModal, setShowSignInModal] = useState(false);
 
@@ -51,6 +53,13 @@ export default function LandingNavbar({
           >
             SIMULATOR
           </button>
+          <button
+            onClick={() => onOpenAR && onOpenAR("drone-b")}
+            className="text-[#FF6A1A] hover:text-white transition-colors duration-200 uppercase cursor-pointer flex items-center gap-1.5"
+          >
+            <span className="w-1.5 h-1.5 rounded-full bg-[#FF6A1A] animate-pulse" />
+            <span>WEB AR</span>
+          </button>
           <a href="#exploded" className="hover:text-white transition-colors duration-200">
             BUILD LAB
           </a>
@@ -60,7 +69,15 @@ export default function LandingNavbar({
         </nav>
 
         {/* Right Actions */}
-        <div className="flex items-center gap-6 text-[11px] font-mono-tech tracking-widest uppercase">
+        <div className="flex items-center gap-4 sm:gap-6 text-[11px] font-mono-tech tracking-widest uppercase">
+          <button
+            onClick={() => onOpenAR && onOpenAR("drone-b")}
+            className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-[#FF6A1A]/30 bg-[#FF6A1A]/10 text-[#FF6A1A] hover:bg-[#FF6A1A] hover:text-white transition-all cursor-pointer"
+          >
+            <Camera size={12} />
+            <span>AR PREVIEW</span>
+          </button>
+
           <button
             onClick={() => setShowSignInModal(true)}
             className="hidden sm:block text-[#9AA0A9] hover:text-white transition-colors cursor-pointer"

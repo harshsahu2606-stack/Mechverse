@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowLeft, Box, Eye, Layers, Palette, Zap } from "lucide-react";
+import { ArrowLeft, Box, Eye, Layers, Palette, Zap, Camera } from "lucide-react";
 import { ViewMode, AppTheme } from "@/types/machine";
 
 interface ControlsHeaderProps {
@@ -10,6 +10,7 @@ interface ControlsHeaderProps {
   onExitSubAssembly: () => void;
   machineTitle: string;
   theme?: AppTheme;
+  onOpenAR?: () => void;
 }
 
 export default function ControlsHeader({
@@ -19,6 +20,7 @@ export default function ControlsHeader({
   onExitSubAssembly,
   machineTitle,
   theme = "dark",
+  onOpenAR,
 }: ControlsHeaderProps) {
   const isLight = theme === "light";
 
@@ -136,6 +138,21 @@ export default function ControlsHeader({
           <Palette size={13} />
           <span>Customize</span>
         </button>
+
+        {onOpenAR && (
+          <button
+            onClick={onOpenAR}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition ${
+              isLight
+                ? "text-orange-600 hover:bg-orange-50 border border-orange-200"
+                : "text-[#FF6A1A] hover:bg-[#FF6A1A]/10 border border-[#FF6A1A]/30"
+            }`}
+            title="Inspect in Web AR (Augmented Reality Camera)"
+          >
+            <Camera size={13} />
+            <span>Web AR</span>
+          </button>
+        )}
       </div>
     </div>
   );

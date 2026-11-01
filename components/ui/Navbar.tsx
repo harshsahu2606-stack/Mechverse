@@ -1,6 +1,6 @@
 "use client";
 
-import { Box, CarFront, Fan, Bot, RotateCcw, Bookmark, Sparkles, Swords, Plane, Hexagon, Smartphone, Sun, Moon } from "lucide-react";
+import { Box, CarFront, Fan, Bot, RotateCcw, Bookmark, Sparkles, Swords, Plane, Hexagon, Smartphone, Sun, Moon, Camera } from "lucide-react";
 import { MachineId, AppTheme } from "@/types/machine";
 
 interface NavbarProps {
@@ -13,6 +13,7 @@ interface NavbarProps {
   savedCount: number;
   theme?: AppTheme;
   onToggleTheme?: () => void;
+  onOpenAR?: () => void;
 }
 
 export default function Navbar({
@@ -25,6 +26,7 @@ export default function Navbar({
   savedCount,
   theme = "dark",
   onToggleTheme,
+  onOpenAR,
 }: NavbarProps) {
   const isLight = theme === "light";
 
@@ -238,6 +240,18 @@ export default function Navbar({
             <span className="hidden sm:inline">ESP32 Drone</span>
           </button>
         </div>
+
+        {/* Web AR Quick Trigger Button */}
+        {onOpenAR && (
+          <button
+            onClick={onOpenAR}
+            title="Launch Interactive Web AR"
+            className="flex items-center gap-1.5 rounded-lg border border-[#FF6A1A]/40 bg-[#FF6A1A]/10 px-2.5 sm:px-3 py-1.5 text-xs font-semibold text-[#FF6A1A] hover:bg-[#FF6A1A] hover:text-white transition shadow-sm"
+          >
+            <Camera size={14} />
+            <span className="hidden md:inline">Web AR</span>
+          </button>
+        )}
 
         {/* Global Light / Dark Theme Toggle Button */}
         {onToggleTheme && (

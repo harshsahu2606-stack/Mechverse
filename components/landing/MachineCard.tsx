@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { ArrowRight, ShieldCheck, Clock } from "lucide-react";
+import { ArrowRight, ShieldCheck, Clock, Camera } from "lucide-react";
 import { MachineId } from "@/types/machine";
 import { TOKENS } from "@/constants/designTokens";
 
@@ -21,9 +21,10 @@ export interface CatalogMachineItem {
 interface MachineCardProps {
   item: CatalogMachineItem;
   onLaunch: (id: MachineId) => void;
+  onOpenAR?: (id: MachineId) => void;
 }
 
-export default function MachineCard({ item, onLaunch }: MachineCardProps) {
+export default function MachineCard({ item, onLaunch, onOpenAR }: MachineCardProps) {
   const isVerified = item.priceStatus === "verified";
 
   return (
@@ -100,14 +101,25 @@ export default function MachineCard({ item, onLaunch }: MachineCardProps) {
         </div>
       </div>
 
-      {/* Direct Functional Launch Action */}
-      <button
-        onClick={() => onLaunch(item.id)}
-        className="w-full py-2.5 rounded-xl text-xs font-mono font-medium text-white flex items-center justify-center gap-2 border border-white/10 bg-[#07080A] hover:bg-[#FF6A1A] hover:border-[#FF6A1A] transition-all transform active:scale-98 cursor-pointer"
-      >
-        <span>Launch in 3D Studio</span>
-        <ArrowRight size={13} className="group-hover:translate-x-0.5 transition-transform" />
-      </button>
+      {/* Direct Functional Launch & Web AR Actions */}
+      <div className="flex items-center gap-2 pt-1">
+        <button
+          onClick={() => onLaunch(item.id)}
+          className="flex-1 py-2.5 rounded-xl text-xs font-mono font-medium text-white flex items-center justify-center gap-2 border border-white/10 bg-[#07080A] hover:bg-[#FF6A1A] hover:border-[#FF6A1A] transition-all transform active:scale-98 cursor-pointer"
+        >
+          <span>3D Studio</span>
+          <ArrowRight size={13} className="group-hover:translate-x-0.5 transition-transform" />
+        </button>
+
+        <button
+          onClick={() => (onOpenAR ? onOpenAR(item.id) : onLaunch(item.id))}
+          title="Inspect in Web AR (Augmented Reality)"
+          className="px-3.5 py-2.5 rounded-xl text-xs font-mono font-semibold text-[#FF6A1A] border border-[#FF6A1A]/30 bg-[#FF6A1A]/10 hover:bg-[#FF6A1A] hover:text-white transition-all transform active:scale-95 flex items-center gap-1.5 cursor-pointer shadow-sm"
+        >
+          <Camera size={13} />
+          <span>AR</span>
+        </button>
+      </div>
     </div>
   );
 }
