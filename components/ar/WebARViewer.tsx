@@ -369,17 +369,17 @@ export default function WebARViewer({
       </div>
 
       {/* 3. Top Navigation & Telemetry Header */}
-      <div className="relative z-20 w-full p-4 flex items-center justify-between pointer-events-none">
+      <div className="relative z-20 w-full p-2.5 sm:p-4 flex items-center justify-between pointer-events-none">
         {/* Left: AR Tracking Status */}
-        <div className="flex items-center gap-2.5 pointer-events-auto">
-          <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#0F1114]/85 border border-white/15 backdrop-blur-md shadow-lg">
+        <div className="flex items-center gap-1.5 sm:gap-2.5 pointer-events-auto">
+          <div className="flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full bg-[#0F1114]/85 border border-white/15 backdrop-blur-md shadow-lg">
             <span
-              className={`w-2 h-2 rounded-full ${
+              className={`w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full ${
                 cameraActive ? "bg-emerald-500 animate-pulse" : "bg-[#FF6A1A]"
               }`}
             />
-            <span className="text-[10px] font-mono tracking-widest text-white font-semibold uppercase">
-              {cameraActive ? "WEB AR: LIVE FEED" : "AR SIMULATED STAGE"}
+            <span className="text-[9px] sm:text-[10px] font-mono tracking-widest text-white font-semibold uppercase">
+              {cameraActive ? "WEB AR" : "AR STAGE"}
             </span>
           </div>
 
@@ -391,18 +391,18 @@ export default function WebARViewer({
         </div>
 
         {/* Right: Quick Actions (Camera flip, torch, close) */}
-        <div className="flex items-center gap-2 pointer-events-auto">
+        <div className="flex items-center gap-1.5 sm:gap-2 pointer-events-auto">
           {/* Torch / Flashlight Toggle */}
           <button
             onClick={() => setTorchEnabled((prev) => !prev)}
             title="Toggle AR Studio Spotlight"
-            className={`p-2 rounded-xl border backdrop-blur-md transition-all ${
+            className={`p-1.5 sm:p-2 rounded-xl border backdrop-blur-md transition-all ${
               torchEnabled
                 ? "bg-[#FF6A1A] border-[#FF6A1A] text-white shadow-[0_0_15px_rgba(255,106,26,0.5)]"
                 : "bg-[#0F1114]/80 border-white/15 text-white/70 hover:text-white"
             }`}
           >
-            <Sun size={15} />
+            <Sun size={14} />
           </button>
 
           {/* Flip Camera (if mobile has multiple cameras) */}
@@ -410,9 +410,9 @@ export default function WebARViewer({
             <button
               onClick={toggleCameraFacing}
               title="Flip Camera (Front/Rear)"
-              className="p-2 rounded-xl bg-[#0F1114]/80 border border-white/15 text-white/70 hover:text-white backdrop-blur-md transition-all"
+              className="p-1.5 sm:p-2 rounded-xl bg-[#0F1114]/80 border border-white/15 text-white/70 hover:text-white backdrop-blur-md transition-all"
             >
-              <FlipHorizontal size={15} />
+              <FlipHorizontal size={14} />
             </button>
           )}
 
@@ -420,19 +420,19 @@ export default function WebARViewer({
           <button
             onClick={() => setShowReticle((prev) => !prev)}
             title="Toggle Ground Placement Ring"
-            className={`p-2 rounded-xl border backdrop-blur-md transition-all ${
+            className={`p-1.5 sm:p-2 rounded-xl border backdrop-blur-md transition-all ${
               showReticle
                 ? "bg-white/15 border-white/30 text-white"
                 : "bg-[#0F1114]/80 border-white/15 text-white/40"
             }`}
           >
-            <Eye size={15} />
+            <Eye size={14} />
           </button>
 
           {/* Close AR Button */}
           <button
             onClick={onClose}
-            className="px-3.5 py-1.5 rounded-xl bg-red-600/80 hover:bg-red-600 border border-red-500/50 text-white text-xs font-mono font-medium backdrop-blur-md transition-all shadow-lg"
+            className="px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-xl bg-red-600/80 hover:bg-red-600 border border-red-500/50 text-white text-[11px] sm:text-xs font-mono font-medium backdrop-blur-md transition-all shadow-lg"
           >
             Exit AR
           </button>
@@ -450,35 +450,36 @@ export default function WebARViewer({
       )}
 
       {/* 4. Bottom Controls: Machine Switcher, Scale Presets, Shutter & Slider Panel */}
-      <div className="relative z-20 w-full p-4 max-w-4xl mx-auto flex flex-col gap-3 pointer-events-none">
+      <div className="relative z-20 w-full p-2.5 sm:p-4 max-w-4xl mx-auto flex flex-col gap-2 sm:gap-3 pointer-events-none">
         {/* Interaction Hint */}
-        <div className="flex items-center justify-center gap-2 text-[10px] font-mono tracking-widest text-white/75 bg-black/60 border border-white/10 px-3.5 py-1 rounded-full backdrop-blur-md mx-auto">
-          <Move size={11} className="text-[#FF6A1A]" />
-          <span>DRAG TO REPOSITION · PINCH TO ZOOM · 2-FINGER DRAG TO ROTATE</span>
+        <div className="flex items-center justify-center gap-1.5 sm:gap-2 text-[9px] sm:text-[10px] font-mono tracking-wider sm:tracking-widest text-white/75 bg-black/60 border border-white/10 px-2.5 sm:px-3.5 py-1 rounded-full backdrop-blur-md mx-auto text-center">
+          <Move size={11} className="text-[#FF6A1A] shrink-0" />
+          <span className="hidden xs:inline">DRAG TO MOVE · PINCH TO ZOOM · ROTATE ON DESK</span>
+          <span className="xs:hidden">DRAG &amp; PINCH TO MOVE</span>
         </div>
 
         {/* Tabbed AR Drawer (Transform | Explode | Specs) */}
-        <div className="bg-[#0F1114]/90 border border-white/15 rounded-2xl backdrop-blur-xl p-3 shadow-2xl pointer-events-auto space-y-3">
+        <div className="bg-[#0F1114]/90 border border-white/15 rounded-2xl backdrop-blur-xl p-2.5 sm:p-3 shadow-2xl pointer-events-auto space-y-2.5 sm:space-y-3 max-h-[45vh] overflow-y-auto">
           {/* Top Bar inside Drawer: Tabs & Shutter button */}
-          <div className="flex items-center justify-between border-b border-white/10 pb-2.5">
-            <div className="flex items-center gap-1">
+          <div className="flex items-center justify-between border-b border-white/10 pb-2">
+            <div className="flex items-center gap-1 overflow-x-auto no-scrollbar">
               {[
                 { id: "transform", label: "Scale & Rotate", icon: Sliders },
                 { id: "explode", label: "Disassembly", icon: Layers },
-                { id: "telemetry", label: "Specifications", icon: Info },
+                { id: "telemetry", label: "Specs", icon: Info },
               ].map((tab) => {
                 const Icon = tab.icon;
                 return (
                   <button
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id as any)}
-                    className={`flex items-center gap-1.5 px-3 py-1 rounded-xl text-xs font-mono transition-all ${
+                    className={`flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1 rounded-xl text-[10px] sm:text-xs font-mono whitespace-nowrap transition-all ${
                       activeTab === tab.id
                         ? "bg-[#FF6A1A] text-white font-semibold shadow-md shadow-[#FF6A1A]/30"
                         : "text-white/60 hover:text-white hover:bg-white/5"
                     }`}
                   >
-                    <Icon size={12} />
+                    <Icon size={11} />
                     <span>{tab.label}</span>
                   </button>
                 );
@@ -488,11 +489,11 @@ export default function WebARViewer({
             {/* AR Photo Shutter Capture Button */}
             <button
               onClick={handleCaptureSnapshot}
-              className="flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-white hover:bg-slate-100 text-[#07080A] text-xs font-mono font-bold transition-all transform active:scale-95 shadow-lg"
+              className="flex items-center gap-1.5 px-2.5 sm:px-3.5 py-1 sm:py-1.5 rounded-xl bg-white hover:bg-slate-100 text-[#07080A] text-[10px] sm:text-xs font-mono font-bold transition-all transform active:scale-95 shadow-lg shrink-0 ml-1"
               title="Capture High-Res AR Photo with Telemetry"
             >
-              <Camera size={13} className="text-[#FF6A1A]" />
-              <span>Capture AR Photo</span>
+              <Camera size={12} className="text-[#FF6A1A]" />
+              <span className="hidden xs:inline">Capture</span> Photo
             </button>
           </div>
 

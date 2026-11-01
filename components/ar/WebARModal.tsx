@@ -104,9 +104,9 @@ export default function WebARModal({
         </div>
       ) : (
         /* Mobile QR Code & Native AR Modal Panel */
-        <div className="relative w-full max-w-xl mx-4 bg-[#0F1114] border border-white/15 rounded-3xl p-6 sm:p-8 shadow-2xl text-center space-y-6">
+        <div className="relative w-full max-w-xl mx-3 sm:mx-4 bg-[#0F1114] border border-white/15 rounded-3xl p-4 sm:p-8 shadow-2xl text-center space-y-4 sm:space-y-6 max-h-[92vh] overflow-y-auto">
           {/* Top Row with Close Button */}
-          <div className="flex items-center justify-between border-b border-white/10 pb-4">
+          <div className="flex items-center justify-between border-b border-white/10 pb-3 sm:pb-4">
             <div className="flex items-center gap-2">
               <div className="w-2.5 h-2.5 rounded-full bg-[#FF6A1A] animate-pulse" />
               <span className="text-xs font-mono tracking-widest text-white uppercase font-bold">

@@ -167,36 +167,36 @@ export default function CatalogGrid({ onLaunchStudio, onOpenAR }: CatalogGridPro
   return (
     <section
       id="catalog"
-      className="relative w-full py-20 px-6 md:px-12 border-t border-white/5 overflow-hidden"
+      className="relative w-full py-14 sm:py-20 px-4 sm:px-6 md:px-12 border-t border-white/5 overflow-hidden"
       style={{ backgroundColor: TOKENS.colors.background }}
     >
-      <div className="max-w-7xl mx-auto flex flex-col space-y-12">
+      <div className="max-w-7xl mx-auto flex flex-col space-y-8 sm:space-y-12">
         {/* Section Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-          <div className="space-y-3">
-            <div className="text-[11px] font-mono tracking-widest text-[#9AA0A9] uppercase">
+          <div className="space-y-2 sm:space-y-3">
+            <div className="text-[10px] sm:text-[11px] font-mono tracking-widest text-[#9AA0A9] uppercase">
               Machine Catalog
             </div>
-            <h2 className="text-3xl sm:text-4xl font-light text-[#F4F5F7] tracking-tight">
+            <h2 className="text-2xl sm:text-4xl font-light text-[#F4F5F7] tracking-tight">
               Explore Engineering{" "}
               <span className="font-semibold" style={{ color: TOKENS.colors.accent }}>
                 Machines
               </span>
               .
             </h2>
-            <p className="text-sm text-[#9AA0A9] max-w-xl">
+            <p className="text-xs sm:text-sm text-[#9AA0A9] max-w-xl leading-relaxed">
               Every project includes verified 3D CAD files, assembly explosion steps, real wiring diagrams,
               and BOM sourcing with verified Indian component prices.
             </p>
           </div>
 
           {/* Filter Pills */}
-          <div className="flex flex-wrap gap-2">
+          <div className="flex items-center gap-1.5 sm:gap-2 overflow-x-auto no-scrollbar pb-1 max-w-full">
             {categories.map((cat) => (
               <button
                 key={cat.id}
                 onClick={() => setFilter(cat.id)}
-                className={`px-3 py-1.5 rounded-lg text-xs font-mono transition-all cursor-pointer ${
+                className={`px-3 py-1.5 rounded-lg text-xs font-mono whitespace-nowrap transition-all cursor-pointer ${
                   filter === cat.id
                     ? "bg-[#161A1F] text-white border border-white/30"
                     : "bg-[#0F1114] text-[#9AA0A9] border border-white/5 hover:text-white"

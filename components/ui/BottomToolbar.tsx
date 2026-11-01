@@ -36,15 +36,15 @@ export default function BottomToolbar({
   };
 
   return (
-    <div className="absolute bottom-4 left-4 right-4 z-20 flex items-center justify-between pointer-events-none">
+    <div className="absolute bottom-2 sm:bottom-4 left-2 sm:left-4 right-2 sm:right-4 z-20 flex items-center justify-between pointer-events-none">
       {/* Interaction Hint (matching screenshot: DRAG TO ROTATE · SCROLL TO ZOOM) */}
-      <div className="hidden sm:flex items-center gap-2 text-[11px] font-mono tracking-wider text-gray-400 bg-black/50 border border-white/10 px-3 py-1.5 rounded-xl backdrop-blur-md">
+      <div className="hidden md:flex items-center gap-2 text-[11px] font-mono tracking-wider text-gray-400 bg-black/50 border border-white/10 px-3 py-1.5 rounded-xl backdrop-blur-md">
         <Move size={12} className="text-gray-400" />
         <span>DRAG TO ROTATE · SCROLL TO ZOOM · SHIFT+DRAG TO PAN</span>
       </div>
 
       {/* Camera Presets Toolbar */}
-      <div className="flex items-center gap-1.5 bg-black/70 border border-white/15 p-1 rounded-2xl backdrop-blur-md shadow-xl pointer-events-auto ml-auto sm:ml-0">
+      <div className="flex items-center gap-1 sm:gap-1.5 bg-black/80 border border-white/15 p-1 rounded-2xl backdrop-blur-md shadow-xl pointer-events-auto ml-auto sm:ml-0">
         {[
           { id: "default", label: "Iso" },
           { id: "front", label: "Front" },
@@ -54,7 +54,7 @@ export default function BottomToolbar({
           <button
             key={item.id}
             onClick={() => onSelectPreset(item.id as CameraPreset)}
-            className={`px-2.5 py-1 rounded-xl text-[11px] font-semibold transition ${
+            className={`px-2 sm:px-2.5 py-1 rounded-xl text-[10px] sm:text-[11px] font-semibold transition ${
               currentPreset === item.id
                 ? "bg-white/20 text-white"
                 : "text-gray-400 hover:text-white"

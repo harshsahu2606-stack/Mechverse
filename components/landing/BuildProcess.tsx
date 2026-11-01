@@ -39,22 +39,22 @@ export default function BuildProcess() {
   return (
     <section
       id="workflow"
-      className="relative w-full py-20 px-6 md:px-12 border-t border-white/5 overflow-hidden"
+      className="relative w-full py-14 sm:py-20 px-4 sm:px-6 md:px-12 border-t border-white/5 overflow-hidden"
       style={{ backgroundColor: TOKENS.colors.background }}
     >
-      <div className="max-w-7xl mx-auto flex flex-col space-y-12">
-        <div className="space-y-3">
-          <div className="text-[11px] font-mono tracking-widest text-[#9AA0A9] uppercase">
+      <div className="max-w-7xl mx-auto flex flex-col space-y-8 sm:space-y-12">
+        <div className="space-y-2 sm:space-y-3">
+          <div className="text-[10px] sm:text-[11px] font-mono tracking-widest text-[#9AA0A9] uppercase">
             Build Workflow
           </div>
-          <h2 className="text-3xl sm:text-4xl font-light text-[#F4F5F7] tracking-tight">
+          <h2 className="text-2xl sm:text-4xl font-light text-[#F4F5F7] tracking-tight">
             From Digital CAD to{" "}
             <span className="font-semibold" style={{ color: TOKENS.colors.accent }}>
               Working Hardware
             </span>
             .
           </h2>
-          <p className="text-sm text-[#9AA0A9] max-w-xl">
+          <p className="text-xs sm:text-sm text-[#9AA0A9] max-w-xl leading-relaxed">
             A structured, beginner-friendly pipeline designed for student engineers and makers.
           </p>
         </div>

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useRef, Suspense } from "react";
-import { Canvas, useFrame } from "@react-three/fiber";
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
 import * as THREE from "three";
 import { ArrowRight, ChevronDown, Camera } from "lucide-react";
@@ -56,13 +56,18 @@ function IndustrialStudioStage({
   const walkerGroupRef = useRef<THREE.Group>(null);
   const orbitLightRef = useRef<THREE.PointLight>(null);
 
+  const { width } = useThree((state) => state.viewport);
+  const isMobile = width < 3.4;
+
   useFrame((state, delta) => {
     const t = state.clock.elapsedTime;
 
     // Center Drone B: Hero prominence, smooth hovering dynamics
     if (droneGroupRef.current) {
       const isHovered = hoveredMachine === "drone-b";
-      const targetScale = isHovered ? 1.16 : 1.10;
+      const targetScale = isMobile
+        ? (isHovered ? 0.92 : 0.86)
+        : (isHovered ? 1.16 : 1.10);
       droneGroupRef.current.scale.lerp(new THREE.Vector3(targetScale, targetScale, targetScale), delta * 5);
 
       // Delicate floating motion lowered cleanly below labels
@@ -75,7 +80,9 @@ function IndustrialStudioStage({
     // Left Combat Bot: brought close to center drone, well inside screen
     if (combatBotGroupRef.current) {
       const isHovered = hoveredMachine === "robo-rumble";
-      const targetScale = isHovered ? 0.54 : 0.50;
+      const targetScale = isMobile
+        ? (isHovered ? 0.40 : 0.36)
+        : (isHovered ? 0.54 : 0.50);
       combatBotGroupRef.current.scale.lerp(new THREE.Vector3(targetScale, targetScale, targetScale), delta * 5);
       combatBotGroupRef.current.rotation.y = 0.42 + Math.sin(t * 0.3) * 0.015;
     }
@@ -83,7 +90,9 @@ function IndustrialStudioStage({
     // Right Walker: brought close to center drone, well inside screen
     if (walkerGroupRef.current) {
       const isHovered = hoveredMachine === "walking-robot";
-      const targetScale = isHovered ? 0.50 : 0.46;
+      const targetScale = isMobile
+        ? (isHovered ? 0.38 : 0.34)
+        : (isHovered ? 0.50 : 0.46);
       walkerGroupRef.current.scale.lerp(new THREE.Vector3(targetScale, targetScale, targetScale), delta * 5);
       walkerGroupRef.current.rotation.y = -0.42 + Math.cos(t * 0.3) * 0.015;
     }
@@ -149,7 +158,7 @@ function IndustrialStudioStage({
       {/* ================= 1. LEFT MACHINE: RR-01 COMBAT ROBOT ================= */}
       <group
         ref={combatBotGroupRef}
-        position={[-1.15, -0.46, 0.35]}
+        position={[isMobile ? -0.82 : -1.15, -0.46, 0.35]}
         scale={0.50}
         onPointerOver={(e) => {
           e.stopPropagation();
@@ -178,13 +187,13 @@ function IndustrialStudioStage({
       <group position={[0, -0.56, 0]}>
         {/* Dark Cylindrical Pedestal */}
         <mesh position={[0, 0.07, 0]}>
-          <cylinderGeometry args={[0.62, 0.68, 0.14, 64]} />
+          <cylinderGeometry args={[isMobile ? 0.48 : 0.62, isMobile ? 0.54 : 0.68, 0.14, 64]} />
           <meshStandardMaterial color="#0c0e12" roughness={0.25} metalness={0.75} />
         </mesh>
 
         {/* Emissive Orange Neon Ring around top rim of pedestal */}
         <mesh position={[0, 0.142, 0]} rotation={[Math.PI / 2, 0, 0]}>
-          <torusGeometry args={[0.62, 0.011, 16, 64]} />
+          <torusGeometry args={[isMobile ? 0.48 : 0.62, 0.011, 16, 64]} />
           <meshStandardMaterial
             color={TOKENS.colors.accent}
             emissive={TOKENS.colors.accent}
@@ -223,7 +232,7 @@ function IndustrialStudioStage({
       {/* ================= 3. RIGHT MACHINE: TJ-01 WALKING MECHANISM ================= */}
       <group
         ref={walkerGroupRef}
-        position={[1.15, -0.46, 0.35]}
+        position={[isMobile ? 0.82 : 1.15, -0.46, 0.35]}
         scale={0.46}
         onPointerOver={(e) => {
           e.stopPropagation();
@@ -283,16 +292,16 @@ export default function HeroScene({ onLaunchStudio, onOpenAR }: HeroSceneProps) 
       />
 
       {/* ================= 1. EDITORIAL HEADLINE & SANS SUBTITLE (CLEAN HIERARCHY) ================= */}
-      <div className="relative z-20 w-full pt-16 sm:pt-20 md:pt-22 text-center px-4 flex flex-col items-center pointer-events-none">
-        <h1 className="font-serif-headline text-3xl sm:text-4xl md:text-5xl lg:text-[2.75rem] tracking-[0.04em] text-white uppercase font-normal leading-[1.15] select-text max-w-3xl">
+      <div className="relative z-20 w-full pt-14 sm:pt-20 md:pt-22 text-center px-4 flex flex-col items-center pointer-events-none">
+        <h1 className="font-serif-headline text-2xl sm:text-4xl md:text-5xl lg:text-[2.75rem] tracking-[0.04em] text-white uppercase font-normal leading-snug sm:leading-[1.15] select-text max-w-3xl">
           FOR THOSE WHO
           <br />
-          <span className="italic font-bold text-[#FF6A1A] mr-3">BUILD</span>
+          <span className="italic font-bold text-[#FF6A1A] mr-2 sm:mr-3">BUILD</span>
           BEYOND ORDINARY.
         </h1>
 
         {/* Clean Editorial Subtitle - Distinct typography and human-readable styling */}
-        <p className="mt-3 text-sm sm:text-base font-sans tracking-wide text-[#94A3B8] font-normal select-text">
+        <p className="mt-2 sm:mt-3 text-xs sm:text-base font-sans tracking-wide text-[#94A3B8] font-normal select-text">
           Design. Simulate. Build real machines.
         </p>
       </div>
@@ -325,7 +334,7 @@ export default function HeroScene({ onLaunchStudio, onOpenAR }: HeroSceneProps) 
       </div>
 
       {/* ================= 3. AUTHENTIC ENGINEERING CAD HUD LABELS & LEADER LINES ================= */}
-      <div className="absolute inset-0 w-full h-full z-20 pointer-events-none max-w-7xl mx-auto px-4 sm:px-8 md:px-12">
+      <div className="absolute inset-0 w-full h-full z-20 pointer-events-none max-w-7xl mx-auto px-2 sm:px-8 md:px-12">
         <div className="relative w-full h-full">
 
           {/* ----- LABEL 1: RR-01 COMBAT ROBOT (LEFT) ----- */}
@@ -333,19 +342,19 @@ export default function HeroScene({ onLaunchStudio, onOpenAR }: HeroSceneProps) 
             onClick={() => onLaunchStudio("robo-rumble")}
             onMouseEnter={() => setHoveredMachine("robo-rumble")}
             onMouseLeave={() => setHoveredMachine(null)}
-            className={`absolute left-[3%] sm:left-[5%] lg:left-[7%] top-[45%] md:top-[44%] text-left pointer-events-auto cursor-pointer transition-all duration-300 ${
+            className={`absolute left-[2%] sm:left-[5%] lg:left-[7%] top-[45%] md:top-[44%] text-left pointer-events-auto cursor-pointer transition-all duration-300 ${
               hoveredMachine === "robo-rumble" ? "scale-105" : "opacity-90 hover:opacity-100"
             }`}
           >
             {/* Title & Technical Underline with Pointer */}
             <div className="relative pb-1">
-              <span className="text-[11px] sm:text-xs font-mono-tech tracking-[0.16em] text-white font-medium uppercase drop-shadow-sm">
+              <span className="text-[9px] sm:text-xs font-mono-tech tracking-[0.12em] sm:tracking-[0.16em] text-white font-medium uppercase drop-shadow-sm">
                 RR-01 / COMBAT ROBOT
               </span>
               {/* Leader Line extending right and down toward combat bot */}
               <svg
-                width="130"
-                height="42"
+                width="110"
+                height="38"
                 viewBox="0 0 130 42"
                 fill="none"
                 className={`transition-colors duration-200 mt-0.5 ${
@@ -357,7 +366,7 @@ export default function HeroScene({ onLaunchStudio, onOpenAR }: HeroSceneProps) 
             </div>
 
             {/* Technical Sub-Specs */}
-            <div className="space-y-0.5 text-[9px] sm:text-[10px] font-mono-tech tracking-wider text-[#94A3B8] uppercase">
+            <div className="hidden sm:block space-y-0.5 text-[9px] sm:text-[10px] font-mono-tech tracking-wider text-[#94A3B8] uppercase">
               <div className="hover:text-white transition-colors">ESP32 CONTROL</div>
               <div className="hover:text-white transition-colors">IMPACT READY</div>
             </div>
@@ -368,18 +377,18 @@ export default function HeroScene({ onLaunchStudio, onOpenAR }: HeroSceneProps) 
             onClick={() => onLaunchStudio("drone-b")}
             onMouseEnter={() => setHoveredMachine("drone-b")}
             onMouseLeave={() => setHoveredMachine(null)}
-            className={`absolute left-[24%] sm:left-[30%] lg:left-[34%] top-[39%] md:top-[38%] text-left pointer-events-auto cursor-pointer transition-all duration-300 ${
+            className={`absolute left-[12%] sm:left-[30%] lg:left-[34%] top-[39%] md:top-[38%] text-left pointer-events-auto cursor-pointer transition-all duration-300 ${
               hoveredMachine === "drone-b" ? "scale-105" : "opacity-90 hover:opacity-100"
             }`}
           >
             {/* Title & Leader Line pointing down-right to Drone's left motor/arm */}
             <div className="relative pb-0.5">
-              <span className="text-[11px] sm:text-xs font-mono-tech tracking-[0.18em] text-white font-medium uppercase drop-shadow-sm">
+              <span className="text-[9px] sm:text-xs font-mono-tech tracking-[0.12em] sm:tracking-[0.18em] text-white font-medium uppercase drop-shadow-sm whitespace-nowrap">
                 DRONE-B / INDUSTRIAL OCTOCOPTER
               </span>
               <svg
-                width="140"
-                height="38"
+                width="120"
+                height="34"
                 viewBox="0 0 140 38"
                 fill="none"
                 className={`transition-colors duration-200 mt-0.5 ${
@@ -411,18 +420,18 @@ export default function HeroScene({ onLaunchStudio, onOpenAR }: HeroSceneProps) 
             onClick={() => onLaunchStudio("walking-robot")}
             onMouseEnter={() => setHoveredMachine("walking-robot")}
             onMouseLeave={() => setHoveredMachine(null)}
-            className={`absolute right-[3%] sm:right-[5%] lg:right-[7%] top-[43%] md:top-[42%] text-right pointer-events-auto cursor-pointer transition-all duration-300 ${
+            className={`absolute right-[2%] sm:right-[5%] lg:right-[7%] top-[43%] md:top-[42%] text-right pointer-events-auto cursor-pointer transition-all duration-300 ${
               hoveredMachine === "walking-robot" ? "scale-105" : "opacity-90 hover:opacity-100"
             }`}
           >
             {/* Title & Leader Line extending left and down toward walker linkage */}
             <div className="relative pb-1">
-              <span className="text-[11px] sm:text-xs font-mono-tech tracking-[0.16em] text-white font-medium uppercase drop-shadow-sm">
+              <span className="text-[9px] sm:text-xs font-mono-tech tracking-[0.12em] sm:tracking-[0.16em] text-white font-medium uppercase drop-shadow-sm">
                 TJ-01 / WALKING MECHANISM
               </span>
               <svg
-                width="130"
-                height="42"
+                width="110"
+                height="38"
                 viewBox="0 0 130 42"
                 fill="none"
                 className={`ml-auto transition-colors duration-200 mt-0.5 ${
@@ -434,7 +443,7 @@ export default function HeroScene({ onLaunchStudio, onOpenAR }: HeroSceneProps) 
             </div>
 
             {/* Technical Sub-Specs */}
-            <div className="space-y-0.5 text-[9px] sm:text-[10px] font-mono-tech tracking-wider text-[#94A3B8] uppercase">
+            <div className="hidden sm:block space-y-0.5 text-[9px] sm:text-[10px] font-mono-tech tracking-wider text-[#94A3B8] uppercase">
               <div className="hover:text-white transition-colors">LINKAGE DRIVE</div>
               <div className="hover:text-white transition-colors">LOW POWER</div>
             </div>
@@ -444,12 +453,12 @@ export default function HeroScene({ onLaunchStudio, onOpenAR }: HeroSceneProps) 
       </div>
 
       {/* ================= 4. REAL FUNCTIONAL CTA BUTTONS & SCROLL INDICATOR ================= */}
-      <div className="relative z-30 w-full pb-8 flex flex-col items-center gap-5 pointer-events-auto">
-        <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4">
+      <div className="relative z-30 w-full pb-6 sm:pb-8 flex flex-col items-center gap-3 sm:gap-5 pointer-events-auto">
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-2.5 sm:gap-4 w-full max-w-xs sm:max-w-none px-4">
           {/* Primary Orange Button: EXPLORE MACHINES → */}
           <a
             href="#catalog"
-            className="px-8 py-3.5 rounded-full text-xs font-mono-tech font-semibold tracking-wider text-white flex items-center gap-2 transition-all transform active:scale-95 cursor-pointer shadow-lg hover:brightness-110"
+            className="w-full sm:w-auto text-center justify-center px-6 sm:px-8 py-3 sm:py-3.5 rounded-full text-xs font-mono-tech font-semibold tracking-wider text-white flex items-center gap-2 transition-all transform active:scale-95 cursor-pointer shadow-lg hover:brightness-110"
             style={{
               backgroundColor: TOKENS.colors.accent,
               boxShadow: `0 0 25px ${TOKENS.colors.accentGlow}`,
@@ -462,7 +471,7 @@ export default function HeroScene({ onLaunchStudio, onOpenAR }: HeroSceneProps) 
           {/* Secondary Dark Glass Button: ENTER 3D STUDIO */}
           <button
             onClick={() => onLaunchStudio()}
-            className="px-7 py-3.5 rounded-full text-xs font-mono-tech font-medium tracking-wider text-white bg-[#0F1114]/85 backdrop-blur-md border border-white/20 hover:border-white/50 hover:bg-[#161A1F] transition-all transform active:scale-95 cursor-pointer uppercase shadow-lg"
+            className="w-full sm:w-auto text-center justify-center px-6 sm:px-7 py-3 sm:py-3.5 rounded-full text-xs font-mono-tech font-medium tracking-wider text-white bg-[#0F1114]/85 backdrop-blur-md border border-white/20 hover:border-white/50 hover:bg-[#161A1F] transition-all transform active:scale-95 cursor-pointer uppercase shadow-lg"
           >
             <span>ENTER 3D STUDIO</span>
           </button>
@@ -470,7 +479,7 @@ export default function HeroScene({ onLaunchStudio, onOpenAR }: HeroSceneProps) 
           {/* Web AR Interactive Experience Button */}
           <button
             onClick={() => (onOpenAR ? onOpenAR("drone-b") : onLaunchStudio("drone-b"))}
-            className="px-6 py-3.5 rounded-full text-xs font-mono-tech font-semibold tracking-wider text-[#FF6A1A] bg-[#0F1114]/90 backdrop-blur-md border border-[#FF6A1A]/40 hover:border-[#FF6A1A] hover:bg-[#FF6A1A]/10 transition-all transform active:scale-95 cursor-pointer uppercase shadow-lg flex items-center gap-2"
+            className="w-full sm:w-auto text-center justify-center px-5 sm:px-6 py-3 sm:py-3.5 rounded-full text-xs font-mono-tech font-semibold tracking-wider text-[#FF6A1A] bg-[#0F1114]/90 backdrop-blur-md border border-[#FF6A1A]/40 hover:border-[#FF6A1A] hover:bg-[#FF6A1A]/10 transition-all transform active:scale-95 cursor-pointer uppercase shadow-lg flex items-center gap-2"
           >
             <Camera size={14} />
             <span>VIEW IN AR</span>

@@ -34,39 +34,39 @@ export default function ExplodedView({ onLaunchStudio }: ExplodedViewProps) {
   return (
     <section
       id="exploded"
-      className="relative w-full py-20 px-6 md:px-12 border-t border-white/5 overflow-hidden"
+      className="relative w-full py-14 sm:py-20 px-4 sm:px-6 md:px-12 border-t border-white/5 overflow-hidden"
       style={{ backgroundColor: TOKENS.colors.background }}
     >
-      <div className="max-w-7xl mx-auto flex flex-col space-y-12">
+      <div className="max-w-7xl mx-auto flex flex-col space-y-8 sm:space-y-12">
         {/* Section Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-          <div className="space-y-3">
+          <div className="space-y-2 sm:space-y-3">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/10 bg-[#0F1114]">
               <Layers size={12} style={{ color: TOKENS.colors.accent }} />
-              <span className="text-[11px] font-mono tracking-widest text-[#9AA0A9] uppercase">
+              <span className="text-[10px] sm:text-[11px] font-mono tracking-widest text-[#9AA0A9] uppercase">
                 CAD Disassembly
               </span>
             </div>
-            <h2 className="text-3xl sm:text-4xl font-light text-[#F4F5F7] tracking-tight">
+            <h2 className="text-2xl sm:text-4xl font-light text-[#F4F5F7] tracking-tight">
               Interactive CAD{" "}
               <span className="font-semibold" style={{ color: TOKENS.colors.accent }}>
                 Explosion
               </span>
               .
             </h2>
-            <p className="text-sm text-[#9AA0A9] max-w-xl">
+            <p className="text-xs sm:text-sm text-[#9AA0A9] max-w-xl leading-relaxed">
               Inspect every individual mechanical layer and electronic surface. The 3D model separates
               along calibrated Cartesian vectors mirroring real physical assembly steps.
             </p>
           </div>
 
           {/* Preset Buttons */}
-          <div className="flex flex-wrap items-center gap-2">
+          <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
             {presets.map((preset) => (
               <button
                 key={preset.label}
                 onClick={() => setExplosionLevel(preset.value)}
-                className={`px-3.5 py-1.5 rounded-lg text-xs font-mono transition-all cursor-pointer ${
+                className={`px-3 py-1.5 rounded-lg text-xs font-mono transition-all cursor-pointer ${
                   Math.abs(explosionLevel - preset.value) < 0.05
                     ? "bg-[#161A1F] text-white border border-white/30"
                     : "bg-[#0F1114] text-[#9AA0A9] border border-white/5 hover:text-white"
@@ -79,9 +79,9 @@ export default function ExplodedView({ onLaunchStudio }: ExplodedViewProps) {
         </div>
 
         {/* 3D Explosion Canvas & Part Callouts */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 items-center">
           {/* 3D Stage */}
-          <div className="lg:col-span-8 h-[400px] sm:h-[520px] rounded-2xl border border-white/5 bg-[#0F1114]/70 overflow-hidden relative">
+          <div className="lg:col-span-8 h-[320px] sm:h-[520px] rounded-2xl border border-white/5 bg-[#0F1114]/70 overflow-hidden relative">
             <div className="absolute top-4 left-4 z-20 flex items-center gap-2 pointer-events-none">
               <span
                 className="w-2 h-2 rounded-full"
@@ -123,9 +123,9 @@ export default function ExplodedView({ onLaunchStudio }: ExplodedViewProps) {
             </Canvas>
 
             {/* In-Canvas Slider Controller */}
-            <div className="absolute bottom-6 left-6 right-6 z-20 flex items-center gap-4 bg-[#07080A]/85 backdrop-blur-md px-5 py-3 rounded-xl border border-white/10">
-              <span className="text-[11px] font-mono text-[#9AA0A9] whitespace-nowrap uppercase">
-                Disassembly Vector
+            <div className="absolute bottom-3 left-3 right-3 sm:bottom-6 sm:left-6 sm:right-6 z-20 flex items-center gap-2 sm:gap-4 bg-[#07080A]/90 backdrop-blur-md px-3 py-2 sm:px-5 sm:py-3 rounded-xl border border-white/10">
+              <span className="text-[10px] sm:text-[11px] font-mono text-[#9AA0A9] whitespace-nowrap uppercase hidden xs:inline">
+                Disassembly
               </span>
               <input
                 type="range"
@@ -137,7 +137,7 @@ export default function ExplodedView({ onLaunchStudio }: ExplodedViewProps) {
                 aria-label="Exploded View Slider"
                 className="w-full h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer accent-[#FF6A1A]"
               />
-              <span className="text-xs font-mono font-semibold text-white whitespace-nowrap min-w-[3rem] text-right">
+              <span className="text-xs font-mono font-semibold text-white whitespace-nowrap min-w-[2.5rem] sm:min-w-[3rem] text-right">
                 {Math.round(explosionLevel * 100)}%
               </span>
             </div>

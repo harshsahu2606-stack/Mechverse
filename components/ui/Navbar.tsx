@@ -32,36 +32,36 @@ export default function Navbar({
 
   return (
     <header
-      className={`h-16 px-4 sm:px-6 flex items-center justify-between sticky top-0 z-50 transition-colors duration-300 backdrop-blur-md ${
+      className={`h-14 sm:h-16 px-3 sm:px-6 flex items-center justify-between sticky top-0 z-50 transition-colors duration-300 backdrop-blur-md ${
         isLight
           ? "bg-white/90 border-b border-gray-200 shadow-sm"
           : "bg-[#0a0c10]/90 border-b border-white/10"
       }`}
     >
       {/* Brand Logo & Tagline */}
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-2 sm:gap-3 shrink-0">
         <button
           onClick={() => setCurrentTab("landing")}
-          className="flex items-center gap-3 text-left group"
+          className="flex items-center gap-2 sm:gap-3 text-left group"
         >
-          <div className="bg-gradient-to-br from-red-600 to-orange-600 rounded-lg p-2 text-white shadow-lg shadow-red-600/20 group-hover:scale-105 transition">
-            <CarFront size={20} />
+          <div className="bg-gradient-to-br from-red-600 to-orange-600 rounded-lg p-1.5 sm:p-2 text-white shadow-lg shadow-red-600/20 group-hover:scale-105 transition shrink-0">
+            <CarFront size={18} className="sm:w-5 sm:h-5" />
           </div>
           <div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5 sm:gap-2">
               <span
-                className={`font-extrabold tracking-widest text-sm sm:text-base transition ${
+                className={`font-extrabold tracking-widest text-xs sm:text-base transition ${
                   isLight ? "text-gray-900" : "text-white"
                 }`}
               >
                 MECHVERSE
               </span>
-              <span className="text-[10px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded bg-red-500/10 text-red-500 border border-red-500/20 hidden md:inline-block">
+              <span className="text-[9px] sm:text-[10px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded bg-red-500/10 text-red-500 border border-red-500/20 hidden lg:inline-block">
                 3D SIMULATOR
               </span>
             </div>
             <p
-              className={`text-[9px] tracking-[2px] font-medium uppercase ${
+              className={`text-[8px] sm:text-[9px] tracking-[1.5px] sm:tracking-[2px] font-medium uppercase hidden xs:block ${
                 isLight ? "text-gray-500" : "text-gray-400"
               }`}
             >
@@ -71,11 +71,11 @@ export default function Navbar({
         </button>
       </div>
 
-      {/* Center Navigation Links */}
-      <nav className="flex items-center gap-1 sm:gap-2">
+      {/* Center Navigation Links (Hidden on very narrow mobile screens, accessible via back or pills) */}
+      <nav className="hidden md:flex items-center gap-1 sm:gap-2">
         <button
           onClick={() => setCurrentTab("landing")}
-          className={`px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition ${
+          className={`px-2.5 sm:px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition ${
             currentTab === "landing"
               ? isLight
                 ? "bg-gray-100 text-gray-900 font-bold"
@@ -89,7 +89,7 @@ export default function Navbar({
         </button>
         <button
           onClick={() => setCurrentTab("home")}
-          className={`px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition ${
+          className={`px-2.5 sm:px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition ${
             currentTab === "home"
               ? isLight
                 ? "bg-gray-100 text-gray-900 font-bold"
@@ -103,7 +103,7 @@ export default function Navbar({
         </button>
         <button
           onClick={() => setCurrentTab("explore")}
-          className={`px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition ${
+          className={`px-2.5 sm:px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition ${
             currentTab === "explore"
               ? isLight
                 ? "bg-gray-100 text-gray-900 font-bold"
@@ -113,11 +113,11 @@ export default function Navbar({
               : "text-gray-400 hover:text-white hover:bg-white/5"
           }`}
         >
-          3D Simulator
+          Simulator
         </button>
         <button
           onClick={() => setCurrentTab("builder")}
-          className={`px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition ${
+          className={`px-2.5 sm:px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition ${
             currentTab === "builder"
               ? isLight
                 ? "bg-gray-100 text-gray-900 font-bold"
@@ -132,10 +132,10 @@ export default function Navbar({
       </nav>
 
       {/* Right Controls: Machine Switcher, Theme Toggle, Saved Designs, Reset */}
-      <div className="flex items-center gap-2 sm:gap-3">
-        {/* Machine Selector Dropdown / Pill */}
+      <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
+        {/* Machine Selector Dropdown / Pill with Mobile Scroll */}
         <div
-          className={`flex items-center rounded-xl p-1 border transition ${
+          className={`flex items-center rounded-xl p-0.5 sm:p-1 border transition overflow-x-auto no-scrollbar max-w-[130px] xs:max-w-[200px] sm:max-w-none ${
             isLight
               ? "bg-gray-100 border-gray-300"
               : "bg-black/40 border-white/10"

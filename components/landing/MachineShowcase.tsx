@@ -247,27 +247,27 @@ export default function MachineShowcase({ onLaunchStudio }: MachineShowcaseProps
   return (
     <section
       id="showcase"
-      className="relative w-full py-20 px-6 md:px-12 border-t border-white/5 overflow-hidden"
+      className="relative w-full py-14 sm:py-20 px-4 sm:px-6 md:px-12 border-t border-white/5 overflow-hidden"
       style={{ backgroundColor: TOKENS.colors.background }}
     >
-      <div className="max-w-7xl mx-auto flex flex-col space-y-12">
+      <div className="max-w-7xl mx-auto flex flex-col space-y-8 sm:space-y-12">
         {/* Section Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-          <div className="space-y-3">
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6">
+          <div className="space-y-2 sm:space-y-3">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/10 bg-[#0F1114]">
               <Cpu size={12} style={{ color: TOKENS.colors.accent }} />
-              <span className="text-[11px] font-mono tracking-widest text-[#9AA0A9] uppercase">
+              <span className="text-[10px] sm:text-[11px] font-mono tracking-widest text-[#9AA0A9] uppercase">
                 Machine Showcase
               </span>
             </div>
-            <h2 className="text-3xl sm:text-4xl font-light text-[#F4F5F7] tracking-tight">
+            <h2 className="text-2xl sm:text-4xl font-light text-[#F4F5F7] tracking-tight">
               Hardware Engineering{" "}
               <span className="font-semibold" style={{ color: TOKENS.colors.accent }}>
                 Showcase
               </span>
               .
             </h2>
-            <p className="text-sm text-[#9AA0A9] max-w-xl">
+            <p className="text-xs sm:text-sm text-[#9AA0A9] max-w-xl leading-relaxed">
               Inspect each physical machine in continuous dark-room studio lighting. Every model is backed
               by a real Bill of Materials and manufacturing guide.
             </p>
@@ -280,14 +280,14 @@ export default function MachineShowcase({ onLaunchStudio }: MachineShowcaseProps
             </div>
             <button
               onClick={handlePrev}
-              className="p-2.5 rounded-xl border border-white/10 bg-[#0F1114] text-[#F4F5F7] hover:border-white/30 hover:bg-[#161A1F] transition-all cursor-pointer"
+              className="p-2 sm:p-2.5 rounded-xl border border-white/10 bg-[#0F1114] text-[#F4F5F7] hover:border-white/30 hover:bg-[#161A1F] transition-all cursor-pointer"
               aria-label="Previous Machine"
             >
               <ChevronLeft size={16} />
             </button>
             <button
               onClick={handleNext}
-              className="p-2.5 rounded-xl border border-white/10 bg-[#0F1114] text-[#F4F5F7] hover:border-white/30 hover:bg-[#161A1F] transition-all cursor-pointer"
+              className="p-2 sm:p-2.5 rounded-xl border border-white/10 bg-[#0F1114] text-[#F4F5F7] hover:border-white/30 hover:bg-[#161A1F] transition-all cursor-pointer"
               aria-label="Next Machine"
             >
               <ChevronRight size={16} />
@@ -296,15 +296,15 @@ export default function MachineShowcase({ onLaunchStudio }: MachineShowcaseProps
         </div>
 
         {/* Main Showcase Stage */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 items-center">
           {/* Left Column: 3D Stage */}
-          <div className="lg:col-span-7 h-[380px] sm:h-[480px] rounded-2xl border border-white/5 bg-[#0F1114]/70 overflow-hidden relative">
+          <div className="lg:col-span-7 h-[300px] sm:h-[480px] rounded-2xl border border-white/5 bg-[#0F1114]/70 overflow-hidden relative">
             <div className="absolute top-4 left-4 z-20 flex items-center gap-2 pointer-events-none">
               <span
                 className="w-2 h-2 rounded-full"
                 style={{ backgroundColor: TOKENS.colors.accent }}
               />
-              <span className="text-[10px] font-mono tracking-widest text-[#9AA0A9] uppercase">
+              <span className="text-[10px] font-mono tracking-widest text-[#9AA0A9] uppercase truncate max-w-[200px] sm:max-w-none">
                 {activeMachine.name} · Studio Turntable
               </span>
             </div>
@@ -317,31 +317,31 @@ export default function MachineShowcase({ onLaunchStudio }: MachineShowcaseProps
           </div>
 
           {/* Right Column: Specifications & Verified Sourcing */}
-          <div className="lg:col-span-5 flex flex-col justify-center space-y-6">
-            <div className="space-y-2">
-              <div className="text-xs font-mono text-[#9AA0A9] uppercase tracking-wider">
+          <div className="lg:col-span-5 flex flex-col justify-center space-y-5 sm:space-y-6">
+            <div className="space-y-1.5 sm:space-y-2">
+              <div className="text-[11px] sm:text-xs font-mono text-[#9AA0A9] uppercase tracking-wider">
                 {activeMachine.category}
               </div>
-              <h3 className="text-2xl sm:text-3xl font-light text-[#F4F5F7] tracking-tight">
+              <h3 className="text-xl sm:text-3xl font-light text-[#F4F5F7] tracking-tight">
                 {activeMachine.name}
               </h3>
-              <p className="text-sm font-normal text-[#9AA0A9] leading-relaxed">
+              <p className="text-xs sm:text-sm font-normal text-[#9AA0A9] leading-relaxed">
                 {activeMachine.description}
               </p>
             </div>
 
             {/* Price Badge with Verified / Estimated Status */}
-            <div className="p-4 rounded-xl border border-white/5 bg-[#0F1114] flex items-center justify-between">
+            <div className="p-3.5 sm:p-4 rounded-xl border border-white/5 bg-[#0F1114] flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
               <div>
-                <div className="text-[10px] font-mono text-[#5C626B] uppercase">Estimated Build Cost</div>
-                <div className="text-xl font-mono font-semibold text-white mt-0.5">
+                <div className="text-[9px] sm:text-[10px] font-mono text-[#5C626B] uppercase">Estimated Build Cost</div>
+                <div className="text-lg sm:text-xl font-mono font-semibold text-white mt-0.5">
                   {activeMachine.price}
                 </div>
               </div>
 
-              <div className="text-right">
+              <div className="text-left sm:text-right">
                 <span
-                  className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-mono uppercase tracking-wider font-medium"
+                  className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[9px] sm:text-[10px] font-mono uppercase tracking-wider font-medium"
                   style={{
                     backgroundColor:
                       activeMachine.priceStatus === "verified"
@@ -368,10 +368,10 @@ export default function MachineShowcase({ onLaunchStudio }: MachineShowcaseProps
             </div>
 
             {/* Verified Technical Specs Grid */}
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
               {activeMachine.specs.map((spec, i) => (
-                <div key={i} className="p-3 rounded-lg border border-white/5 bg-[#0F1114]/50">
-                  <div className="text-[10px] font-mono text-[#5C626B] uppercase">{spec.label}</div>
+                <div key={i} className="p-2.5 sm:p-3 rounded-lg border border-white/5 bg-[#0F1114]/50">
+                  <div className="text-[9px] sm:text-[10px] font-mono text-[#5C626B] uppercase">{spec.label}</div>
                   <div className="text-xs font-mono font-medium text-[#F4F5F7] mt-0.5">{spec.value}</div>
                 </div>
               ))}
@@ -380,13 +380,13 @@ export default function MachineShowcase({ onLaunchStudio }: MachineShowcaseProps
             {/* Direct Studio Launch CTA */}
             <button
               onClick={() => onLaunchStudio(activeMachine.id)}
-              className="w-full py-3.5 rounded-xl text-xs font-semibold tracking-wider text-white flex items-center justify-center gap-2 transition-all transform active:scale-98 cursor-pointer uppercase font-mono"
+              className="w-full py-3 sm:py-3.5 rounded-xl text-xs font-semibold tracking-wider text-white flex items-center justify-center gap-2 transition-all transform active:scale-98 cursor-pointer uppercase font-mono"
               style={{
                 backgroundColor: TOKENS.colors.accent,
                 boxShadow: `0 0 20px ${TOKENS.colors.accentGlow}`,
               }}
             >
-              <span>Launch {activeMachine.name} in 3D Studio</span>
+              <span>Launch in 3D Studio</span>
               <ArrowRight size={14} />
             </button>
           </div>
