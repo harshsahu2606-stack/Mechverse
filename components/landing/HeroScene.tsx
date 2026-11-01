@@ -61,35 +61,35 @@ function IndustrialStudioStage({
     // Center Drone B: Hero prominence, smooth hovering dynamics
     if (droneGroupRef.current) {
       const isHovered = hoveredMachine === "drone-b";
-      const targetScale = isHovered ? 1.22 : 1.16;
+      const targetScale = isHovered ? 1.18 : 1.12;
       droneGroupRef.current.scale.lerp(new THREE.Vector3(targetScale, targetScale, targetScale), delta * 5);
 
-      // Delicate floating motion positioned cleanly above pedestal
-      droneGroupRef.current.position.y = -0.06 + Math.sin(t * 1.6) * 0.02;
+      // Delicate floating motion lowered so it doesn't collide with text
+      droneGroupRef.current.position.y = -0.04 + Math.sin(t * 1.6) * 0.018;
       droneGroupRef.current.rotation.y = Math.sin(t * 0.35) * 0.08;
       droneGroupRef.current.rotation.x = Math.sin(t * 1.1) * 0.015;
       droneGroupRef.current.rotation.z = Math.cos(t * 0.9) * 0.015;
     }
 
-    // Left Combat Bot: brought closer to center so it stays 100% on-screen
+    // Left Combat Bot: brought close to center drone, well inside screen
     if (combatBotGroupRef.current) {
       const isHovered = hoveredMachine === "robo-rumble";
-      const targetScale = isHovered ? 0.76 : 0.72;
+      const targetScale = isHovered ? 0.56 : 0.52;
       combatBotGroupRef.current.scale.lerp(new THREE.Vector3(targetScale, targetScale, targetScale), delta * 5);
       combatBotGroupRef.current.rotation.y = 0.42 + Math.sin(t * 0.3) * 0.015;
     }
 
-    // Right Walker: brought closer to center so it stays 100% on-screen
+    // Right Walker: brought close to center drone, well inside screen
     if (walkerGroupRef.current) {
       const isHovered = hoveredMachine === "walking-robot";
-      const targetScale = isHovered ? 0.72 : 0.68;
+      const targetScale = isHovered ? 0.52 : 0.48;
       walkerGroupRef.current.scale.lerp(new THREE.Vector3(targetScale, targetScale, targetScale), delta * 5);
       walkerGroupRef.current.rotation.y = -0.42 + Math.cos(t * 0.3) * 0.015;
     }
 
     // Pedestal glow pulse
     if (orbitLightRef.current) {
-      orbitLightRef.current.intensity = 3.5 + Math.sin(t * 2.5) * 0.5;
+      orbitLightRef.current.intensity = 3.2 + Math.sin(t * 2.5) * 0.4;
     }
   });
 
@@ -106,15 +106,15 @@ function IndustrialStudioStage({
 
       {/* Industrial Side Key & Rim Lights */}
       <spotLight
-        position={[-7, 5, -2]}
-        intensity={3.0}
+        position={[-6, 4.5, -2]}
+        intensity={2.8}
         color="#e2e8f0"
         angle={0.65}
         penumbra={0.9}
       />
       <spotLight
-        position={[7, 5, -2]}
-        intensity={3.0}
+        position={[6, 4.5, -2]}
+        intensity={2.8}
         color="#e2e8f0"
         angle={0.65}
         penumbra={0.9}
@@ -123,33 +123,33 @@ function IndustrialStudioStage({
       {/* Pedestal Orange Glow Ring & Uplight */}
       <pointLight
         ref={orbitLightRef}
-        position={[0, -0.38, 0]}
+        position={[0, -0.35, 0]}
         color={TOKENS.colors.accent}
-        intensity={3.5}
-        distance={4.8}
+        intensity={3.2}
+        distance={4.5}
       />
-      <pointLight position={[0, 0.05, 0]} color={TOKENS.colors.accent} intensity={1.4} distance={3.0} />
+      <pointLight position={[0, 0.05, 0]} color={TOKENS.colors.accent} intensity={1.2} distance={2.5} />
 
       {/* Background Overhead White Industrial Light Strips (Left & Right) */}
-      <group position={[-5.2, 2.6, -3.8]} rotation={[0.08, 0.4, -0.65]}>
+      <group position={[-4.5, 2.4, -3.5]} rotation={[0.08, 0.4, -0.65]}>
         <mesh>
-          <cylinderGeometry args={[0.04, 0.04, 3.8, 16]} />
+          <cylinderGeometry args={[0.035, 0.035, 3.5, 16]} />
           <meshBasicMaterial color="#ffffff" />
         </mesh>
       </group>
 
-      <group position={[5.2, 2.6, -3.8]} rotation={[-0.08, -0.4, 0.65]}>
+      <group position={[4.5, 2.4, -3.5]} rotation={[-0.08, -0.4, 0.65]}>
         <mesh>
-          <cylinderGeometry args={[0.04, 0.04, 3.8, 16]} />
+          <cylinderGeometry args={[0.035, 0.035, 3.5, 16]} />
           <meshBasicMaterial color="#ffffff" />
         </mesh>
       </group>
 
-      {/* ================= 1. LEFT MACHINE: RR-01 COMBAT ROBOT (CLOSER IN & ON SCREEN) ================= */}
+      {/* ================= 1. LEFT MACHINE: RR-01 COMBAT ROBOT (CLOSER IN & FULLY ON SCREEN) ================= */}
       <group
         ref={combatBotGroupRef}
-        position={[-1.75, -0.44, 0.35]}
-        scale={0.72}
+        position={[-1.15, -0.42, 0.4]}
+        scale={0.52}
         onPointerOver={(e) => {
           e.stopPropagation();
           onHoverMachine("robo-rumble");
@@ -174,20 +174,20 @@ function IndustrialStudioStage({
       </group>
 
       {/* ================= 2. CENTER MACHINE: DRONE B ON GLOWING PEDESTAL ================= */}
-      <group position={[0, -0.52, 0]}>
+      <group position={[0, -0.48, 0]}>
         {/* Dark Cylindrical Pedestal */}
         <mesh position={[0, 0.07, 0]}>
-          <cylinderGeometry args={[0.76, 0.82, 0.14, 64]} />
+          <cylinderGeometry args={[0.62, 0.68, 0.14, 64]} />
           <meshStandardMaterial color="#0c0e12" roughness={0.25} metalness={0.75} />
         </mesh>
 
         {/* Emissive Orange Neon Ring around top rim of pedestal */}
         <mesh position={[0, 0.142, 0]} rotation={[Math.PI / 2, 0, 0]}>
-          <torusGeometry args={[0.76, 0.012, 16, 64]} />
+          <torusGeometry args={[0.62, 0.011, 16, 64]} />
           <meshStandardMaterial
             color={TOKENS.colors.accent}
             emissive={TOKENS.colors.accent}
-            emissiveIntensity={3.8}
+            emissiveIntensity={3.6}
             roughness={0.1}
           />
         </mesh>
@@ -196,8 +196,8 @@ function IndustrialStudioStage({
       {/* Hovering Drone B (Center Hero) */}
       <group
         ref={droneGroupRef}
-        position={[0, -0.05, 0]}
-        scale={1.16}
+        position={[0, -0.04, 0]}
+        scale={1.12}
         onPointerOver={(e) => {
           e.stopPropagation();
           onHoverMachine("drone-b");
@@ -219,11 +219,11 @@ function IndustrialStudioStage({
         />
       </group>
 
-      {/* ================= 3. RIGHT MACHINE: TJ-01 WALKING MECHANISM (CLOSER IN & ON SCREEN) ================= */}
+      {/* ================= 3. RIGHT MACHINE: TJ-01 WALKING MECHANISM (CLOSER IN & FULLY ON SCREEN) ================= */}
       <group
         ref={walkerGroupRef}
-        position={[1.75, -0.44, 0.35]}
-        scale={0.68}
+        position={[1.15, -0.42, 0.4]}
+        scale={0.48}
         onPointerOver={(e) => {
           e.stopPropagation();
           onHoverMachine("walking-robot");
@@ -246,8 +246,8 @@ function IndustrialStudioStage({
       </group>
 
       {/* Highly Reflective Industrial Wet Studio Ground */}
-      <mesh position={[0, -0.525, 0]} rotation={[-Math.PI / 2, 0, 0]}>
-        <planeGeometry args={[32, 32]} />
+      <mesh position={[0, -0.485, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+        <planeGeometry args={[28, 28]} />
         <meshStandardMaterial
           color="#060709"
           roughness={0.15}
@@ -256,7 +256,7 @@ function IndustrialStudioStage({
       </mesh>
 
       {/* Subtle Engineering Grid on floor */}
-      <gridHelper args={[28, 56, "#222a36", "#0e1218"]} position={[0, -0.52, 0]} />
+      <gridHelper args={[24, 48, "#222a36", "#0e1218"]} position={[0, -0.48, 0]} />
     </>
   );
 }
@@ -267,30 +267,30 @@ export default function HeroScene({ onLaunchStudio }: HeroSceneProps) {
   return (
     <section
       id="hero"
-      className="relative w-full h-[100svh] min-h-[660px] flex flex-col justify-between overflow-hidden bg-[#07080A] select-none"
+      className="relative w-full h-[100svh] min-h-[640px] flex flex-col justify-between overflow-hidden bg-[#07080A] select-none"
     >
       {/* Background Studio Vignette Gradient */}
       <div
         className="absolute inset-0 pointer-events-none z-10"
         style={{
           background: `
-            radial-gradient(circle at 50% 25%, rgba(255,255,255,0.03) 0%, transparent 65%),
-            radial-gradient(circle at 50% 80%, rgba(255,106,26,0.06) 0%, transparent 55%),
-            linear-gradient(to bottom, rgba(7,8,10,0.85) 0%, transparent 20%, transparent 80%, rgba(7,8,10,0.98) 100%)
+            radial-gradient(circle at 50% 20%, rgba(255,255,255,0.03) 0%, transparent 60%),
+            radial-gradient(circle at 50% 75%, rgba(255,106,26,0.06) 0%, transparent 50%),
+            linear-gradient(to bottom, rgba(7,8,10,0.85) 0%, transparent 18%, transparent 80%, rgba(7,8,10,0.98) 100%)
           `,
         }}
       />
 
-      {/* ================= 1. CLEAN RESPONSIVE HTML HEADLINE (WELL-SPACED BELOW NAVBAR, NO OVERLAP) ================= */}
-      <div className="relative z-20 w-full pt-24 sm:pt-26 md:pt-28 text-center px-4 flex flex-col items-center pointer-events-none">
-        <h1 className="font-serif-headline text-2xl sm:text-4xl md:text-5xl lg:text-[3.2rem] tracking-[0.06em] text-white uppercase font-normal leading-tight select-text max-w-4xl">
+      {/* ================= 1. COMPACT ADJUSTED HTML HEADLINE (ZERO OVERLAP) ================= */}
+      <div className="relative z-20 w-full pt-20 sm:pt-22 md:pt-24 text-center px-4 flex flex-col items-center pointer-events-none">
+        <h1 className="font-serif-headline text-2xl sm:text-3xl md:text-4xl lg:text-[2.6rem] tracking-[0.06em] text-white uppercase font-normal leading-tight select-text max-w-3xl">
           FOR THOSE WHO
           <br />
           <span className="italic font-bold text-[#FF6A1A] mr-3">BUILD</span>
           BEYOND ORDINARY.
         </h1>
 
-        <p className="mt-2 text-[10px] sm:text-xs md:text-sm font-mono-tech tracking-[0.25em] text-[#9AA0A9] font-light uppercase select-text">
+        <p className="mt-1.5 text-[10px] sm:text-xs font-mono-tech tracking-[0.22em] text-[#9AA0A9] font-light uppercase select-text">
           Design. Simulate. Build real machines.
         </p>
       </div>
@@ -298,7 +298,7 @@ export default function HeroScene({ onLaunchStudio }: HeroSceneProps) {
       {/* ================= 2. REAL 3D CANVAS SHOWCASE ================= */}
       <div className="absolute inset-0 w-full h-full z-0">
         <Canvas
-          camera={{ position: [0, 0.45, 3.9], fov: 36 }}
+          camera={{ position: [0, 0.45, 4.2], fov: 38 }}
           className="w-full h-full cursor-grab active:cursor-grabbing"
           dpr={[1, 1.5]}
         >
@@ -311,7 +311,7 @@ export default function HeroScene({ onLaunchStudio }: HeroSceneProps) {
             <OrbitControls
               enableZoom={false}
               enablePan={false}
-              target={[0, -0.12, 0]}
+              target={[0, -0.15, 0]}
               minPolarAngle={Math.PI / 2.8}
               maxPolarAngle={Math.PI / 2.05}
               minAzimuthAngle={-Math.PI / 6}
@@ -322,15 +322,15 @@ export default function HeroScene({ onLaunchStudio }: HeroSceneProps) {
         </Canvas>
       </div>
 
-      {/* ================= 3. ACTUAL TECHNICAL HUD LABELS & CONNECTORS (CLEANLY ALIGNED) ================= */}
-      <div className="absolute inset-0 w-full h-full z-20 pointer-events-none max-w-7xl mx-auto px-6 md:px-12 flex flex-col justify-between py-16">
+      {/* ================= 3. ACTUAL TECHNICAL HUD LABELS & CONNECTORS (WELL-SPACED, ZERO OVERLAP) ================= */}
+      <div className="absolute inset-0 w-full h-full z-20 pointer-events-none max-w-7xl mx-auto px-6 md:px-12 flex flex-col justify-between py-14">
         <div className="relative w-full h-full">
           {/* Label 1: RR-01 Combat Robot (Left) */}
           <div
             onClick={() => onLaunchStudio("robo-rumble")}
             onMouseEnter={() => setHoveredMachine("robo-rumble")}
             onMouseLeave={() => setHoveredMachine(null)}
-            className={`absolute left-[2%] sm:left-[5%] lg:left-[6%] top-[48%] text-left pointer-events-auto cursor-pointer transition-all duration-300 ${
+            className={`absolute left-[5%] sm:left-[10%] lg:left-[12%] top-[52%] text-left pointer-events-auto cursor-pointer transition-all duration-300 ${
               hoveredMachine === "robo-rumble" ? "scale-105" : "opacity-85"
             }`}
           >
@@ -343,28 +343,28 @@ export default function HeroScene({ onLaunchStudio }: HeroSceneProps) {
             </div>
             {/* Technical SVG Connector Line */}
             <svg
-              width="120"
-              height="32"
-              viewBox="0 0 120 32"
+              width="100"
+              height="28"
+              viewBox="0 0 100 28"
               fill="none"
               className={`my-1 transition-colors ${
                 hoveredMachine === "robo-rumble" ? "stroke-[#FF6A1A]" : "stroke-white/40"
               }`}
             >
-              <path d="M0 1H85L115 31" strokeWidth="1" />
+              <path d="M0 1H70L95 27" strokeWidth="1" />
             </svg>
-            <div className="text-[10px] font-mono-tech tracking-widest text-[#9AA0A9] space-y-0.5 uppercase">
+            <div className="text-[9px] font-mono-tech tracking-widest text-[#9AA0A9] space-y-0.5 uppercase">
               <div>ESP32 CONTROL</div>
               <div>IMPACT READY</div>
             </div>
           </div>
 
-          {/* Label 2: DRONE-B / INDUSTRIAL OCTOCOPTER (Center - Situated in clear space between title & drone) */}
+          {/* Label 2: DRONE-B / INDUSTRIAL OCTOCOPTER (Center - Situated comfortably at top-[44%] with plenty of clearance) */}
           <div
             onClick={() => onLaunchStudio("drone-b")}
             onMouseEnter={() => setHoveredMachine("drone-b")}
             onMouseLeave={() => setHoveredMachine(null)}
-            className={`absolute left-1/2 -translate-x-1/2 top-[34%] text-center pointer-events-auto cursor-pointer transition-all duration-300 ${
+            className={`absolute left-1/2 -translate-x-1/2 top-[44%] text-center pointer-events-auto cursor-pointer transition-all duration-300 ${
               hoveredMachine === "drone-b" ? "scale-105" : "opacity-85"
             }`}
           >
@@ -377,17 +377,17 @@ export default function HeroScene({ onLaunchStudio }: HeroSceneProps) {
             </div>
             {/* Technical SVG Connector Line */}
             <svg
-              width="220"
-              height="22"
-              viewBox="0 0 220 22"
+              width="200"
+              height="20"
+              viewBox="0 0 200 20"
               fill="none"
               className={`mx-auto my-1 transition-colors ${
                 hoveredMachine === "drone-b" ? "stroke-[#FF6A1A]" : "stroke-white/40"
               }`}
             >
-              <path d="M10 21L45 1H175L210 21" strokeWidth="1" />
+              <path d="M10 19L40 1H160L190 19" strokeWidth="1" />
             </svg>
-            <div className="flex items-center justify-center gap-6 text-[9px] sm:text-[10px] font-mono-tech tracking-widest text-[#9AA0A9] uppercase">
+            <div className="flex items-center justify-center gap-6 text-[9px] font-mono-tech tracking-widest text-[#9AA0A9] uppercase">
               <div>400Hz SIMULATION</div>
               <div>ESP32 CONTROL</div>
             </div>
@@ -398,7 +398,7 @@ export default function HeroScene({ onLaunchStudio }: HeroSceneProps) {
             onClick={() => onLaunchStudio("walking-robot")}
             onMouseEnter={() => setHoveredMachine("walking-robot")}
             onMouseLeave={() => setHoveredMachine(null)}
-            className={`absolute right-[2%] sm:right-[5%] lg:right-[6%] top-[46%] text-right pointer-events-auto cursor-pointer transition-all duration-300 ${
+            className={`absolute right-[5%] sm:right-[10%] lg:right-[12%] top-[50%] text-right pointer-events-auto cursor-pointer transition-all duration-300 ${
               hoveredMachine === "walking-robot" ? "scale-105" : "opacity-85"
             }`}
           >
@@ -411,17 +411,17 @@ export default function HeroScene({ onLaunchStudio }: HeroSceneProps) {
             </div>
             {/* Technical SVG Connector Line */}
             <svg
-              width="120"
-              height="32"
-              viewBox="0 0 120 32"
+              width="100"
+              height="28"
+              viewBox="0 0 100 28"
               fill="none"
               className={`my-1 ml-auto transition-colors ${
                 hoveredMachine === "walking-robot" ? "stroke-[#FF6A1A]" : "stroke-white/40"
               }`}
             >
-              <path d="M120 1H35L5 31" strokeWidth="1" />
+              <path d="M100 1H30L5 27" strokeWidth="1" />
             </svg>
-            <div className="text-[10px] font-mono-tech tracking-widest text-[#9AA0A9] space-y-0.5 uppercase">
+            <div className="text-[9px] font-mono-tech tracking-widest text-[#9AA0A9] space-y-0.5 uppercase">
               <div>LINKAGE DRIVE</div>
               <div>LOW POWER</div>
             </div>
