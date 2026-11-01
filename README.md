@@ -84,4 +84,4 @@ Mechverse includes a complete Indian student budget build guide (under ₹2,000 
 
 ## 📄 License
 
-MIT License © 2026 Yash Harfode. All rights reserved.
+Copyright (c) 2026 Yash. All Rights Reserved. See [LICENSE](LICENSE) for full terms.
