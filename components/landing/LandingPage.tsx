@@ -34,7 +34,7 @@ export default function LandingPage({
       }`}
       style={{ backgroundColor: isLight ? "#f8fafc" : TOKENS.colors.background }}
     >
-      {/* 1. Minimalist Engineering Navbar */}
+      {/* 1. Real Fixed Minimalist Engineering Navbar */}
       <LandingNavbar
         theme={theme}
         onToggleTheme={onToggleTheme}
@@ -42,7 +42,7 @@ export default function LandingPage({
       />
 
       <main className="flex-1 w-full flex flex-col">
-        {/* 2. Cinematic Hero Section with 3D Turntable */}
+        {/* 2. Real Interactive 3D Hero Scene with actual WebGL machines */}
         <HeroScene onLaunchStudio={onLaunchStudio} />
 
         {/* 3. Signature Machine Reveal (Drag-to-reveal orbital arc slider) */}

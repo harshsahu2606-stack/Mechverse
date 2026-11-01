@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { ArrowRight, User } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { AppTheme, MachineId } from "@/types/machine";
 import { TOKENS } from "@/constants/designTokens";
 
@@ -18,8 +18,8 @@ export default function LandingNavbar({
 
   return (
     <>
-      <header className="absolute top-0 left-0 right-0 z-50 w-full px-6 md:px-12 py-5 flex items-center justify-between pointer-events-auto">
-        {/* Brand Logo matching the uploaded screenshot */}
+      <header className="fixed top-0 left-0 right-0 z-50 w-full px-6 md:px-12 py-4 flex items-center justify-between bg-[#07080A]/60 backdrop-blur-md border-b border-white/[0.08] pointer-events-auto">
+        {/* Brand Logo matching the reference design */}
         <div className="flex items-center gap-4">
           <a href="#hero" className="flex items-center gap-2.5 group cursor-pointer">
             {/* Geometric Orange M Logo */}
@@ -31,7 +31,7 @@ export default function LandingNavbar({
                 />
               </svg>
             </div>
-            <span className="font-extrabold tracking-[0.2em] text-base md:text-lg text-white uppercase">
+            <span className="font-extrabold tracking-[0.2em] text-sm md:text-base text-white uppercase">
               MECHVERSE
             </span>
           </a>
@@ -41,7 +41,7 @@ export default function LandingNavbar({
         </div>
 
         {/* Center Nav Links */}
-        <nav className="hidden lg:flex items-center gap-10 text-[11px] font-mono tracking-[0.22em] text-[#9AA0A9] uppercase">
+        <nav className="hidden lg:flex items-center gap-10 text-[11px] font-mono-tech tracking-[0.22em] text-[#9AA0A9] uppercase">
           <a href="#catalog" className="hover:text-white transition-colors duration-200">
             MACHINES
           </a>
@@ -60,7 +60,7 @@ export default function LandingNavbar({
         </nav>
 
         {/* Right Actions */}
-        <div className="flex items-center gap-6 text-[11px] font-mono tracking-widest uppercase">
+        <div className="flex items-center gap-6 text-[11px] font-mono-tech tracking-widest uppercase">
           <button
             onClick={() => setShowSignInModal(true)}
             className="hidden sm:block text-[#9AA0A9] hover:text-white transition-colors cursor-pointer"
@@ -70,7 +70,7 @@ export default function LandingNavbar({
 
           <button
             onClick={() => onLaunchStudio()}
-            className="px-6 py-2.5 rounded-full text-xs font-mono font-semibold tracking-wider text-white flex items-center gap-2 transition-all transform active:scale-95 cursor-pointer shadow-lg hover:brightness-110"
+            className="px-6 py-2.5 rounded-full text-xs font-mono-tech font-semibold tracking-wider text-white flex items-center gap-2 transition-all transform active:scale-95 cursor-pointer shadow-lg hover:brightness-110"
             style={{
               backgroundColor: TOKENS.colors.accent,
               boxShadow: `0 0 25px ${TOKENS.colors.accentGlow}`,
@@ -87,7 +87,7 @@ export default function LandingNavbar({
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4">
           <div className="relative w-full max-w-sm p-6 rounded-2xl border border-white/10 bg-[#0F1114] text-white space-y-4">
             <div className="flex items-center justify-between">
-              <h4 className="text-base font-mono tracking-wider uppercase text-white">Engineering Access</h4>
+              <h4 className="text-base font-mono-tech tracking-wider uppercase text-white">Engineering Access</h4>
               <button
                 onClick={() => setShowSignInModal(false)}
                 className="text-gray-400 hover:text-white text-sm"
@@ -103,7 +103,7 @@ export default function LandingNavbar({
                 setShowSignInModal(false);
                 onLaunchStudio();
               }}
-              className="w-full py-2.5 rounded-xl text-xs font-mono font-semibold text-white tracking-wider uppercase bg-[#FF6A1A] hover:brightness-110 transition-all"
+              className="w-full py-2.5 rounded-xl text-xs font-mono-tech font-semibold text-white tracking-wider uppercase bg-[#FF6A1A] hover:brightness-110 transition-all"
             >
               Enter Studio Guest Session
             </button>
