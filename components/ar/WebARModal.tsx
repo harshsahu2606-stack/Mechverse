@@ -75,26 +75,6 @@ export default function WebARModal({
       {/* If Camera AR Mode is chosen */}
       {modalMode === "camera" ? (
         <div className="relative w-full h-full flex flex-col">
-          {/* Top Switcher Pill to QR Mode */}
-          <div className="absolute top-4 left-1/2 -translate-x-1/2 z-30 pointer-events-auto">
-            <div className="flex items-center gap-1 bg-[#0F1114]/90 border border-white/15 p-1 rounded-2xl backdrop-blur-xl shadow-2xl">
-              <button
-                onClick={() => setModalMode("camera")}
-                className="flex items-center gap-1.5 px-3 py-1 rounded-xl text-xs font-mono font-bold bg-[#FF6A1A] text-white shadow-md shadow-[#FF6A1A]/30"
-              >
-                <Camera size={12} />
-                <span>Live Web AR</span>
-              </button>
-              <button
-                onClick={() => setModalMode("qr")}
-                className="flex items-center gap-1.5 px-3 py-1 rounded-xl text-xs font-mono text-white/70 hover:text-white hover:bg-white/10 transition"
-              >
-                <QrCode size={12} />
-                <span>Scan for Mobile</span>
-              </button>
-            </div>
-          </div>
-
           <WebARViewer
             machineId={machineId}
             customization={customization || ({} as CustomizationSettings)}
