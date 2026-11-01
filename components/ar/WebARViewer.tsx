@@ -25,6 +25,30 @@ const AR_MACHINES: { id: MachineId; name: string }[] = [
   { id: "electric-fan", name: "Electric Fan" },
 ];
 
+/**
+ * Floor Plane Raycast Receiver: Allows tapping anywhere on the detected floor to move the anchor point
+ */
+function FloorHitDetector({
+  onHit,
+}: {
+  onHit: (point: [number, number, number]) => void;
+}) {
+  return (
+    <mesh
+      rotation={[-Math.PI / 2, 0, 0]}
+      position={[0, 0, 0]}
+      onClick={(e) => {
+        e.stopPropagation();
+        onHit([e.point.x, 0, e.point.z]);
+      }}
+      visible={false}
+    >
+      <planeGeometry args={[50, 50]} />
+      <meshBasicMaterial transparent opacity={0} depthWrite={false} />
+    </mesh>
+  );
+}
+
 export default function WebARViewer({
   machineId,
   customization,
@@ -36,6 +60,8 @@ export default function WebARViewer({
   const [cameraActive, setCameraActive] = useState<boolean>(false);
   const [facingMode, setFacingMode] = useState<"environment" | "user">("environment");
   const [availableCameras, setAvailableCameras] = useState<MediaDeviceInfo[]>([]);
+  // Floor Anchor Position [X, 0, Z]
+  const [anchorPosition, setAnchorPosition] = useState<[number, number, number]>([0, 0, 0]);
 
   // Initialize Camera stream with environmental (back camera) priority
   useEffect(() => {
@@ -67,7 +93,7 @@ export default function WebARViewer({
           };
           setCameraActive(true);
         }
-      } catch (err) {
+      } catch {
         try {
           stream = await navigator.mediaDevices.getUserMedia({ audio: false, video: true });
           if (videoRef.current) {
@@ -121,37 +147,40 @@ export default function WebARViewer({
         />
       )}
 
-      {/* 2. Interactive Transparent 3D Canvas */}
+      {/* 2. Interactive Transparent 3D Canvas with Standing Eye Height looking down at Floor Plane */}
       <div className="absolute inset-0 w-full h-full z-10 pointer-events-auto">
         <Canvas
           gl={{ alpha: true, antialias: true, preserveDrawingBuffer: true }}
-          camera={{ position: [0, 0.45, 1.8], fov: 46 }}
+          camera={{ position: [0, 1.4, 2.1], fov: 48 }}
           className="w-full h-full cursor-grab active:cursor-grabbing"
           dpr={[1, 1.5]}
         >
           <Suspense fallback={null}>
+            {/* Floor Plane Raycast Detector for Tap-To-Anchor */}
+            <FloorHitDetector onHit={setAnchorPosition} />
+
             <WebARModelRenderer
               machineId={machineId}
               customization={customization}
               explosionLevel={0}
               scale={1.0}
               rotationY={0}
-              elevation={0.05}
-              isHovering={true}
+              anchorPosition={anchorPosition}
               torchEnabled={false}
               showReticle={true}
               selectedComponent={null}
               onSelectComponent={() => {}}
+              isHovering={false}
             />
 
             <OrbitControls
               enablePan={true}
               enableZoom={true}
               enableRotate={true}
-              target={[0, 0.05, 0]}
-              minDistance={0.5}
-              maxDistance={6.0}
-              maxPolarAngle={Math.PI / 2.05}
+              target={[anchorPosition[0], 0, anchorPosition[2]]}
+              minDistance={0.35}
+              maxDistance={5.5}
+              maxPolarAngle={Math.PI / 2.02}
             />
           </Suspense>
         </Canvas>
@@ -163,7 +192,7 @@ export default function WebARViewer({
           <button
             onClick={toggleCameraFacing}
             aria-label="Flip camera"
-            className="p-2.5 rounded-full bg-black/60 hover:bg-black/80 border border-white/20 text-white/80 hover:text-white backdrop-blur-md transition-all shadow-lg"
+            className="p-2.5 rounded-full bg-black/60 hover:bg-black/80 border border-white/20 text-white/80 hover:text-white backdrop-blur-md transition-all shadow-lg cursor-pointer"
           >
             <FlipHorizontal size={16} />
           </button>

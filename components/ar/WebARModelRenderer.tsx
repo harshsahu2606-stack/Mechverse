@@ -18,14 +18,14 @@ interface WebARModelRendererProps {
   machineId: MachineId;
   customization: CustomizationSettings;
   explosionLevel: number;
-  scale: number;
-  rotationY: number;
-  elevation: number;
-  isHovering: boolean;
-  torchEnabled: boolean;
-  showReticle: boolean;
-  selectedComponent: string | null;
-  onSelectComponent: (id: string) => void;
+  scale?: number;
+  rotationY?: number;
+  anchorPosition?: [number, number, number]; // Floor plane coordinates [X, 0, Z]
+  torchEnabled?: boolean;
+  showReticle?: boolean;
+  selectedComponent?: string | null;
+  onSelectComponent?: (id: string) => void;
+  isHovering?: boolean;
 }
 
 const DEFAULT_WALKER_SIM: RobotSimulationState = {
@@ -39,80 +39,111 @@ const DEFAULT_FAN_SIM: FanSimulationState = {
   power: true,
   speed: 2,
   oscillating: true,
-  tiltAngle: 6,
+  tiltAngle: 0,
 };
 
 export default function WebARModelRenderer({
   machineId,
   customization,
-  explosionLevel,
-  scale,
-  rotationY,
-  elevation,
-  isHovering,
-  torchEnabled,
-  showReticle,
-  selectedComponent,
-  onSelectComponent,
+  explosionLevel = 0,
+  scale = 1.0,
+  rotationY = 0,
+  anchorPosition = [0, 0, 0],
+  torchEnabled = false,
+  showReticle = true,
+  selectedComponent = null,
+  onSelectComponent = () => {},
+  isHovering = false,
 }: WebARModelRendererProps) {
   const modelGroupRef = useRef<THREE.Group>(null);
-  const reticleRef = useRef<THREE.Group>(null);
+  const reticleRingRef = useRef<THREE.Group>(null);
+  const pulseRingRef = useRef<THREE.Mesh>(null);
+
+  // Accurate real-world physical scale calibration (in meters)
+  // Ensures machines do not float at camera height or appear distorted
+  const getAccuratePhysicsScale = (): number => {
+    switch (machineId) {
+      case "esp32-drone":
+        return 0.85; // ~0.15m true micro quadcopter span
+      case "robo-racer":
+        return 0.95; // ~0.24m true SolidWorks 4WD rover length
+      case "robo-rumble":
+        return 0.45; // ~0.30m combat robot
+      case "walking-robot":
+        return 0.52; // ~0.32m tabletop mechanism
+      case "electric-fan":
+        return 0.65; // ~0.45m standard desk fan
+      case "aero-450":
+        return 0.75; // ~0.48m 450 quadcopter
+      case "drone-b":
+        return 0.72; // ~0.75m industrial octocopter
+      case "sports-car":
+        return 0.28; // ~1.25m comfortable room floor scale
+      default:
+        return 0.8;
+    }
+  };
+
+  // Vertical grounding offset so each machine's wheels, skids, or base touch the floor plane (Y = 0) exactly
+  const getFloorGroundingOffset = (): number => {
+    switch (machineId) {
+      case "robo-racer":
+        return 0.052; // Bottom of 65mm chevron wheels flush with Y = 0
+      case "esp32-drone":
+        return 0.015; // Frame & prop guards rest on floor
+      case "robo-rumble":
+        return 0.045; // Tires & wedge touch floor
+      case "walking-robot":
+        return 0.32;  // Feet touch floor
+      case "electric-fan":
+        return 0.0;   // Base cylinder rests on floor
+      case "aero-450":
+        return 0.12;  // Landing gear skids touch floor
+      case "drone-b":
+        return 0.12;  // Tubular skids touch floor
+      case "sports-car":
+        return 0.22;  // Tires touch floor
+      default:
+        return 0.02;
+    }
+  };
+
+  const finalScale = scale * getAccuratePhysicsScale();
+  const groundingY = getFloorGroundingOffset();
 
   useFrame((state, delta) => {
     const t = state.clock.elapsedTime;
 
     if (modelGroupRef.current) {
-      // Manual rotation around Y axis
       modelGroupRef.current.rotation.y = rotationY;
 
-      // Base elevation + gentle hover for drones
-      const hoverOffset =
+      // Only flying drones hover if hover mode is active; otherwise rest firmly on floor
+      const hoverAltitude =
         isHovering && (machineId === "drone-b" || machineId === "aero-450" || machineId === "esp32-drone")
-          ? Math.sin(t * 1.8) * 0.025
+          ? 0.35 + Math.sin(t * 1.8) * 0.03
           : 0;
 
-      modelGroupRef.current.position.y = elevation + hoverOffset;
+      modelGroupRef.current.position.y = groundingY + hoverAltitude;
     }
 
-    if (reticleRef.current) {
-      reticleRef.current.rotation.z = t * 0.4;
+    // Dynamic floor reticle animation
+    if (reticleRingRef.current) {
+      reticleRingRef.current.rotation.z = t * 0.3;
+    }
+    if (pulseRingRef.current) {
+      const pulse = 0.5 + Math.sin(t * 2.5) * 0.5;
+      pulseRingRef.current.scale.set(1 + pulse * 0.18, 1 + pulse * 0.18, 1);
     }
   });
 
-  // Base normalization scale multiplier so each model has a comfortable default AR presence
-  const getBaseScaleMultiplier = () => {
-    switch (machineId) {
-      case "drone-b":
-        return 0.85;
-      case "aero-450":
-        return 0.85;
-      case "robo-rumble":
-        return 0.55;
-      case "walking-robot":
-        return 0.65;
-      case "sports-car":
-        return 0.32;
-      case "electric-fan":
-        return 0.75;
-      case "esp32-drone":
-        return 2.4;
-      case "robo-racer":
-        return 1.6;
-      default:
-        return 1.0;
-    }
-  };
-
-  const finalScale = scale * getBaseScaleMultiplier();
-
   return (
-    <>
-      {/* Lighting Architecture for Real World AR Passthrough */}
-      <ambientLight intensity={torchEnabled ? 0.8 : 0.6} />
-      <directionalLight position={[4, 8, 4]} intensity={1.4} castShadow shadow-mapSize={[1024, 1024]} />
+    <group position={anchorPosition}>
+      {/* Lighting Architecture for Real-World Environmental Passthrough */}
+      <ambientLight intensity={torchEnabled ? 0.9 : 0.65} />
+      <directionalLight position={[4, 8, 4]} intensity={1.5} castShadow shadow-mapSize={[1024, 1024]} />
       <directionalLight position={[-4, 5, -3]} intensity={0.5} />
 
-      {/* AR Torch/Spotlight simulation */}
+      {/* AR Torch / Spotlight simulation */}
       {torchEnabled && (
         <spotLight
           position={[0, 3, 3]}
@@ -124,54 +155,67 @@ export default function WebARModelRenderer({
         />
       )}
 
-      {/* Surface Contact Shadows: Realistically anchors the 3D model to the table/floor */}
+      {/* High-Fidelity Surface Contact Shadow: Anchors the 3D model firmly to the real physical floor */}
       <ContactShadows
-        position={[0, 0, 0]}
-        opacity={0.65}
-        scale={8}
-        blur={2.0}
-        far={3.0}
+        position={[0, 0.001, 0]}
+        opacity={0.82}
+        scale={6}
+        blur={1.8}
+        far={2.5}
         resolution={512}
         color="#000000"
       />
 
-      {/* Holographic CAD Surface Placement Reticle */}
+      {/* Surface Detection CAD Reticle on Horizontal Floor Plane (Y = 0) */}
       {showReticle && (
-        <group position={[0, 0.005, 0]} rotation={[-Math.PI / 2, 0, 0]}>
-          <group ref={reticleRef}>
+        <group position={[0, 0.002, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+          <group ref={reticleRingRef}>
             {/* Outer dotted tracking circle */}
             <mesh>
-              <ringGeometry args={[0.7, 0.73, 64]} />
-              <meshBasicMaterial color="#FF6A1A" opacity={0.7} transparent side={THREE.DoubleSide} />
+              <ringGeometry args={[0.65, 0.68, 48]} />
+              <meshBasicMaterial color="#FF6A1A" opacity={0.6} transparent side={THREE.DoubleSide} />
             </mesh>
             {/* Inner target circle */}
             <mesh>
-              <ringGeometry args={[0.35, 0.37, 32]} />
-              <meshBasicMaterial color="#ffffff" opacity={0.5} transparent side={THREE.DoubleSide} />
+              <ringGeometry args={[0.32, 0.34, 32]} />
+              <meshBasicMaterial color="#ffffff" opacity={0.45} transparent side={THREE.DoubleSide} />
             </mesh>
           </group>
 
-          {/* Crosshair markers */}
-          <mesh position={[0.75, 0, 0]}>
-            <planeGeometry args={[0.12, 0.015]} />
+          {/* Pulse radar ring */}
+          <mesh ref={pulseRingRef}>
+            <ringGeometry args={[0.48, 0.50, 32]} />
+            <meshBasicMaterial color="#FF6A1A" opacity={0.25} transparent side={THREE.DoubleSide} />
+          </mesh>
+
+          {/* Crosshair surface alignment markers */}
+          <mesh position={[0.7, 0, 0]}>
+            <planeGeometry args={[0.1, 0.012]} />
             <meshBasicMaterial color="#FF6A1A" />
           </mesh>
-          <mesh position={[-0.75, 0, 0]}>
-            <planeGeometry args={[0.12, 0.015]} />
+          <mesh position={[-0.7, 0, 0]}>
+            <planeGeometry args={[0.1, 0.012]} />
             <meshBasicMaterial color="#FF6A1A" />
           </mesh>
-          <mesh position={[0, 0.75, 0]}>
-            <planeGeometry args={[0.015, 0.12]} />
+          <mesh position={[0, 0.7, 0]}>
+            <planeGeometry args={[0.012, 0.1]} />
             <meshBasicMaterial color="#FF6A1A" />
           </mesh>
-          <mesh position={[0, -0.75, 0]}>
-            <planeGeometry args={[0.015, 0.12]} />
+          <mesh position={[0, -0.7, 0]}>
+            <planeGeometry args={[0.012, 0.1]} />
             <meshBasicMaterial color="#FF6A1A" />
           </mesh>
+
+          {/* Floor grid crosslines */}
+          <gridHelper
+            args={[1.6, 8, "#FF6A1A", "#334155"]}
+            position={[0, 0, -0.001]}
+            rotation={[Math.PI / 2, 0, 0]}
+          />
         </group>
       )}
 
-      {/* Interactive Model Transform Node */}
+      {/* Model Root Node Anchored Directly to the Ground */}
       <group ref={modelGroupRef} scale={finalScale}>
         {machineId === "drone-b" && (
           <DroneBModel
@@ -181,7 +225,7 @@ export default function WebARModelRenderer({
             isolatedComponent={null}
             hiddenComponents={[]}
             onSelect={onSelectComponent}
-            isArmed={true}
+            isArmed={isHovering}
           />
         )}
 
@@ -193,8 +237,8 @@ export default function WebARModelRenderer({
             isolatedComponent={null}
             hiddenComponents={[]}
             onSelect={onSelectComponent}
-            isArmed={true}
-            throttlePct={30}
+            isArmed={isHovering}
+            throttlePct={isHovering ? 45 : 0}
           />
         )}
 
@@ -257,8 +301,8 @@ export default function WebARModelRenderer({
             isolatedComponent={null}
             hiddenComponents={[]}
             onSelect={onSelectComponent}
-            isArmed={true}
-            throttlePct={35}
+            isArmed={isHovering}
+            throttlePct={isHovering ? 40 : 0}
           />
         )}
 
@@ -278,6 +322,6 @@ export default function WebARModelRenderer({
           />
         )}
       </group>
-    </>
+    </group>
   );
 }

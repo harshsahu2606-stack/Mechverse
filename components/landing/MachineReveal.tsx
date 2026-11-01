@@ -1,9 +1,9 @@
 "use client";
 
-import React, { useState, useRef, useEffect, useCallback, Suspense } from "react";
+import React, { useState, useRef, useEffect, Suspense } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import * as THREE from "three";
-import { Eye, EyeOff, Sparkles, Sliders } from "lucide-react";
+import { Sparkles, ArrowDown, Eye, EyeOff, ShieldCheck, Cpu } from "lucide-react";
 import { TOKENS } from "@/constants/designTokens";
 import AeroDroneModel from "@/components/3d/AeroDroneModel";
 import { CustomizationSettings } from "@/types/machine";
@@ -40,7 +40,7 @@ function RevealScene({ progress }: { progress: number }) {
   const flareRef = useRef<THREE.PointLight>(null);
 
   useFrame((state, delta) => {
-    // Subtle breathing / floating motion
+    // Subtle breathing floating motion
     if (modelGroupRef.current) {
       modelGroupRef.current.position.y = Math.sin(state.clock.elapsedTime * 0.8) * 0.015;
       modelGroupRef.current.rotation.y = THREE.MathUtils.lerp(
@@ -50,7 +50,7 @@ function RevealScene({ progress }: { progress: number }) {
       );
     }
 
-    // Shroud lifts vertically and glides away as progress increases
+    // Shroud lifts vertically and glides away as scroll progress increases
     if (shroudRef.current) {
       shroudRef.current.position.y = progress * 1.8;
       shroudRef.current.position.z = -progress * 0.8;
@@ -143,12 +143,10 @@ function RevealScene({ progress }: { progress: number }) {
 export default function MachineReveal({ onLaunchStudio }: MachineRevealProps) {
   const [progress, setProgress] = useState<number>(0);
   const [targetProgress, setTargetProgress] = useState<number>(0);
-  const [isInteracting, setIsInteracting] = useState<boolean>(false);
-  const [hasInteracted, setHasInteracted] = useState<boolean>(false);
   const [prefersReducedMotion, setPrefersReducedMotion] = useState<boolean>(false);
+  const [manualOverride, setManualOverride] = useState<boolean | null>(null);
 
-  const arcContainerRef = useRef<HTMLDivElement>(null);
-  const isDraggingRef = useRef<boolean>(false);
+  const sectionRef = useRef<HTMLElement>(null);
   const animFrameRef = useRef<number | null>(null);
 
   // Check for reduced motion preference
@@ -159,13 +157,40 @@ export default function MachineReveal({ onLaunchStudio }: MachineRevealProps) {
     }
   }, []);
 
+  // Scroll-Triggered Animation: Automatically calculates reveal progress based on page scroll
+  useEffect(() => {
+    const handleScroll = () => {
+      // If user clicked manual toggle, don't immediately overwrite until scroll changes significantly
+      if (manualOverride !== null) return;
+      if (!sectionRef.current) return;
+
+      const rect = sectionRef.current.getBoundingClientRect();
+      const windowHeight = window.innerHeight;
+
+      // Start revealing when the section enters the lower part of the screen
+      // Reach 100% reveal when centered in the viewport
+      const startY = windowHeight * 0.85;
+      const endY = windowHeight * 0.25;
+
+      const rawProgress = (startY - rect.top) / (startY - endY);
+      const clamped = Math.max(0, Math.min(1, rawProgress));
+
+      setTargetProgress(clamped);
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    handleScroll(); // Initial position check
+
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [manualOverride]);
+
   // Smooth damped physics interpolation loop
   useEffect(() => {
     const updatePhysics = () => {
       setProgress((prev) => {
         const diff = targetProgress - prev;
         if (Math.abs(diff) < 0.001) return targetProgress;
-        return prev + diff * 0.12; // Damping factor
+        return prev + diff * 0.12; // Damping factor for silky smooth motion
       });
       animFrameRef.current = requestAnimationFrame(updatePhysics);
     };
@@ -176,60 +201,15 @@ export default function MachineReveal({ onLaunchStudio }: MachineRevealProps) {
     };
   }, [targetProgress]);
 
-  // Pointer drag calculation along horizontal arc
-  const handlePointerDown = (e: React.PointerEvent) => {
-    (e.target as HTMLElement).setPointerCapture(e.pointerId);
-    isDraggingRef.current = true;
-    setIsInteracting(true);
-    setHasInteracted(true);
-  };
-
-  const handlePointerMove = (e: React.PointerEvent) => {
-    if (!isDraggingRef.current || !arcContainerRef.current) return;
-    const rect = arcContainerRef.current.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const ratio = Math.max(0, Math.min(1, x / rect.width));
-    setTargetProgress(ratio);
-  };
-
-  const handlePointerUp = () => {
-    if (!isDraggingRef.current) return;
-    isDraggingRef.current = false;
-    setIsInteracting(false);
-
-    // Magnetic snap to extremes
-    setTargetProgress((curr) => {
-      if (curr < 0.2) return 0;
-      if (curr > 0.8) return 1;
-      return curr;
-    });
-  };
-
-  // Keyboard accessibility
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    setHasInteracted(true);
-    if (e.key === "ArrowRight" || e.key === "ArrowUp") {
-      e.preventDefault();
-      setTargetProgress((p) => Math.min(1, p + 0.1));
-    } else if (e.key === "ArrowLeft" || e.key === "ArrowDown") {
-      e.preventDefault();
-      setTargetProgress((p) => Math.max(0, p - 0.1));
-    } else if (e.key === "Home") {
-      e.preventDefault();
-      setTargetProgress(0);
-    } else if (e.key === "End") {
-      e.preventDefault();
-      setTargetProgress(1);
-    }
-  };
-
-  const toggleReveal = () => {
-    setHasInteracted(true);
-    setTargetProgress((p) => (p > 0.5 ? 0 : 1));
+  const toggleManualReveal = () => {
+    const nextVal = targetProgress > 0.5 ? 0 : 1;
+    setManualOverride(nextVal === 1);
+    setTargetProgress(nextVal);
   };
 
   return (
     <section
+      ref={sectionRef}
       id="reveal"
       className="relative w-full py-20 px-6 md:px-12 border-t border-white/5 overflow-hidden"
       style={{ backgroundColor: TOKENS.colors.background }}
@@ -240,31 +220,32 @@ export default function MachineReveal({ onLaunchStudio }: MachineRevealProps) {
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/10 bg-[#0F1114]">
             <Sparkles size={12} style={{ color: TOKENS.colors.accent }} />
             <span className="text-[11px] font-mono tracking-widest text-[#9AA0A9] uppercase">
-              Signature Reveal
+              Scroll-Driven Reveal
             </span>
           </div>
 
           <h2 className="text-3xl sm:text-4xl font-light text-[#F4F5F7] tracking-tight">
-            Drag to Unveil Engineering{" "}
+            Scroll to Unveil Engineering{" "}
             <span className="font-semibold" style={{ color: TOKENS.colors.accent }}>
               Precision
             </span>
             .
           </h2>
           <p className="text-sm text-[#9AA0A9] max-w-lg mx-auto">
-            Scrub the orbital arc to strip away the protective shroud and reveal internal carbon
-            airframe, BLDC power systems, and APM flight avionics.
+            As you scroll down the page, the aerodynamic protective shroud automatically glides away to
+            uncover the internal carbon airframe, BLDC power systems, and APM flight avionics.
           </p>
         </div>
 
         {/* 3D Viewport with Shroud & Model */}
-        <div className="relative w-full h-[420px] sm:h-[500px] rounded-2xl border border-white/5 bg-[#0F1114]/80 overflow-hidden flex items-center justify-center">
+        <div className="relative w-full h-[420px] sm:h-[520px] rounded-2xl border border-white/5 bg-[#0F1114]/80 overflow-hidden flex items-center justify-center shadow-2xl">
           {/* Status Overlay */}
           <div className="absolute top-4 left-4 z-20 flex items-center gap-3 pointer-events-none">
             <span
-              className="w-2 h-2 rounded-full"
+              className="w-2.5 h-2.5 rounded-full transition-colors duration-300"
               style={{
                 backgroundColor: progress > 0.85 ? TOKENS.colors.status.verified : TOKENS.colors.accent,
+                boxShadow: `0 0 10px ${progress > 0.85 ? TOKENS.colors.status.verified : TOKENS.colors.accent}`,
               }}
             />
             <span className="text-xs font-mono text-[#9AA0A9] tracking-wider uppercase">
@@ -272,15 +253,15 @@ export default function MachineReveal({ onLaunchStudio }: MachineRevealProps) {
                 ? "State: Shrouded Silhouette"
                 : progress > 0.85
                 ? "State: Fully Revealed · Ready for Flight"
-                : `Revealing: ${Math.round(progress * 100)}%`}
+                : `Scroll Unveiling: ${Math.round(progress * 100)}%`}
             </span>
           </div>
 
-          {/* Fallback One-Click Button for Accessibility */}
+          {/* Quick Manual Toggle Button */}
           <button
-            onClick={toggleReveal}
-            className="absolute top-4 right-4 z-20 px-3 py-1.5 rounded-lg border border-white/10 bg-[#161A1F] text-xs font-mono text-[#F4F5F7] hover:text-white hover:border-white/30 flex items-center gap-2 transition-all cursor-pointer"
-            aria-label={progress > 0.5 ? "Cover Machine" : "Reveal Machine"}
+            onClick={toggleManualReveal}
+            className="absolute top-4 right-4 z-20 px-3 py-1.5 rounded-lg border border-white/10 bg-[#161A1F] text-xs font-mono text-[#F4F5F7] hover:text-white hover:border-white/30 flex items-center gap-2 transition-all cursor-pointer shadow-md"
+            aria-label={progress > 0.5 ? "Cover Machine" : "Instant Reveal"}
           >
             {progress > 0.5 ? <EyeOff size={14} /> : <Eye size={14} />}
             <span>{progress > 0.5 ? "Cover Machine" : "Instant Reveal"}</span>
@@ -294,58 +275,28 @@ export default function MachineReveal({ onLaunchStudio }: MachineRevealProps) {
           </Canvas>
         </div>
 
-        {/* Drag-to-Reveal Orbital Arc Slider Controller */}
-        <div className="w-full max-w-xl mt-8 flex flex-col items-center space-y-3">
-          {/* Accessibility slider container */}
-          <div
-            ref={arcContainerRef}
-            role="slider"
-            aria-label="Machine Reveal Slider"
-            aria-valuemin={0}
-            aria-valuemax={100}
-            aria-valuenow={Math.round(progress * 100)}
-            tabIndex={0}
-            onKeyDown={handleKeyDown}
-            onPointerDown={handlePointerDown}
-            onPointerMove={handlePointerMove}
-            onPointerUp={handlePointerUp}
-            className="relative w-full h-12 flex items-center cursor-ew-resize select-none touch-none px-4 rounded-xl border border-white/10 bg-[#0F1114] hover:border-white/20 transition-colors"
-          >
-            {/* Track Line */}
-            <div className="absolute left-4 right-4 h-1 bg-white/10 rounded-full overflow-hidden">
-              <div
-                className="h-full transition-all"
-                style={{
-                  width: `${progress * 100}%`,
-                  backgroundColor: TOKENS.colors.accent,
-                  boxShadow: `0 0 10px ${TOKENS.colors.accentGlow}`,
-                }}
-              />
-            </div>
-
-            {/* Draggable Handle */}
+        {/* Scroll Progress Indicator & Dynamic Feedback */}
+        <div className="w-full max-w-xl mt-6 flex flex-col items-center space-y-3">
+          {/* Automatic Scroll Track Line */}
+          <div className="relative w-full h-2 bg-white/10 rounded-full overflow-hidden shadow-inner">
             <div
-              className="absolute top-1/2 -translate-y-1/2 w-8 h-8 rounded-full border-2 border-white bg-[#07080A] flex items-center justify-center transition-transform hover:scale-110 active:scale-95 shadow-lg"
+              className="h-full transition-all duration-75"
               style={{
-                left: `calc(${progress * 100}% * (1 - 32px / 100%) + 8px)`,
-                borderColor: TOKENS.colors.accent,
-                boxShadow: `0 0 15px ${TOKENS.colors.accentGlow}`,
+                width: `${Math.round(progress * 100)}%`,
+                backgroundColor: TOKENS.colors.accent,
+                boxShadow: `0 0 12px ${TOKENS.colors.accentGlow}`,
               }}
-            >
-              <div
-                className="w-2.5 h-2.5 rounded-full"
-                style={{ backgroundColor: TOKENS.colors.accent }}
-              />
-            </div>
+            />
           </div>
 
-          {/* Interactive Hint */}
+          {/* Scroll Direction Prompt & Live Percentage */}
           <div className="flex items-center justify-between w-full text-[11px] font-mono text-[#5C626B] px-1">
             <span>0% Shrouded</span>
-            <span className={`transition-opacity duration-500 ${hasInteracted ? "opacity-40" : "opacity-100 text-[#9AA0A9]"}`}>
-              ← Drag arc handle or use arrow keys →
-            </span>
-            <span>100% CAD Revealed</span>
+            <div className="flex items-center gap-1.5 text-orange-400 font-semibold animate-pulse">
+              <ArrowDown size={13} />
+              <span>Scroll down to uncover</span>
+            </div>
+            <span className="text-white font-bold">{Math.round(progress * 100)}% Revealed</span>
           </div>
         </div>
       </div>
