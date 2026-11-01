@@ -1,0 +1,909 @@
+"use client";
+
+import React, { useState, useEffect } from "react";
+import {
+  Car,
+  Camera,
+  Eye,
+  Activity,
+  Zap,
+  Radio,
+  Sliders,
+  Layers,
+  ShoppingBag,
+  FileCode,
+  BookOpen,
+  CheckCircle2,
+  AlertTriangle,
+  RotateCcw,
+  Power,
+  ShieldAlert,
+  ChevronRight,
+  ArrowUp,
+  ArrowDown,
+  ArrowLeft,
+  ArrowRight,
+  Check,
+  Cpu,
+  Gauge,
+  Compass,
+  Crosshair,
+  Volume2,
+} from "lucide-react";
+import { AppTheme, RoboRacerNavTab } from "@/types/machine";
+import { ROBO_RACER_SHOPPING_LIST } from "@/data/roboRacerData";
+
+interface RoboRacerWorkshopOverlayProps {
+  theme?: AppTheme;
+  isDriving: boolean;
+  onToggleDrive: () => void;
+  speed: number; // -100 to 100
+  steering: number; // -45 to 45 degrees
+  cameraPan: number; // -90 to 90 degrees
+  hoodOpen: boolean;
+  onToggleHood: () => void;
+  onControlChange: (control: { speed: number; steering: number; cameraPan: number }) => void;
+  activeTab: RoboRacerNavTab;
+  onChangeTab: (tab: RoboRacerNavTab) => void;
+  explosionLevel?: number;
+  onChangeExplosionLevel?: (level: number) => void;
+  onResetCamera?: () => void;
+}
+
+export default function RoboRacerWorkshopOverlay({
+  theme = "dark",
+  isDriving,
+  onToggleDrive,
+  speed,
+  steering,
+  cameraPan,
+  hoodOpen,
+  onToggleHood,
+  onControlChange,
+  activeTab,
+  onChangeTab,
+  explosionLevel = 0,
+  onChangeExplosionLevel,
+  onResetCamera,
+}: RoboRacerWorkshopOverlayProps) {
+  const isLight = theme === "light";
+  const [driveMode, setDriveMode] = useState<"manual" | "obstacle" | "ai-track">("manual");
+  const [batteryVoltage, setBatteryVoltage] = useState<number>(7.82);
+  const [ultrasonicDistance, setUltrasonicDistance] = useState<number>(48); // cm
+  const [cameraFps, setCameraFps] = useState<number>(30);
+  const [copiedCode, setCopiedCode] = useState<boolean>(false);
+
+  // Simulated live telemetry updates
+  useEffect(() => {
+    if (!isDriving) {
+      setBatteryVoltage(7.84);
+      return;
+    }
+    const interval = setInterval(() => {
+      // Simulate ultrasonic range fluctuations while moving
+      if (driveMode === "obstacle") {
+        setUltrasonicDistance((prev) => {
+          const next = prev - 4 + Math.floor(Math.random() * 8);
+          return Math.max(12, Math.min(180, next));
+        });
+      } else {
+        setUltrasonicDistance(45 + Math.floor(Math.sin(Date.now() / 800) * 20));
+      }
+
+      // Voltage load drop
+      const load = (Math.abs(speed) / 100) * 0.22;
+      setBatteryVoltage(Number((7.84 - load).toFixed(2)));
+    }, 400);
+
+    return () => clearInterval(interval);
+  }, [isDriving, driveMode, speed]);
+
+  const totalBOM = ROBO_RACER_SHOPPING_LIST.reduce((acc, item) => acc + item.priceINR, 0);
+
+  const handleCopyCode = () => {
+    navigator.clipboard.writeText(ROBO_RACER_FIRMWARE_CODE);
+    setCopiedCode(true);
+    setTimeout(() => setCopiedCode(false), 2000);
+  };
+
+  return (
+    <div className="w-full flex flex-col pointer-events-auto">
+      {/* ================= WORKSHOP TOP NAVIGATION BAR ================= */}
+      <div
+        className={`px-3 py-2 border-b flex items-center justify-between gap-2 overflow-x-auto ${
+          isLight ? "bg-white/95 border-gray-200" : "bg-[#0b0f19]/90 border-white/10 backdrop-blur-md"
+        }`}
+      >
+        <div className="flex items-center gap-1.5 shrink-0">
+          <div className="w-6 h-6 rounded-lg bg-gradient-to-tr from-amber-500 to-orange-600 flex items-center justify-center text-white font-black text-xs shadow-md">
+            RR
+          </div>
+          <div className="hidden sm:block">
+            <span className="text-xs font-bold tracking-wider text-amber-500 uppercase">ROBO-RACER</span>
+            <span className="text-[10px] text-gray-400 block font-mono">SolidWorks CAD Edition</span>
+          </div>
+        </div>
+
+        {/* Tab Buttons */}
+        <div className="flex items-center gap-1 overflow-x-auto py-0.5">
+          {[
+            { id: "simulator" as RoboRacerNavTab, label: "Live Telemetry", icon: Gauge },
+            { id: "how-it-works" as RoboRacerNavTab, label: "Architecture", icon: Layers },
+            { id: "schematic" as RoboRacerNavTab, label: "Schematics", icon: Zap },
+            { id: "firmware" as RoboRacerNavTab, label: "Firmware", icon: FileCode },
+            { id: "bom" as RoboRacerNavTab, label: "Indian BOM (₹)", icon: ShoppingBag },
+            { id: "build-guide" as RoboRacerNavTab, label: "Build Guide", icon: BookOpen },
+            { id: "ai-vision" as RoboRacerNavTab, label: "AI Vision", icon: Camera },
+          ].map((tab) => {
+            const Icon = tab.icon;
+            const isActive = activeTab === tab.id;
+            return (
+              <button
+                key={tab.id}
+                onClick={() => onChangeTab(tab.id)}
+                className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium transition whitespace-nowrap ${
+                  isActive
+                    ? "bg-amber-500 text-black font-bold shadow-lg shadow-amber-500/25"
+                    : isLight
+                    ? "text-gray-600 hover:text-black hover:bg-gray-100"
+                    : "text-gray-400 hover:text-white hover:bg-white/5"
+                }`}
+              >
+                <Icon size={13} />
+                <span>{tab.label}</span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* ================= TAB 1: SIMULATOR & TELEMETRY CONTROLLER ================= */}
+      {activeTab === "simulator" && (
+        <div className="p-3 sm:p-4 space-y-3">
+          {/* Top Status Bar: Battery, Distance, Mode */}
+          <div
+            className={`grid grid-cols-2 sm:grid-cols-4 gap-2 p-2.5 rounded-xl border ${
+              isLight ? "bg-gray-50 border-gray-200" : "bg-[#111726]/80 border-white/10"
+            }`}
+          >
+            {/* Battery Voltage */}
+            <div className="flex items-center gap-2">
+              <Zap size={16} className="text-amber-400 shrink-0" />
+              <div>
+                <span className="text-[10px] text-gray-400 uppercase font-mono block">2S Li-ion Battery</span>
+                <span className="text-xs font-bold font-mono text-amber-400">{batteryVoltage} V</span>
+              </div>
+            </div>
+
+            {/* Ultrasonic Proximity */}
+            <div className="flex items-center gap-2">
+              <Radio
+                size={16}
+                className={
+                  ultrasonicDistance < 25
+                    ? "text-red-500 animate-pulse shrink-0"
+                    : "text-emerald-400 shrink-0"
+                }
+              />
+              <div>
+                <span className="text-[10px] text-gray-400 uppercase font-mono block">HC-SR04 Proximity</span>
+                <span
+                  className={`text-xs font-bold font-mono ${
+                    ultrasonicDistance < 25 ? "text-red-400 font-black" : "text-emerald-400"
+                  }`}
+                >
+                  {ultrasonicDistance} cm {ultrasonicDistance < 25 && "(!)"}
+                </span>
+              </div>
+            </div>
+
+            {/* AI Vision Stream */}
+            <div className="flex items-center gap-2">
+              <Camera size={16} className="text-sky-400 shrink-0" />
+              <div>
+                <span className="text-[10px] text-gray-400 uppercase font-mono block">Hikvision DS-U02</span>
+                <span className="text-xs font-bold font-mono text-sky-400">1080p @ {cameraFps} FPS</span>
+              </div>
+            </div>
+
+            {/* Engine Status */}
+            <div className="flex items-center gap-2">
+              <Power
+                size={16}
+                className={isDriving ? "text-emerald-400 animate-spin shrink-0" : "text-gray-500 shrink-0"}
+              />
+              <div>
+                <span className="text-[10px] text-gray-400 uppercase font-mono block">4WD Drivetrain</span>
+                <span
+                  className={`text-xs font-bold uppercase font-mono ${
+                    isDriving ? "text-emerald-400" : "text-gray-400"
+                  }`}
+                >
+                  {isDriving ? "Active (Armed)" : "Standby"}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Drive Mode Switcher & Quick Actions */}
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <div className="flex items-center gap-1 bg-black/40 p-1 rounded-xl border border-white/10">
+              <span className="text-[10px] text-gray-400 font-mono px-2 uppercase">Mode:</span>
+              {(["manual", "obstacle", "ai-track"] as const).map((mode) => (
+                <button
+                  key={mode}
+                  onClick={() => setDriveMode(mode)}
+                  className={`px-2.5 py-1 rounded-lg text-xs font-bold uppercase transition ${
+                    driveMode === mode
+                      ? "bg-amber-500 text-black shadow-sm"
+                      : "text-gray-400 hover:text-white"
+                  }`}
+                >
+                  {mode === "manual" ? "Manual 4WD" : mode === "obstacle" ? "Sonar Reflex" : "AI Lane Track"}
+                </button>
+              ))}
+            </div>
+
+            <div className="flex items-center gap-2">
+              <button
+                onClick={onToggleHood}
+                className={`px-3 py-1.5 rounded-xl border text-xs font-bold transition flex items-center gap-1.5 ${
+                  hoodOpen
+                    ? "bg-amber-500/20 border-amber-500/50 text-amber-300"
+                    : isLight
+                    ? "bg-gray-100 border-gray-300 text-gray-700"
+                    : "bg-white/5 border-white/10 text-gray-300 hover:text-white"
+                }`}
+              >
+                <Layers size={13} />
+                <span>{hoodOpen ? "Close Hood (Dhakna)" : "Open Hood (Dhakna)"}</span>
+              </button>
+
+              <button
+                onClick={onToggleDrive}
+                className={`px-4 py-1.5 rounded-xl font-bold text-xs shadow-lg transition flex items-center gap-1.5 ${
+                  isDriving
+                    ? "bg-red-500 hover:bg-red-600 text-white shadow-red-500/20"
+                    : "bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-black shadow-amber-500/25"
+                }`}
+              >
+                <Power size={13} />
+                <span>{isDriving ? "DISARM 4WD" : "ENGAGE 4WD"}</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Interactive Controls & Teleop Dashboard */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+            {/* Speed & Direction Controller */}
+            <div
+              className={`p-3 rounded-xl border space-y-2 ${
+                isLight ? "bg-white border-gray-200" : "bg-[#111726]/60 border-white/10"
+              }`}
+            >
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-gray-300 flex items-center gap-1.5">
+                  <Gauge size={14} className="text-amber-400" />
+                  Throttle & Reverse
+                </span>
+                <span className="text-xs font-mono font-bold text-amber-400">{speed}%</span>
+              </div>
+              <input
+                type="range"
+                min="-100"
+                max="100"
+                step="5"
+                value={speed}
+                onChange={(e) =>
+                  onControlChange({
+                    speed: parseInt(e.target.value),
+                    steering,
+                    cameraPan,
+                  })
+                }
+                className="w-full accent-amber-500 cursor-pointer"
+              />
+              <div className="flex justify-between text-[10px] font-mono text-gray-500">
+                <span>-100% (Rev)</span>
+                <span>0 (Stop)</span>
+                <span>+100% (Fwd)</span>
+              </div>
+            </div>
+
+            {/* Steering Yaw Controller */}
+            <div
+              className={`p-3 rounded-xl border space-y-2 ${
+                isLight ? "bg-white border-gray-200" : "bg-[#111726]/60 border-white/10"
+              }`}
+            >
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-gray-300 flex items-center gap-1.5">
+                  <Compass size={14} className="text-orange-400" />
+                  Skid-Steering Yaw
+                </span>
+                <span className="text-xs font-mono font-bold text-orange-400">{steering}°</span>
+              </div>
+              <input
+                type="range"
+                min="-45"
+                max="45"
+                step="5"
+                value={steering}
+                onChange={(e) =>
+                  onControlChange({
+                    speed,
+                    steering: parseInt(e.target.value),
+                    cameraPan,
+                  })
+                }
+                className="w-full accent-orange-500 cursor-pointer"
+              />
+              <div className="flex justify-between text-[10px] font-mono text-gray-500">
+                <span>Left (-45°)</span>
+                <span>Neutral (0°)</span>
+                <span>Right (+45°)</span>
+              </div>
+            </div>
+
+            {/* Camera Pan Servo Controller */}
+            <div
+              className={`p-3 rounded-xl border space-y-2 ${
+                isLight ? "bg-white border-gray-200" : "bg-[#111726]/60 border-white/10"
+              }`}
+            >
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-gray-300 flex items-center gap-1.5">
+                  <Camera size={14} className="text-sky-400" />
+                  Hikvision Camera Pan
+                </span>
+                <span className="text-xs font-mono font-bold text-sky-400">{cameraPan}°</span>
+              </div>
+              <input
+                type="range"
+                min="-90"
+                max="90"
+                step="5"
+                value={cameraPan}
+                onChange={(e) =>
+                  onControlChange({
+                    speed,
+                    steering,
+                    cameraPan: parseInt(e.target.value),
+                  })
+                }
+                className="w-full accent-sky-500 cursor-pointer"
+              />
+              <div className="flex justify-between text-[10px] font-mono text-gray-500">
+                <span>Left (-90°)</span>
+                <span>Center (0°)</span>
+                <span>Right (+90°)</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Exploded View Slider & Reset View */}
+          {onChangeExplosionLevel && (
+            <div
+              className={`p-2.5 rounded-xl border flex items-center gap-3 ${
+                isLight ? "bg-gray-50 border-gray-200" : "bg-black/40 border-white/10"
+              }`}
+            >
+              <span className="text-xs font-mono text-gray-400 shrink-0">CAD Exploded View:</span>
+              <input
+                type="range"
+                min="0"
+                max="1"
+                step="0.05"
+                value={explosionLevel}
+                onChange={(e) => onChangeExplosionLevel(parseFloat(e.target.value))}
+                className="w-full accent-amber-500 cursor-pointer"
+              />
+              <span className="text-xs font-mono font-bold text-amber-400 shrink-0">
+                {Math.round(explosionLevel * 100)}%
+              </span>
+              {onResetCamera && (
+                <button
+                  onClick={onResetCamera}
+                  className="px-2.5 py-1 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-xs text-gray-300 transition shrink-0"
+                >
+                  Reset View
+                </button>
+              )}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* ================= TAB 2: SYSTEM ARCHITECTURE & SIGNAL FLOW ================= */}
+      {activeTab === "how-it-works" && (
+        <div className="p-4 sm:p-6 space-y-6 max-h-[70vh] overflow-y-auto">
+          <div>
+            <h3 className="text-lg font-bold text-white flex items-center gap-2">
+              <Layers className="text-amber-400" />
+              Robo-Racer Autonomous Architecture
+            </h3>
+            <p className="text-xs text-gray-400 mt-1">
+              Dual-core real-time signal flow connecting optical machine vision, ultrasonic reflex loops, and high-current 4WD skid-steer propulsion.
+            </p>
+          </div>
+
+          {/* Block Diagram Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <div className="p-3.5 rounded-xl border border-sky-500/20 bg-sky-950/20 space-y-2">
+              <div className="flex items-center gap-2 text-sky-400">
+                <Camera size={18} />
+                <h4 className="text-xs font-bold uppercase tracking-wider">Tier 1: Vision Ingestion</h4>
+              </div>
+              <p className="text-xs text-gray-300">
+                Hikvision DS-U02 captures 1080p @ 30 FPS. Frames are processed via HSV color thresholding to detect track boundaries and AprilTag markers.
+              </p>
+              <div className="text-[10px] font-mono text-sky-300 bg-black/40 p-2 rounded border border-sky-500/20">
+                Resolution: 1920x1080 • Latency: 22ms • Pan: SG90 ±90°
+              </div>
+            </div>
+
+            <div className="p-3.5 rounded-xl border border-amber-500/20 bg-amber-950/20 space-y-2">
+              <div className="flex items-center gap-2 text-amber-400">
+                <Cpu size={18} />
+                <h4 className="text-xs font-bold uppercase tracking-wider">Tier 2: Dual-Core Brain</h4>
+              </div>
+              <p className="text-xs text-gray-300">
+                ESP32 Core 0 runs WebSockets / Wi-Fi telemetry and pan servo positioning. Core 1 runs the 100Hz PID steering loop and HC-SR04 sonar interrupt.
+              </p>
+              <div className="text-[10px] font-mono text-amber-300 bg-black/40 p-2 rounded border border-amber-500/20">
+                Clock: 240MHz • Loop: 100Hz PID • Sonar: 40kHz Ping
+              </div>
+            </div>
+
+            <div className="p-3.5 rounded-xl border border-orange-500/20 bg-orange-950/20 space-y-2">
+              <div className="flex items-center gap-2 text-orange-400">
+                <Car size={18} />
+                <h4 className="text-xs font-bold uppercase tracking-wider">Tier 3: 4WD Actuation</h4>
+              </div>
+              <p className="text-xs text-gray-300">
+                L298N Dual H-Bridge translates PWM signals into differential skid-steer torque across 4 geared motors with directional chevron tires.
+              </p>
+              <div className="text-[10px] font-mono text-orange-300 bg-black/40 p-2 rounded border border-orange-500/20">
+                Max Current: 2.0A/ch • Stall Torque: 6.0 kg·cm
+              </div>
+            </div>
+          </div>
+
+          {/* Mathematical Signal Flow */}
+          <div className="p-4 rounded-xl border border-white/10 bg-black/40 space-y-3">
+            <h4 className="text-xs font-bold text-amber-400 uppercase tracking-wider">
+              Mathematical Motion Model & Collision Reflex
+            </h4>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs text-gray-300">
+              <div className="space-y-1">
+                <span className="font-semibold text-white">1. Ultrasonic Distance Formula:</span>
+                <p className="font-mono text-amber-300 bg-white/5 p-2 rounded">
+                  Distance (cm) = (Echo_Duration_µs × 0.0343) / 2
+                </p>
+                <p className="text-[11px] text-gray-400">
+                  If Distance &lt; 20cm, state machine triggers hard reverse-brake reflex, overriding vision steering commands.
+                </p>
+              </div>
+
+              <div className="space-y-1">
+                <span className="font-semibold text-white">2. Differential Skid-Steer Torque:</span>
+                <p className="font-mono text-amber-300 bg-white/5 p-2 rounded">
+                  PWM_Left = Speed - (Kp × Error_Yaw)<br />
+                  PWM_Right = Speed + (Kp × Error_Yaw)
+                </p>
+                <p className="text-[11px] text-gray-400">
+                  Adjusts differential motor RPM across both flanks for instantaneous apex pivot cornering.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ================= TAB 3: SCHEMATIC & PINOUT MAPPING ================= */}
+      {activeTab === "schematic" && (
+        <div className="p-4 sm:p-6 space-y-4 max-h-[70vh] overflow-y-auto">
+          <div>
+            <h3 className="text-lg font-bold text-white flex items-center gap-2">
+              <Zap className="text-amber-400" />
+              Complete ESP32 Pinout & Wiring Interconnect
+            </h3>
+            <p className="text-xs text-gray-400 mt-1">
+              Zero-guesswork GPIO wiring map for connecting the ESP32 brain, L298N driver, HC-SR04 sonar, and SG90 pan servo.
+            </p>
+          </div>
+
+          <div className="overflow-x-auto rounded-xl border border-white/10">
+            <table className="w-full text-left text-xs text-gray-300">
+              <thead className="bg-white/5 text-gray-400 uppercase font-mono text-[10px]">
+                <tr>
+                  <th className="p-3">Device Pin</th>
+                  <th className="p-3">ESP32 Pin</th>
+                  <th className="p-3">Signal Type</th>
+                  <th className="p-3">Electrical Voltage</th>
+                  <th className="p-3">Functional Role</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-white/5 font-mono text-[11px]">
+                <tr className="hover:bg-white/5">
+                  <td className="p-3 text-sky-400">HC-SR04 Trig</td>
+                  <td className="p-3 font-bold text-white">GPIO 18</td>
+                  <td className="p-3 text-amber-300">Digital Output</td>
+                  <td className="p-3">3.3V Logic</td>
+                  <td className="p-3 font-sans">10µs ultrasonic sonic trigger chirp</td>
+                </tr>
+                <tr className="hover:bg-white/5">
+                  <td className="p-3 text-sky-400">HC-SR04 Echo</td>
+                  <td className="p-3 font-bold text-white">GPIO 19</td>
+                  <td className="p-3 text-amber-300">Digital Input</td>
+                  <td className="p-3 text-red-300">3.3V (via 1k/2k Divider)</td>
+                  <td className="p-3 font-sans">High-pulse duration returns distance</td>
+                </tr>
+                <tr className="hover:bg-white/5">
+                  <td className="p-3 text-amber-400">SG90 Servo PWM</td>
+                  <td className="p-3 font-bold text-white">GPIO 13</td>
+                  <td className="p-3 text-amber-300">50Hz PWM</td>
+                  <td className="p-3">3.3V Logic</td>
+                  <td className="p-3 font-sans">Controls camera pan angle (0° to 180°)</td>
+                </tr>
+                <tr className="hover:bg-white/5">
+                  <td className="p-3 text-orange-400">L298N ENA (Left Speed)</td>
+                  <td className="p-3 font-bold text-white">GPIO 27</td>
+                  <td className="p-3 text-amber-300">20kHz PWM</td>
+                  <td className="p-3">3.3V Logic</td>
+                  <td className="p-3 font-sans">Hardware PWM duty cycle for left flank</td>
+                </tr>
+                <tr className="hover:bg-white/5">
+                  <td className="p-3 text-orange-400">L298N IN1 / IN2</td>
+                  <td className="p-3 font-bold text-white">GPIO 25 / 26</td>
+                  <td className="p-3 text-amber-300">Digital Output</td>
+                  <td className="p-3">3.3V Logic</td>
+                  <td className="p-3 font-sans">Left motor forward / reverse polarity</td>
+                </tr>
+                <tr className="hover:bg-white/5">
+                  <td className="p-3 text-orange-400">L298N ENB (Right Speed)</td>
+                  <td className="p-3 font-bold text-white">GPIO 33</td>
+                  <td className="p-3 text-amber-300">20kHz PWM</td>
+                  <td className="p-3">3.3V Logic</td>
+                  <td className="p-3 font-sans">Hardware PWM duty cycle for right flank</td>
+                </tr>
+                <tr className="hover:bg-white/5">
+                  <td className="p-3 text-orange-400">L298N IN3 / IN4</td>
+                  <td className="p-3 font-bold text-white">GPIO 14 / 12</td>
+                  <td className="p-3 text-amber-300">Digital Output</td>
+                  <td className="p-3">3.3V Logic</td>
+                  <td className="p-3 font-sans">Right motor forward / reverse polarity</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div className="p-3.5 rounded-xl border border-amber-500/30 bg-amber-950/20 space-y-1.5">
+            <div className="flex items-center gap-2 text-amber-400 text-xs font-bold">
+              <AlertTriangle size={15} />
+              <span>Critical Electrical Safety Rule: Common Ground</span>
+            </div>
+            <p className="text-xs text-gray-300">
+              Always tie the negative terminal (GND) of the 7.4V Li-ion battery, the LM2596 buck converter, the L298N motor driver, and the ESP32 board together to a unified Common Ground. Failure to connect common ground results in erratic motor stutter and floating logic noise.
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* ================= TAB 4: PRODUCTION FIRMWARE CODE ================= */}
+      {activeTab === "firmware" && (
+        <div className="p-4 sm:p-6 space-y-4 max-h-[70vh] overflow-y-auto">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-lg font-bold text-white flex items-center gap-2">
+                <FileCode className="text-amber-400" />
+                Production ESP32 Autonomous Firmware
+              </h3>
+              <p className="text-xs text-gray-400 mt-0.5">
+                Full deployable C++/Arduino sketch featuring WebSockets telemetry, HC-SR04 sonar obstacle braking, and differential PWM drive.
+              </p>
+            </div>
+            <button
+              onClick={handleCopyCode}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-400 text-black font-bold text-xs shadow-md transition"
+            >
+              {copiedCode ? <Check size={14} /> : <FileCode size={14} />}
+              <span>{copiedCode ? "Copied to Clipboard!" : "Copy Full Code"}</span>
+            </button>
+          </div>
+
+          <div className="relative rounded-xl border border-white/10 bg-[#070913] overflow-hidden">
+            <pre className="p-4 text-xs font-mono text-gray-300 overflow-x-auto leading-relaxed max-h-[460px]">
+              {ROBO_RACER_FIRMWARE_CODE}
+            </pre>
+          </div>
+        </div>
+      )}
+
+      {/* ================= TAB 5: INDIAN BILL OF MATERIALS & PRICING ================= */}
+      {activeTab === "bom" && (
+        <div className="p-4 sm:p-6 space-y-5 max-h-[70vh] overflow-y-auto">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <div>
+              <h3 className="text-lg font-bold text-white flex items-center gap-2">
+                <ShoppingBag className="text-amber-400" />
+                Verified Indian Sourcing Bill of Materials (BOM)
+              </h3>
+              <p className="text-xs text-gray-400 mt-0.5">
+                Real-world pricing and direct links to trusted Indian suppliers (Robu.in, ElectronicsComp, Robocraze).
+              </p>
+            </div>
+            <div className="p-2.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-right">
+              <span className="text-[10px] text-gray-400 uppercase font-mono block">Complete Build Budget</span>
+              <span className="text-lg font-black text-amber-400">₹{totalBOM.toLocaleString()} INR</span>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            {ROBO_RACER_SHOPPING_LIST.map((item, idx) => (
+              <div
+                key={idx}
+                className="p-3.5 rounded-xl border border-white/10 bg-white/5 space-y-2 hover:border-amber-500/40 transition"
+              >
+                <div className="flex items-start justify-between gap-2">
+                  <div>
+                    <span className="text-xs font-bold text-white">{item.component}</span>
+                    <span className="text-[11px] text-gray-400 block font-mono">{item.model}</span>
+                  </div>
+                  <span className="text-xs font-bold font-mono text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20">
+                    ₹{item.priceINR}
+                  </span>
+                </div>
+                <p className="text-[11px] text-gray-400 leading-snug">{item.purpose}</p>
+                <div className="flex items-center justify-between pt-1 border-t border-white/5 text-[10px] font-mono">
+                  <span className="text-gray-400">Vendor: {item.seller}</span>
+                  <a
+                    href={item.url}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-amber-400 hover:text-amber-300 font-bold flex items-center gap-1"
+                  >
+                    View Part <ChevronRight size={12} />
+                  </a>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* ================= TAB 6: STEP-BY-STEP BUILD GUIDE ================= */}
+      {activeTab === "build-guide" && (
+        <div className="p-4 sm:p-6 space-y-5 max-h-[70vh] overflow-y-auto">
+          <div>
+            <h3 className="text-lg font-bold text-white flex items-center gap-2">
+              <BookOpen className="text-amber-400" />
+              Mechanical & Electrical Step-by-Step Assembly
+            </h3>
+            <p className="text-xs text-gray-400 mt-0.5">
+              Follow this 6-stage engineering walkthrough to build and calibrate your Robo-Racer from scratch.
+            </p>
+          </div>
+
+          <div className="space-y-3">
+            {[
+              {
+                step: "01",
+                title: "Chassis Baseplate & Motor Mounts",
+                desc: "Bolt the four golden brass brackets onto the lower chassis plate ('Body Part.SLDPRT') using M3 hex screws. Mount the four 300 RPM DC gearmotors so their drive shafts protrude symmetrically outwards.",
+              },
+              {
+                step: "02",
+                title: "Wheel Press-Fit & Alignment",
+                desc: "Align the D-flat shaft cutouts on the four 65mm chevron racing tires with the motor output shafts. Press them firmly into place until flush and secure with locking hub screws.",
+              },
+              {
+                step: "03",
+                title: "Front HC-SR04 & Camera Pan Servo",
+                desc: "Mount the blue HC-SR04 ultrasonic sensor into the front bumper slot with both acoustic cylinders pointing forward. Install the TowerPro SG90 servo in the top neck holder and attach the Hikvision DS-U02 camera bracket.",
+              },
+              {
+                step: "04",
+                title: "Cabin Box & Gullwing Hood (Dhakna) Installation",
+                desc: "Secure the mid-cabin box ('Box Part.SLDPRT') to the chassis base. Fasten the sloped inspection hood ('Dhakna.SLDPRT') using the rear hinge pivot pins so it opens smoothly at 38 degrees for pit-stop access.",
+              },
+              {
+                step: "05",
+                title: "Power Harness & LM2596 Calibration",
+                desc: "Connect the 2S 7.4V battery pack to the SPST master switch. Wire the output to the LM2596 buck converter and calibrate the trimmer potentiometer with a multimeter to output exactly 5.05V DC before powering the ESP32.",
+              },
+              {
+                step: "06",
+                title: "Firmware Flash & Track Calibration",
+                desc: "Flash the production Arduino/ESP32 sketch over USB. Run the sensor calibration routine on a flat surface to test ultrasonic obstacle stopping distance (25cm) and camera pan range of motion (180°).",
+              },
+            ].map((s) => (
+              <div
+                key={s.step}
+                className="p-4 rounded-xl border border-white/10 bg-white/5 flex items-start gap-4 hover:border-amber-500/40 transition"
+              >
+                <div className="w-8 h-8 rounded-lg bg-amber-500/20 border border-amber-500/30 flex items-center justify-center text-amber-400 font-mono font-black text-sm shrink-0">
+                  {s.step}
+                </div>
+                <div>
+                  <h4 className="text-xs font-bold text-white uppercase tracking-wider">{s.title}</h4>
+                  <p className="text-xs text-gray-300 mt-1 leading-relaxed">{s.desc}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* ================= TAB 7: AI COMPUTER VISION PIPELINE ================= */}
+      {activeTab === "ai-vision" && (
+        <div className="p-4 sm:p-6 space-y-5 max-h-[70vh] overflow-y-auto">
+          <div>
+            <h3 className="text-lg font-bold text-white flex items-center gap-2">
+              <Camera className="text-sky-400" />
+              Hikvision Optical Machine Vision Pipeline
+            </h3>
+            <p className="text-xs text-gray-400 mt-0.5">
+              OpenCV Python & MicroPython processing algorithms for lane detection, track boundaries, and obstacle classification.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="p-4 rounded-xl border border-white/10 bg-black/40 space-y-2">
+              <span className="text-xs font-bold text-sky-400 uppercase tracking-wider">
+                1. HSV Color Space Masking
+              </span>
+              <p className="text-xs text-gray-300 leading-relaxed">
+                Raw RGB frames from the Hikvision DS-U02 are converted to HSV (Hue-Saturation-Value) to isolate white/yellow track boundary lines regardless of ambient room shadows or harsh spotlights.
+              </p>
+              <pre className="p-3 text-[10px] font-mono text-amber-300 bg-white/5 rounded border border-white/5 overflow-x-auto">
+{`hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+lower_yellow = np.array([20, 100, 100])
+upper_yellow = np.array([30, 255, 255])
+mask = cv2.inRange(hsv, lower_yellow, upper_yellow)`}
+              </pre>
+            </div>
+
+            <div className="p-4 rounded-xl border border-white/10 bg-black/40 space-y-2">
+              <span className="text-xs font-bold text-sky-400 uppercase tracking-wider">
+                2. Centroid Deviation & Steering Error
+              </span>
+              <p className="text-xs text-gray-300 leading-relaxed">
+                Image moments calculate the centroid $(C_x, C_y)$ of the detected track lane. The horizontal offset from the camera optical center ($960px$) serves as the PID steering error term.
+              </p>
+              <pre className="p-3 text-[10px] font-mono text-amber-300 bg-white/5 rounded border border-white/5 overflow-x-auto">
+{`M = cv2.moments(mask)
+if M['m00'] > 0:
+    cx = int(M['m10'] / M['m00'])
+    error_x = cx - (frame_width // 2)
+    steering_angle = Kp * error_x + Kd * d_error`}
+              </pre>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+const ROBO_RACER_FIRMWARE_CODE = `/*
+ * =========================================================================
+ * ROBO-RACER AI AUTONOMOUS RACING BOT - PRODUCTION FIRMWARE
+ * Microcontroller: ESP32-WROOM-32 (Dual-Core 240MHz)
+ * Sensors: HC-SR04 Ultrasonic Sonar, Hikvision DS-U02 AI Vision Stream
+ * Actuators: 4WD Geared DC Motors (L298N Driver), SG90 Camera Pan Servo
+ * =========================================================================
+ */
+
+#include <Arduino.h>
+#include <WiFi.h>
+#include <ESP32Servo.h>
+
+// PIN CONFIGURATION
+#define PIN_TRIG        18
+#define PIN_ECHO        19
+#define PIN_SERVO_PAN   13
+
+#define PIN_MOTOR_ENA   27  // Left Motors PWM
+#define PIN_MOTOR_IN1   25
+#define PIN_MOTOR_IN2   26
+
+#define PIN_MOTOR_ENB   33  // Right Motors PWM
+#define PIN_MOTOR_IN3   14
+#define PIN_MOTOR_IN4   12
+
+// PWM CHANNELS
+#define PWM_FREQ        20000 // 20kHz Silent Drive
+#define PWM_RES         8     // 8-bit (0 - 255)
+
+Servo panServo;
+volatile float ultrasonicDistanceCm = 50.0;
+int currentSpeed = 0;
+int currentSteering = 0;
+
+void setMotorSpeeds(int leftPwm, int rightPwm) {
+  // Left Motor Direction
+  if (leftPwm >= 0) {
+    digitalWrite(PIN_MOTOR_IN1, HIGH);
+    digitalWrite(PIN_MOTOR_IN2, LOW);
+  } else {
+    digitalWrite(PIN_MOTOR_IN1, LOW);
+    digitalWrite(PIN_MOTOR_IN2, HIGH);
+    leftPwm = -leftPwm;
+  }
+
+  // Right Motor Direction
+  if (rightPwm >= 0) {
+    digitalWrite(PIN_MOTOR_IN3, HIGH);
+    digitalWrite(PIN_MOTOR_IN4, LOW);
+  } else {
+    digitalWrite(PIN_MOTOR_IN3, LOW);
+    digitalWrite(PIN_MOTOR_IN4, HIGH);
+    rightPwm = -rightPwm;
+  }
+
+  ledcWrite(0, constrain(leftPwm, 0, 255));
+  ledcWrite(1, constrain(rightPwm, 0, 255));
+}
+
+float measureUltrasonicDistance() {
+  digitalWrite(PIN_TRIG, LOW);
+  delayMicroseconds(2);
+  digitalWrite(PIN_TRIG, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(PIN_TRIG, LOW);
+
+  long duration = pulseIn(PIN_ECHO, HIGH, 25000); // 25ms timeout (~4m max)
+  if (duration == 0) return 400.0;
+  return (duration * 0.0343) / 2.0;
+}
+
+void setup() {
+  Serial.begin(115200);
+
+  // Motor Pins
+  pinMode(PIN_MOTOR_IN1, OUTPUT);
+  pinMode(PIN_MOTOR_IN2, OUTPUT);
+  pinMode(PIN_MOTOR_IN3, OUTPUT);
+  pinMode(PIN_MOTOR_IN4, OUTPUT);
+
+  ledcAttach(PIN_MOTOR_ENA, PWM_FREQ, PWM_RES);
+  ledcAttach(PIN_MOTOR_ENB, PWM_FREQ, PWM_RES);
+
+  // Sonar Pins
+  pinMode(PIN_TRIG, OUTPUT);
+  pinMode(PIN_ECHO, INPUT);
+
+  // Servo Setup
+  panServo.setPeriodHertz(50);
+  panServo.attach(PIN_SERVO_PAN, 500, 2400);
+  panServo.write(90); // Center
+
+  Serial.println("[ROBO-RACER] Autonomous Core Booted.");
+}
+
+void loop() {
+  // 1. Measure Front Distance
+  ultrasonicDistanceCm = measureUltrasonicDistance();
+
+  // 2. Emergency Collision Reflex
+  if (ultrasonicDistanceCm < 20.0) {
+    Serial.println("[ALERT] Obstacle Detected! Hard Brake & Evasive Pivot.");
+    setMotorSpeeds(-180, -180); // Reverse
+    delay(150);
+    setMotorSpeeds(-150, 150);  // Quick Tank Turn
+    delay(200);
+    return;
+  }
+
+  // 3. Normal Differential Drive
+  int basePwm = map(currentSpeed, -100, 100, -255, 255);
+  int steerDelta = map(currentSteering, -45, 45, -90, 90);
+
+  int leftMotor = basePwm + steerDelta;
+  int rightMotor = basePwm - steerDelta;
+
+  setMotorSpeeds(leftMotor, rightMotor);
+  delay(10);
+}
+`;

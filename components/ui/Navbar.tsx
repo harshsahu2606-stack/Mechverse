@@ -1,6 +1,6 @@
 "use client";
 
-import { Box, CarFront, Fan, Bot, RotateCcw, Bookmark, Sparkles, Swords, Plane, Hexagon, Smartphone, Sun, Moon, Camera } from "lucide-react";
+import { Box, CarFront, Fan, Bot, RotateCcw, Bookmark, Sparkles, Swords, Plane, Hexagon, Smartphone, Sun, Moon, Camera, Crosshair } from "lucide-react";
 import { MachineId, AppTheme } from "@/types/machine";
 
 interface NavbarProps {
@@ -238,6 +238,20 @@ export default function Navbar({
           >
             <Smartphone size={14} />
             <span className="hidden sm:inline">ESP32 Drone</span>
+          </button>
+          <button
+            onClick={() => onSelectMachine("robo-racer")}
+            title="Switch to ROBO-RACER AI Vision & Obstacle Racing Bot (₹2,888)"
+            className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold transition ${
+              selectedMachineId === "robo-racer"
+                ? "bg-orange-500 text-black font-bold shadow-md shadow-orange-500/30"
+                : isLight
+                ? "text-gray-600 hover:text-gray-900"
+                : "text-gray-400 hover:text-white"
+            }`}
+          >
+            <Crosshair size={14} />
+            <span className="hidden sm:inline">Robo-Racer</span>
           </button>
         </div>
 

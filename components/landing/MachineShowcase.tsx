@@ -10,6 +10,7 @@ import Esp32DroneModel from "@/components/3d/Esp32DroneModel";
 import RoboRumbleVehicleModel from "@/components/3d/RoboRumbleVehicleModel";
 import AeroDroneModel from "@/components/3d/AeroDroneModel";
 import DroneBModel from "@/components/3d/DroneBModel";
+import RoboRacerModel from "@/components/3d/RoboRacerModel";
 
 interface MachineShowcaseProps {
   onLaunchStudio: (machineId: MachineId) => void;
@@ -43,6 +44,23 @@ const SHOWCASE_ITEMS: ShowcaseItem[] = [
       { label: "Sensors", value: "MPU-6050 6-DOF IMU" },
       { label: "Motors", value: "4× 8520 Coreless Brushed" },
       { label: "All-Up Weight", value: "38 grams AUW" },
+    ],
+  },
+  {
+    id: "robo-racer",
+    name: "ROBO-RACER AI Vision & Sonar Bot",
+    category: "Autonomous AI Rover (SolidWorks CAD)",
+    headline: "Hikvision Optical Vision & Sub-Centimeter Sonar Reflex.",
+    description:
+      "Autonomous 4WD racing bot modeled from precision SolidWorks CAD assemblies. Integrates a top-mounted Hikvision DS-U02 1080p camera on an SG90 pan neck, front HC-SR04 ultrasonic rangefinder, and high-traction chevron tires.",
+    price: "₹2,888",
+    priceStatus: "verified",
+    supplierInfo: "Robu.in & ElectronicsComp (Checked Oct 2026)",
+    specs: [
+      { label: "Vision Camera", value: "Hikvision DS-U02 1080p" },
+      { label: "Obstacle Sonar", value: "HC-SR04 (2-400cm)" },
+      { label: "Drivetrain", value: "4WD Geared Bo-Motors" },
+      { label: "Chassis Feature", value: "Gullwing Dhakna Hood" },
     ],
   },
   {
@@ -135,6 +153,22 @@ function ShowcaseScene({ activeId, transitionProgress }: { activeId: MachineId; 
             onSelect={() => {}}
             isArmed={true}
             throttlePct={30}
+          />
+        )}
+
+        {activeId === "robo-racer" && (
+          <RoboRacerModel
+            customization={{}}
+            explosionLevel={0}
+            selectedComponent={null}
+            isolatedComponent={null}
+            hiddenComponents={[]}
+            onSelect={() => {}}
+            isDriving={true}
+            driveSpeed={30}
+            steeringAngle={0}
+            cameraPanAngle={0}
+            hoodOpen={false}
           />
         )}
 

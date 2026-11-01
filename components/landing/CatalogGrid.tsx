@@ -30,6 +30,23 @@ const CATALOG_ITEMS: CatalogMachineItem[] = [
     tags: ["Wi-Fi SoftAP", "400Hz PID", "1S LiPo", "Student Budget"],
   },
   {
+    id: "robo-racer",
+    name: "ROBO-RACER AI Vision Bot",
+    category: "robotics",
+    badgeType: "AI RACING ROVER",
+    price: "₹2,888",
+    priceStatus: "verified",
+    supplierInfo: "Robu.in & ElectronicsComp (SolidWorks CAD BOM)",
+    description: "Autonomous 4WD obstacle-racing rover with Hikvision 1080p camera on SG90 pan neck, HC-SR04 ultrasonic sonar, and gullwing hood ('Dhakna').",
+    specs: [
+      { label: "Vision", value: "Hikvision DS-U02" },
+      { label: "Sonar", value: "HC-SR04 2cm-400cm" },
+      { label: "Motors", value: "4× 300 RPM 4WD" },
+      { label: "Brain", value: "ESP32 Dual-Core" },
+    ],
+    tags: ["Hikvision AI", "Ultrasonic Reflex", "Gullwing Dhakna", "4WD Chevron"],
+  },
+  {
     id: "robo-rumble",
     name: "Robo Rumble Battle Car",
     category: "robotics",

@@ -14,6 +14,7 @@ import RoboRumbleVehicleModel from "./RoboRumbleVehicleModel";
 import AeroDroneModel from "./AeroDroneModel";
 import DroneBModel from "./DroneBModel";
 import Esp32DroneModel from "./Esp32DroneModel";
+import RoboRacerModel from "./RoboRacerModel";
 
 export type CameraPreset = "default" | "front" | "side" | "top";
 
@@ -69,6 +70,22 @@ function CameraController({
           break;
         default:
           targetPos.set(0.16, 0.11, 0.18);
+          break;
+      }
+    } else if (machineId === "robo-racer") {
+      lookTarget.set(0, 0, 0);
+      switch (preset) {
+        case "front":
+          targetPos.set(0, 0.08, 0.35);
+          break;
+        case "side":
+          targetPos.set(0.35, 0.08, 0);
+          break;
+        case "top":
+          targetPos.set(0, 0.45, 0.01);
+          break;
+        default:
+          targetPos.set(0.28, 0.18, 0.32);
           break;
       }
     } else if (machineId === "aero-450" || machineId === "drone-b") {
@@ -176,8 +193,8 @@ function CameraController({
     controls.update();
   }, [preset, resetCount, machineId, isSubAssembly]);
 
-  const minDist = machineId === "esp32-drone" ? 0.03 : isSubAssembly ? 0.15 : 0.25;
-  const maxDist = machineId === "esp32-drone" ? 3.5 : 16;
+  const minDist = (machineId === "esp32-drone" || machineId === "robo-racer") ? 0.03 : isSubAssembly ? 0.15 : 0.25;
+  const maxDist = (machineId === "esp32-drone" || machineId === "robo-racer") ? 4.0 : 16;
 
   return (
     <OrbitControls
@@ -382,6 +399,23 @@ export default function SceneViewer({
               onSelect={onSelectComponent}
               isArmed={true}
               throttlePct={40}
+            />
+          )}
+
+          {/* ROBO-RACER AI Autonomous Vision Bot */}
+          {machineId === "robo-racer" && (
+            <RoboRacerModel
+              customization={customization}
+              explosionLevel={explosionLevel}
+              selectedComponent={selectedComponent}
+              isolatedComponent={isolatedComponent}
+              hiddenComponents={hiddenComponents}
+              onSelect={onSelectComponent}
+              isDriving={true}
+              driveSpeed={35}
+              steeringAngle={0}
+              cameraPanAngle={0}
+              hoodOpen={true}
             />
           )}
 

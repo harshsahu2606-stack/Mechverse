@@ -72,7 +72,8 @@ import AeroTroubleshooting from "@/components/aerodrone/AeroTroubleshooting";
 import AeroBOM from "@/components/aerodrone/AeroBOM";
 import AeroEngineeringDocs from "@/components/aerodrone/AeroEngineeringDocs";
 import Esp32PhoneControllerOverlay from "@/components/esp32drone/Esp32PhoneControllerOverlay";
-import { AeroNavTab, AppTheme, Esp32DroneNavTab } from "@/types/machine";
+import RoboRacerWorkshopOverlay from "@/components/roboracer/RoboRacerWorkshopOverlay";
+import { AeroNavTab, AppTheme, Esp32DroneNavTab, RoboRacerNavTab } from "@/types/machine";
 
 // Dynamic import with SSR disabled to prevent WebGL server rendering errors
 const SceneViewer = dynamic(() => import("@/components/3d/SceneViewer"), {
@@ -219,6 +220,16 @@ export default function Home() {
     pitch: 0,
     roll: 0,
     yaw: 0,
+  });
+
+  // ROBO-RACER AI Vision & Obstacle Bot State
+  const [roboRacerTab, setRoboRacerTab] = useState<RoboRacerNavTab>("simulator");
+  const [roboRacerDriving, setRoboRacerDriving] = useState<boolean>(false);
+  const [roboRacerHoodOpen, setRoboRacerHoodOpen] = useState<boolean>(true);
+  const [roboRacerControls, setRoboRacerControls] = useState({
+    speed: 0,
+    steering: 0,
+    cameraPan: 0,
   });
 
   // Robo Rumble Dedicated Workshop, Arena & Track State
@@ -456,6 +467,12 @@ export default function Home() {
       setEsp32Armed(false);
       setEsp32Controls({ throttle: 1000, pitch: 0, roll: 0, yaw: 0 });
     }
+    if (id === "robo-racer") {
+      setRoboRacerTab("simulator");
+      setRoboRacerDriving(false);
+      setRoboRacerHoodOpen(true);
+      setRoboRacerControls({ speed: 0, steering: 0, cameraPan: 0 });
+    }
   };
 
   const handleEnterSubAssembly = (subAssemblyId: string) => {
@@ -681,6 +698,30 @@ export default function Home() {
                   onResetCamera={() => setCameraResetCount((c) => c + 1)}
                 />
               </div>
+            ) : selectedMachineId === "robo-racer" && roboRacerTab !== "simulator" ? (
+              /* Content Area Based on ROBO-RACER Workshop Tab */
+              <div
+                className={`flex-1 overflow-y-auto custom-scrollbar flex flex-col ${
+                  theme === "light" ? "bg-slate-50" : "bg-[#090b0f]"
+                }`}
+              >
+                <RoboRacerWorkshopOverlay
+                  theme={theme}
+                  isDriving={roboRacerDriving}
+                  onToggleDrive={() => setRoboRacerDriving((prev) => !prev)}
+                  speed={roboRacerControls.speed}
+                  steering={roboRacerControls.steering}
+                  cameraPan={roboRacerControls.cameraPan}
+                  hoodOpen={roboRacerHoodOpen}
+                  onToggleHood={() => setRoboRacerHoodOpen((prev) => !prev)}
+                  onControlChange={setRoboRacerControls}
+                  activeTab={roboRacerTab}
+                  onChangeTab={setRoboRacerTab}
+                  explosionLevel={explosionLevel}
+                  onChangeExplosionLevel={setExplosionLevel}
+                  onResetCamera={() => setCameraResetCount((c) => c + 1)}
+                />
+              </div>
             ) : (
               /* ================= 3D SIMULATOR VIEWPORT ================= */
               <div className="flex-1 relative w-full h-full overflow-hidden">
@@ -897,6 +938,28 @@ export default function Home() {
                           onControlChange={setEsp32Controls}
                           activeTab={esp32ProjectTab}
                           onChangeTab={setEsp32ProjectTab}
+                          explosionLevel={explosionLevel}
+                          onChangeExplosionLevel={setExplosionLevel}
+                          onResetCamera={() => setCameraResetCount((c) => c + 1)}
+                        />
+                      </div>
+                    )}
+
+                    {/* ROBO-RACER Autonomous Drive Controller & Telemetry HUD */}
+                    {selectedMachineId === "robo-racer" && (
+                      <div className="absolute inset-0 pointer-events-none z-20">
+                        <RoboRacerWorkshopOverlay
+                          theme={theme}
+                          isDriving={roboRacerDriving}
+                          onToggleDrive={() => setRoboRacerDriving((prev) => !prev)}
+                          speed={roboRacerControls.speed}
+                          steering={roboRacerControls.steering}
+                          cameraPan={roboRacerControls.cameraPan}
+                          hoodOpen={roboRacerHoodOpen}
+                          onToggleHood={() => setRoboRacerHoodOpen((prev) => !prev)}
+                          onControlChange={setRoboRacerControls}
+                          activeTab={roboRacerTab}
+                          onChangeTab={setRoboRacerTab}
                           explosionLevel={explosionLevel}
                           onChangeExplosionLevel={setExplosionLevel}
                           onResetCamera={() => setCameraResetCount((c) => c + 1)}

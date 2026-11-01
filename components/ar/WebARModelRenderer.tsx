@@ -12,6 +12,7 @@ import WalkingRobotModel from "@/components/3d/WalkingRobotModel";
 import SportsCarModel from "@/components/3d/SportsCarModel";
 import ElectricFanModel from "@/components/3d/ElectricFanModel";
 import Esp32DroneModel from "@/components/3d/Esp32DroneModel";
+import RoboRacerModel from "@/components/3d/RoboRacerModel";
 
 interface WebARModelRendererProps {
   machineId: MachineId;
@@ -95,6 +96,8 @@ export default function WebARModelRenderer({
         return 0.75;
       case "esp32-drone":
         return 2.4;
+      case "robo-racer":
+        return 1.6;
       default:
         return 1.0;
     }
@@ -256,6 +259,22 @@ export default function WebARModelRenderer({
             onSelect={onSelectComponent}
             isArmed={true}
             throttlePct={35}
+          />
+        )}
+
+        {machineId === "robo-racer" && (
+          <RoboRacerModel
+            customization={customization}
+            explosionLevel={explosionLevel}
+            selectedComponent={selectedComponent}
+            isolatedComponent={null}
+            hiddenComponents={[]}
+            onSelect={onSelectComponent}
+            isDriving={true}
+            driveSpeed={25}
+            steeringAngle={0}
+            cameraPanAngle={0}
+            hoodOpen={false}
           />
         )}
       </group>

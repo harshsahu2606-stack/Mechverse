@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowRight, CheckCircle2, ChevronRight, Fan, CarFront, Bot, Palette, Sparkles, Layers, Cpu, Eye, Wrench, Swords, Plane, Hexagon, Smartphone } from "lucide-react";
+import { ArrowRight, CheckCircle2, ChevronRight, Fan, CarFront, Bot, Palette, Sparkles, Layers, Cpu, Eye, Wrench, Swords, Plane, Hexagon, Smartphone, Crosshair, Camera } from "lucide-react";
 import { MachineId } from "@/types/machine";
 
 interface HeroSectionProps {
@@ -91,6 +91,70 @@ export default function HeroSection({ onSelectAndLaunch }: HeroSectionProps) {
             <button
               onClick={() => onSelectAndLaunch("esp32-drone", "builder")}
               title="Customize Drone"
+              className="px-2.5 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-semibold text-gray-300 hover:text-white transition"
+            >
+              <Palette size={14} />
+            </button>
+          </div>
+        </div>
+
+        {/* ================= MODEL 0D: ROBO-RACER AI AUTONOMOUS BOT (SOLIDWORKS CAD) ================= */}
+        <div className="group relative rounded-2xl border border-orange-500/50 bg-gradient-to-b from-[#2a1306] to-[#0c0602] p-5 hover:border-orange-400 transition-all duration-300 shadow-2xl flex flex-col justify-between overflow-hidden">
+          <div className="absolute -top-12 -right-12 w-48 h-48 bg-orange-500/20 rounded-full blur-3xl pointer-events-none group-hover:bg-orange-500/35 transition" />
+
+          <div className="space-y-3 relative z-10">
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] font-mono font-bold tracking-widest text-orange-400 uppercase bg-orange-500/10 px-2 py-0.5 rounded border border-orange-500/25">
+                AI VISION / ₹2,888
+              </span>
+              <span className="text-xs text-orange-400 flex items-center gap-1 font-semibold">
+                <Crosshair size={13} /> SolidWorks CAD
+              </span>
+            </div>
+
+            <div className="flex items-start gap-2.5 pt-1">
+              <div className="p-2.5 rounded-xl bg-orange-500/10 border border-orange-500/25 text-orange-400 group-hover:scale-110 transition">
+                <CarFront size={22} />
+              </div>
+              <div>
+                <h3 className="text-base font-bold text-white group-hover:text-orange-400 transition leading-snug">
+                  Robo-Racer AI Bot
+                </h3>
+                <p className="text-[11px] text-gray-400 mt-0.5 leading-relaxed">
+                  Autonomous 4WD racing rover with Hikvision 1080p AI vision camera, HC-SR04 sonar reflex, and gullwing hood ('Dhakna').
+                </p>
+              </div>
+            </div>
+
+            {/* Feature Pills */}
+            <div className="grid grid-cols-3 gap-1 pt-1 text-center">
+              <div className="bg-white/5 rounded-lg p-1.5 border border-white/5">
+                <span className="text-[8px] uppercase font-mono text-gray-400 block">Cost</span>
+                <span className="text-xs font-bold text-emerald-400">₹2,888</span>
+              </div>
+              <div className="bg-white/5 rounded-lg p-1.5 border border-white/5">
+                <span className="text-[8px] uppercase font-mono text-gray-400 block">Camera</span>
+                <span className="text-xs font-bold text-sky-300">1080p Pan</span>
+              </div>
+              <div className="bg-white/5 rounded-lg p-1.5 border border-white/5">
+                <span className="text-[8px] uppercase font-mono text-gray-400 block">Drive</span>
+                <span className="text-xs font-bold text-orange-400">4WD Skid</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Launch Buttons */}
+          <div className="flex items-center gap-2 pt-4 relative z-10">
+            <button
+              onClick={() => onSelectAndLaunch("robo-racer", "explore")}
+              className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-500 hover:to-amber-500 text-black font-bold text-xs shadow-xl shadow-orange-600/30 transition hover:scale-[1.02] active:scale-[0.98]"
+            >
+              <span>Launch Studio</span>
+              <ArrowRight size={13} />
+            </button>
+            <button
+              onClick={() => onSelectAndLaunch("robo-racer", "builder")}
+              title="Customize Robo-Racer"
               className="px-2.5 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-semibold text-gray-300 hover:text-white transition"
             >
               <Palette size={14} />

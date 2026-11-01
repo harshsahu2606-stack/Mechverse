@@ -21,6 +21,7 @@ const AR_MACHINES: { id: MachineId; name: string }[] = [
   { id: "walking-robot", name: "Walking Robot" },
   { id: "sports-car", name: "Sports Car" },
   { id: "esp32-drone", name: "ESP32 Drone" },
+  { id: "robo-racer", name: "Robo-Racer Bot" },
   { id: "electric-fan", name: "Electric Fan" },
 ];
 
