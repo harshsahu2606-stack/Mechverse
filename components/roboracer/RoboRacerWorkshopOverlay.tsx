@@ -124,29 +124,51 @@ export default function RoboRacerWorkshopOverlay({
           </div>
         </div>
 
-        {/* Tab Buttons */}
-        <div className="flex items-center gap-1 overflow-x-auto py-0.5">
+        {/* Tab Buttons - 5 Clean Pillars */}
+        <div className="flex items-center gap-1 sm:gap-1.5 overflow-x-auto no-scrollbar py-0.5">
           {[
-            { id: "simulator" as RoboRacerNavTab, label: "Live Telemetry", icon: Gauge },
-            { id: "how-it-works" as RoboRacerNavTab, label: "Architecture", icon: Layers },
-            { id: "schematic" as RoboRacerNavTab, label: "Schematics", icon: Zap },
-            { id: "firmware" as RoboRacerNavTab, label: "Firmware", icon: FileCode },
-            { id: "bom" as RoboRacerNavTab, label: "Indian BOM (₹)", icon: ShoppingBag },
-            { id: "build-guide" as RoboRacerNavTab, label: "Build Guide", icon: BookOpen },
-            { id: "ai-vision" as RoboRacerNavTab, label: "AI Vision", icon: Camera },
+            {
+              id: "simulator" as RoboRacerNavTab,
+              label: "Live Telemetry",
+              icon: Gauge,
+              isActive: activeTab === "simulator",
+            },
+            {
+              id: "how-it-works" as RoboRacerNavTab,
+              label: "Architecture & AI",
+              icon: Layers,
+              isActive: activeTab === "how-it-works" || activeTab === "ai-vision",
+            },
+            {
+              id: "schematic" as RoboRacerNavTab,
+              label: "Schematics",
+              icon: Zap,
+              isActive: activeTab === "schematic",
+            },
+            {
+              id: "bom" as RoboRacerNavTab,
+              label: "Indian BOM (₹)",
+              icon: ShoppingBag,
+              isActive: activeTab === "bom",
+            },
+            {
+              id: "build-guide" as RoboRacerNavTab,
+              label: "Build & Firmware",
+              icon: BookOpen,
+              isActive: activeTab === "build-guide" || activeTab === "firmware",
+            },
           ].map((tab) => {
             const Icon = tab.icon;
-            const isActive = activeTab === tab.id;
             return (
               <button
                 key={tab.id}
                 onClick={() => onChangeTab(tab.id)}
-                className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium transition whitespace-nowrap ${
-                  isActive
-                    ? "bg-amber-500 text-black font-bold shadow-lg shadow-amber-500/25"
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition whitespace-nowrap cursor-pointer shrink-0 ${
+                  tab.isActive
+                    ? "bg-amber-500 text-black font-bold shadow-lg shadow-amber-500/25 scale-102"
                     : isLight
-                    ? "text-gray-600 hover:text-black hover:bg-gray-100"
-                    : "text-gray-400 hover:text-white hover:bg-white/5"
+                    ? "bg-gray-100 hover:bg-gray-200 text-gray-700"
+                    : "text-gray-300 hover:text-white bg-white/5 hover:bg-white/10 border border-white/10"
                 }`}
               >
                 <Icon size={13} />
@@ -156,6 +178,59 @@ export default function RoboRacerWorkshopOverlay({
           })}
         </div>
       </div>
+
+      {/* Sub-Tabs for Deep Content */}
+      {(activeTab === "how-it-works" || activeTab === "ai-vision") && (
+        <div className="w-full border-b px-4 py-1.5 bg-black/40 border-white/5 flex items-center gap-2 pointer-events-auto">
+          <span className="text-[10px] font-mono text-gray-500 uppercase">Sections:</span>
+          <button
+            onClick={() => onChangeTab("how-it-works")}
+            className={`px-2.5 py-1 rounded-lg text-xs font-semibold cursor-pointer ${
+              activeTab === "how-it-works"
+                ? "bg-amber-500/20 text-amber-300 border border-amber-500/40"
+                : "text-gray-400 hover:text-white"
+            }`}
+          >
+            Signal Flow & Kinematics
+          </button>
+          <button
+            onClick={() => onChangeTab("ai-vision")}
+            className={`px-2.5 py-1 rounded-lg text-xs font-semibold cursor-pointer ${
+              activeTab === "ai-vision"
+                ? "bg-amber-500/20 text-amber-300 border border-amber-500/40"
+                : "text-gray-400 hover:text-white"
+            }`}
+          >
+            Hikvision Optical AI Vision Pipeline
+          </button>
+        </div>
+      )}
+
+      {(activeTab === "build-guide" || activeTab === "firmware") && (
+        <div className="w-full border-b px-4 py-1.5 bg-black/40 border-white/5 flex items-center gap-2 pointer-events-auto">
+          <span className="text-[10px] font-mono text-gray-500 uppercase">Sections:</span>
+          <button
+            onClick={() => onChangeTab("build-guide")}
+            className={`px-2.5 py-1 rounded-lg text-xs font-semibold cursor-pointer ${
+              activeTab === "build-guide"
+                ? "bg-amber-500/20 text-amber-300 border border-amber-500/40"
+                : "text-gray-400 hover:text-white"
+            }`}
+          >
+            Step-by-Step Build Guide
+          </button>
+          <button
+            onClick={() => onChangeTab("firmware")}
+            className={`px-2.5 py-1 rounded-lg text-xs font-semibold cursor-pointer ${
+              activeTab === "firmware"
+                ? "bg-amber-500/20 text-amber-300 border border-amber-500/40"
+                : "text-gray-400 hover:text-white"
+            }`}
+          >
+            ESP32 Autonomous C++ Firmware
+          </button>
+        </div>
+      )}
 
       {/* ================= TAB 1: SIMULATOR & TELEMETRY CONTROLLER ================= */}
       {activeTab === "simulator" && (

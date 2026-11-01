@@ -146,38 +146,113 @@ export default function Esp32PhoneControllerOverlay({
           </div>
         </div>
 
-        {/* Navigation Tabs */}
-        <div className="flex items-center gap-1.5 shrink-0">
+        {/* Navigation Tabs - 5 Clean Pillars with Sub-Segments */}
+        <div className="flex items-center gap-1 sm:gap-1.5 overflow-x-auto no-scrollbar py-0.5">
           {[
-            { id: "simulator", label: "3D CAD & Flight HUD", icon: Smartphone },
-            { id: "how-it-works", label: "Architecture", icon: Cpu },
-            { id: "build-guide", label: "Step-by-Step Build", icon: BookOpen },
-            { id: "schematic", label: "Schematic & Wiring", icon: Zap },
-            { id: "firmware", label: "Arduino Firmware", icon: FileCode },
-            { id: "bom", label: "₹1,955 Shopping List", icon: ShoppingBag },
-            { id: "dgca-rules", label: "DGCA Nano Rules (<250g)", icon: ShieldAlert },
+            {
+              id: "simulator" as Esp32DroneNavTab,
+              label: "3D CAD & Flight HUD",
+              icon: Smartphone,
+              isActive: activeTab === "simulator",
+            },
+            {
+              id: "how-it-works" as Esp32DroneNavTab,
+              label: "Architecture & Specs",
+              icon: Cpu,
+              isActive: activeTab === "how-it-works" || activeTab === "dgca-rules",
+            },
+            {
+              id: "schematic" as Esp32DroneNavTab,
+              label: "Schematic & Wiring",
+              icon: Zap,
+              isActive: activeTab === "schematic",
+            },
+            {
+              id: "bom" as Esp32DroneNavTab,
+              label: "Indian BOM (₹)",
+              icon: ShoppingBag,
+              isActive: activeTab === "bom",
+            },
+            {
+              id: "build-guide" as Esp32DroneNavTab,
+              label: "Build & Firmware",
+              icon: BookOpen,
+              isActive: activeTab === "build-guide" || activeTab === "firmware",
+            },
           ].map((tab) => {
             const Icon = tab.icon;
-            const isActive = activeTab === tab.id;
             return (
               <button
                 key={tab.id}
-                onClick={() => onChangeTab(tab.id as Esp32DroneNavTab)}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition ${
-                  isActive
-                    ? "bg-indigo-600 text-white shadow-md shadow-indigo-600/30"
+                onClick={() => onChangeTab(tab.id)}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition cursor-pointer shrink-0 ${
+                  tab.isActive
+                    ? "bg-gradient-to-r from-amber-600 to-orange-600 text-white shadow-md shadow-amber-600/30 border border-amber-400/30"
                     : isLight
-                    ? "bg-gray-100 hover:bg-gray-200 text-gray-700"
-                    : "bg-white/5 hover:bg-white/10 text-gray-300"
+                    ? "bg-gray-100 hover:bg-gray-200 text-gray-700 border border-gray-200"
+                    : "bg-white/5 hover:bg-white/10 text-gray-300 border border-white/10"
                 }`}
               >
-                <Icon size={13} className={isActive ? "text-white" : "text-indigo-400"} />
+                <Icon size={13} className={tab.isActive ? "text-white" : "text-amber-400"} />
                 <span>{tab.label}</span>
               </button>
             );
           })}
         </div>
       </div>
+
+      {/* Sub-Tabs for Deep Content */}
+      {(activeTab === "how-it-works" || activeTab === "dgca-rules") && (
+        <div className="w-full border-b px-4 py-1.5 bg-black/40 border-white/5 flex items-center gap-2 pointer-events-auto">
+          <span className="text-[10px] font-mono text-gray-500 uppercase">Sections:</span>
+          <button
+            onClick={() => onChangeTab("how-it-works")}
+            className={`px-2.5 py-1 rounded-lg text-xs font-semibold cursor-pointer ${
+              activeTab === "how-it-works"
+                ? "bg-amber-500/20 text-amber-300 border border-amber-500/40"
+                : "text-gray-400 hover:text-white"
+            }`}
+          >
+            Signal Flow & PID Loop
+          </button>
+          <button
+            onClick={() => onChangeTab("dgca-rules")}
+            className={`px-2.5 py-1 rounded-lg text-xs font-semibold cursor-pointer ${
+              activeTab === "dgca-rules"
+                ? "bg-amber-500/20 text-amber-300 border border-amber-500/40"
+                : "text-gray-400 hover:text-white"
+            }`}
+          >
+            DGCA Nano Drone Rules (&lt;250g)
+          </button>
+        </div>
+      )}
+
+      {(activeTab === "build-guide" || activeTab === "firmware") && (
+        <div className="w-full border-b px-4 py-1.5 bg-black/40 border-white/5 flex items-center gap-2 pointer-events-auto">
+          <span className="text-[10px] font-mono text-gray-500 uppercase">Sections:</span>
+          <button
+            onClick={() => onChangeTab("build-guide")}
+            className={`px-2.5 py-1 rounded-lg text-xs font-semibold cursor-pointer ${
+              activeTab === "build-guide"
+                ? "bg-amber-500/20 text-amber-300 border border-amber-500/40"
+                : "text-gray-400 hover:text-white"
+            }`}
+          >
+            Step-by-Step Build Guide
+          </button>
+          <button
+            onClick={() => onChangeTab("firmware")}
+            className={`px-2.5 py-1 rounded-lg text-xs font-semibold cursor-pointer ${
+              activeTab === "firmware"
+                ? "bg-amber-500/20 text-amber-300 border border-amber-500/40"
+                : "text-gray-400 hover:text-white"
+            }`}
+          >
+            Arduino Production Firmware (SoftAP UDP)
+          </button>
+        </div>
+      )}
 
       {/* ================= TAB 1: 3D CAD & FLIGHT SIMULATOR HUD ================= */}
       {activeTab === "simulator" && (

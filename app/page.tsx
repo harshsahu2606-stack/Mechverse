@@ -73,6 +73,8 @@ import AeroBOM from "@/components/aerodrone/AeroBOM";
 import AeroEngineeringDocs from "@/components/aerodrone/AeroEngineeringDocs";
 import Esp32PhoneControllerOverlay from "@/components/esp32drone/Esp32PhoneControllerOverlay";
 import RoboRacerWorkshopOverlay from "@/components/roboracer/RoboRacerWorkshopOverlay";
+import DroneBWorkshopNav, { DroneBNavPillar } from "@/components/droneb/DroneBWorkshopNav";
+import DroneBWorkshopView from "@/components/droneb/DroneBWorkshopView";
 import { AeroNavTab, AppTheme, Esp32DroneNavTab, RoboRacerNavTab } from "@/types/machine";
 
 // Dynamic import with SSR disabled to prevent WebGL server rendering errors
@@ -211,6 +213,9 @@ export default function Home() {
 
   // AERO-450 Quadcopter Dedicated Workshop State
   const [aeroProjectTab, setAeroProjectTab] = useState<AeroNavTab>("explorer");
+
+  // Drone B Industrial Octocopter Dedicated Workshop State
+  const [droneBProjectPillar, setDroneBProjectPillar] = useState<DroneBNavPillar>("simulator");
 
   // AERO-ESP Phone-Controlled Nano Drone State
   const [esp32ProjectTab, setEsp32ProjectTab] = useState<Esp32DroneNavTab>("simulator");
@@ -473,6 +478,9 @@ export default function Home() {
       setRoboRacerHoodOpen(true);
       setRoboRacerControls({ speed: 0, steering: 0, cameraPan: 0 });
     }
+    if (id === "drone-b") {
+      setDroneBProjectPillar("simulator");
+    }
   };
 
   const handleEnterSubAssembly = (subAssemblyId: string) => {
@@ -627,6 +635,22 @@ export default function Home() {
               </div>
             )}
 
+            {/* If Drone B Octocopter, Render Dedicated Workshop Nav Bar */}
+            {selectedMachineId === "drone-b" && (
+              <div className="z-30 shrink-0">
+                <DroneBWorkshopNav
+                  activePillar={droneBProjectPillar}
+                  onChangePillar={(pillar) => {
+                    setDroneBProjectPillar(pillar);
+                    if (pillar !== "simulator") {
+                      setViewMode("view");
+                    }
+                  }}
+                  theme={theme}
+                />
+              </div>
+            )}
+
             {/* Content Area Based on Robot Workshop Tab */}
             {selectedMachineId === "walking-robot" && robotProjectTab !== "simulator" ? (
               <div className="flex-1 overflow-y-auto custom-scrollbar bg-[#090b0f]">
@@ -674,6 +698,15 @@ export default function Home() {
                 {aeroProjectTab === "troubleshooting" && <AeroTroubleshooting />}
                 {aeroProjectTab === "bom" && <AeroBOM />}
                 {aeroProjectTab === "docs" && <AeroEngineeringDocs />}
+              </div>
+            ) : selectedMachineId === "drone-b" && droneBProjectPillar !== "simulator" ? (
+              /* Content Area Based on Drone B Industrial Workshop Tab */
+              <div
+                className={`flex-1 overflow-y-auto custom-scrollbar flex flex-col ${
+                  theme === "light" ? "bg-slate-50" : "bg-[#090b0f]"
+                }`}
+              >
+                <DroneBWorkshopView activePillar={droneBProjectPillar} theme={theme} />
               </div>
             ) : selectedMachineId === "esp32-drone" && esp32ProjectTab !== "simulator" ? (
               /* Content Area Based on ESP32 Drone Workshop Tab */
