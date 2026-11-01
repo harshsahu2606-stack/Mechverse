@@ -71,7 +71,7 @@ function IndustrialStudioStage({
       droneGroupRef.current.scale.lerp(new THREE.Vector3(targetScale, targetScale, targetScale), delta * 5);
 
       // Delicate floating motion lowered cleanly below labels
-      droneGroupRef.current.position.y = -0.12 + Math.sin(t * 1.6) * 0.016;
+      droneGroupRef.current.position.y = -0.16 + Math.sin(t * 1.6) * 0.016;
       droneGroupRef.current.rotation.y = Math.sin(t * 0.35) * 0.08;
       droneGroupRef.current.rotation.x = Math.sin(t * 1.1) * 0.015;
       droneGroupRef.current.rotation.z = Math.cos(t * 0.9) * 0.015;
@@ -133,12 +133,12 @@ function IndustrialStudioStage({
       {/* Pedestal Orange Glow Ring & Uplight */}
       <pointLight
         ref={orbitLightRef}
-        position={[0, -0.42, 0]}
+        position={[0, -0.46, 0]}
         color={TOKENS.colors.accent}
         intensity={3.2}
         distance={4.5}
       />
-      <pointLight position={[0, -0.02, 0]} color={TOKENS.colors.accent} intensity={1.2} distance={2.5} />
+      <pointLight position={[0, -0.06, 0]} color={TOKENS.colors.accent} intensity={1.2} distance={2.5} />
 
       {/* Background Overhead White Industrial Light Strips (Left & Right) */}
       <group position={[-4.5, 2.4, -3.5]} rotation={[0.08, 0.4, -0.65]}>
@@ -158,7 +158,7 @@ function IndustrialStudioStage({
       {/* ================= 1. LEFT MACHINE: RR-01 COMBAT ROBOT ================= */}
       <group
         ref={combatBotGroupRef}
-        position={[isMobile ? -0.82 : -1.15, -0.46, 0.35]}
+        position={[isMobile ? -0.82 : -1.15, -0.50, 0.35]}
         scale={0.50}
         onPointerOver={(e) => {
           e.stopPropagation();
@@ -184,7 +184,7 @@ function IndustrialStudioStage({
       </group>
 
       {/* ================= 2. CENTER MACHINE: DRONE B ON GLOWING PEDESTAL ================= */}
-      <group position={[0, -0.56, 0]}>
+      <group position={[0, -0.60, 0]}>
         {/* Dark Cylindrical Pedestal */}
         <mesh position={[0, 0.07, 0]}>
           <cylinderGeometry args={[isMobile ? 0.48 : 0.62, isMobile ? 0.54 : 0.68, 0.14, 64]} />
@@ -206,7 +206,7 @@ function IndustrialStudioStage({
       {/* Hovering Drone B (Center Hero) */}
       <group
         ref={droneGroupRef}
-        position={[0, -0.12, 0]}
+        position={[0, -0.16, 0]}
         scale={1.10}
         onPointerOver={(e) => {
           e.stopPropagation();
@@ -232,7 +232,7 @@ function IndustrialStudioStage({
       {/* ================= 3. RIGHT MACHINE: TJ-01 WALKING MECHANISM ================= */}
       <group
         ref={walkerGroupRef}
-        position={[isMobile ? 0.82 : 1.15, -0.46, 0.35]}
+        position={[isMobile ? 0.82 : 1.15, -0.50, 0.35]}
         scale={0.46}
         onPointerOver={(e) => {
           e.stopPropagation();
@@ -256,7 +256,7 @@ function IndustrialStudioStage({
       </group>
 
       {/* Highly Reflective Industrial Wet Studio Ground */}
-      <mesh position={[0, -0.565, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+      <mesh position={[0, -0.605, 0]} rotation={[-Math.PI / 2, 0, 0]}>
         <planeGeometry args={[28, 28]} />
         <meshStandardMaterial
           color="#060709"
@@ -266,7 +266,7 @@ function IndustrialStudioStage({
       </mesh>
 
       {/* Subtle Engineering Grid on floor */}
-      <gridHelper args={[24, 48, "#222a36", "#0e1218"]} position={[0, -0.56, 0]} />
+      <gridHelper args={[24, 48, "#222a36", "#0e1218"]} position={[0, -0.60, 0]} />
     </>
   );
 }
@@ -292,16 +292,16 @@ export default function HeroScene({ onLaunchStudio, onOpenAR }: HeroSceneProps) 
       />
 
       {/* ================= 1. EDITORIAL HEADLINE & SANS SUBTITLE (CLEAN HIERARCHY) ================= */}
-      <div className="relative z-20 w-full pt-14 sm:pt-20 md:pt-22 text-center px-4 flex flex-col items-center pointer-events-none">
-        <h1 className="font-serif-headline text-2xl sm:text-4xl md:text-5xl lg:text-[2.75rem] tracking-[0.04em] text-white uppercase font-normal leading-snug sm:leading-[1.15] select-text max-w-3xl">
+      <div className="relative z-20 w-full pt-10 sm:pt-14 md:pt-16 text-center px-4 flex flex-col items-center pointer-events-none">
+        <h1 className="font-serif-headline text-2xl sm:text-4xl md:text-5xl lg:text-[2.65rem] tracking-[0.04em] text-white uppercase font-normal leading-snug sm:leading-[1.12] select-text max-w-3xl">
           FOR THOSE WHO
           <br />
           <span className="italic font-bold text-[#FF6A1A] mr-2 sm:mr-3">BUILD</span>
           BEYOND ORDINARY.
         </h1>
 
-        {/* Clean Editorial Subtitle - Distinct typography and human-readable styling */}
-        <p className="mt-2 sm:mt-3 text-xs sm:text-base font-sans tracking-wide text-[#94A3B8] font-normal select-text">
+        {/* Clean Editorial Subtitle - Guaranteed clearance from 3D models */}
+        <p className="mt-2 text-xs sm:text-sm font-sans tracking-[0.22em] text-[#94A3B8] font-medium uppercase select-text">
           Design. Simulate. Build real machines.
         </p>
       </div>
@@ -309,7 +309,7 @@ export default function HeroScene({ onLaunchStudio, onOpenAR }: HeroSceneProps) 
       {/* ================= 2. REAL 3D CANVAS SHOWCASE ================= */}
       <div className="absolute inset-0 w-full h-full z-0">
         <Canvas
-          camera={{ position: [0, 0.45, 4.3], fov: 38 }}
+          camera={{ position: [0, 0.40, 4.4], fov: 38 }}
           className="w-full h-full cursor-grab active:cursor-grabbing"
           dpr={[1, 1.5]}
         >
@@ -322,7 +322,7 @@ export default function HeroScene({ onLaunchStudio, onOpenAR }: HeroSceneProps) 
             <OrbitControls
               enableZoom={false}
               enablePan={false}
-              target={[0, -0.15, 0]}
+              target={[0, -0.20, 0]}
               minPolarAngle={Math.PI / 2.8}
               maxPolarAngle={Math.PI / 2.05}
               minAzimuthAngle={-Math.PI / 6}
@@ -342,77 +342,74 @@ export default function HeroScene({ onLaunchStudio, onOpenAR }: HeroSceneProps) 
             onClick={() => onLaunchStudio("robo-rumble")}
             onMouseEnter={() => setHoveredMachine("robo-rumble")}
             onMouseLeave={() => setHoveredMachine(null)}
-            className={`absolute left-[2%] sm:left-[5%] lg:left-[7%] top-[45%] md:top-[44%] text-left pointer-events-auto cursor-pointer transition-all duration-300 ${
+            className={`absolute left-[3%] sm:left-[6%] lg:left-[8%] top-[51%] md:top-[50%] text-left pointer-events-auto cursor-pointer transition-all duration-300 ${
               hoveredMachine === "robo-rumble" ? "scale-105" : "opacity-90 hover:opacity-100"
             }`}
           >
-            {/* Title & Technical Underline with Pointer */}
-            <div className="relative pb-1">
-              <span className="text-[9px] sm:text-xs font-mono-tech tracking-[0.12em] sm:tracking-[0.16em] text-white font-medium uppercase drop-shadow-sm">
-                RR-01 / COMBAT ROBOT
-              </span>
-              {/* Leader Line extending right and down toward combat bot */}
-              <svg
-                width="110"
-                height="38"
-                viewBox="0 0 130 42"
-                fill="none"
-                className={`transition-colors duration-200 mt-0.5 ${
-                  hoveredMachine === "robo-rumble" ? "stroke-[#FF6A1A]" : "stroke-white/40"
-                }`}
-              >
-                <path d="M0 1H85L120 40" strokeWidth="1" strokeDasharray="3 2" />
-              </svg>
+            {/* High-contrast CAD Card */}
+            <div className="bg-[#0b0f19]/90 border border-slate-700/80 hover:border-orange-500/80 shadow-[0_10px_30px_rgba(0,0,0,0.8)] backdrop-blur-md px-3 py-1.5 rounded-xl inline-flex flex-col gap-0.5">
+              <div className="flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-orange-400" />
+                <span className="text-[10px] sm:text-xs font-mono-tech tracking-[0.14em] text-white font-bold uppercase drop-shadow-sm whitespace-nowrap">
+                  RR-01 / COMBAT ROBOT
+                </span>
+              </div>
+              <div className="hidden sm:flex items-center gap-1.5 text-[8px] sm:text-[9px] font-mono-tech tracking-wider text-slate-400 uppercase">
+                <span>ESP32 CONTROL</span>
+                <span className="text-slate-600">•</span>
+                <span>IMPACT READY</span>
+              </div>
             </div>
-
-            {/* Technical Sub-Specs */}
-            <div className="hidden sm:block space-y-0.5 text-[9px] sm:text-[10px] font-mono-tech tracking-wider text-[#94A3B8] uppercase">
-              <div className="hover:text-white transition-colors">ESP32 CONTROL</div>
-              <div className="hover:text-white transition-colors">IMPACT READY</div>
-            </div>
+            {/* Leader Line extending right and down toward combat bot */}
+            <svg
+              width="100"
+              height="30"
+              viewBox="0 0 100 30"
+              fill="none"
+              className={`transition-colors duration-200 mt-1 ${
+                hoveredMachine === "robo-rumble" ? "stroke-[#FF6A1A]" : "stroke-white/40"
+              }`}
+            >
+              <path d="M0 1H65L95 28" strokeWidth="1.5" strokeDasharray="3 2" />
+            </svg>
           </div>
 
-          {/* ----- LABEL 2: DRONE-B / INDUSTRIAL OCTOCOPTER (CENTER - UPPER LEFT OF DRONE) ----- */}
+          {/* ----- LABEL 2: DRONE-B / INDUSTRIAL OCTOCOPTER (CENTER - HOVERING CLEARLY OVER DRONE) ----- */}
           <div
             onClick={() => onLaunchStudio("drone-b")}
             onMouseEnter={() => setHoveredMachine("drone-b")}
             onMouseLeave={() => setHoveredMachine(null)}
-            className={`absolute left-[12%] sm:left-[30%] lg:left-[34%] top-[39%] md:top-[38%] text-left pointer-events-auto cursor-pointer transition-all duration-300 ${
+            className={`absolute left-1/2 -translate-x-1/2 top-[41%] sm:top-[40%] md:top-[41%] text-center pointer-events-auto cursor-pointer transition-all duration-300 flex flex-col items-center ${
               hoveredMachine === "drone-b" ? "scale-105" : "opacity-90 hover:opacity-100"
             }`}
           >
-            {/* Title & Leader Line pointing down-right to Drone's left motor/arm */}
-            <div className="relative pb-0.5">
-              <span className="text-[9px] sm:text-xs font-mono-tech tracking-[0.12em] sm:tracking-[0.18em] text-white font-medium uppercase drop-shadow-sm whitespace-nowrap">
+            {/* High-contrast CAD pill */}
+            <div className="bg-[#0b0f19]/90 border border-slate-700/80 hover:border-orange-500/80 shadow-[0_10px_30px_rgba(0,0,0,0.8)] backdrop-blur-md px-3.5 py-1.5 rounded-full flex items-center gap-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#FF6A1A] animate-pulse shadow-[0_0_8px_#ff6a1a]" />
+              <span className="text-[10px] sm:text-xs font-mono-tech tracking-[0.16em] sm:tracking-[0.2em] text-white font-bold uppercase drop-shadow-sm whitespace-nowrap">
                 DRONE-B / INDUSTRIAL OCTOCOPTER
               </span>
-              <svg
-                width="120"
-                height="34"
-                viewBox="0 0 140 38"
-                fill="none"
-                className={`transition-colors duration-200 mt-0.5 ${
-                  hoveredMachine === "drone-b" ? "stroke-[#FF6A1A]" : "stroke-white/40"
-                }`}
-              >
-                <path d="M0 1H95L132 36" strokeWidth="1" strokeDasharray="3 2" />
-              </svg>
             </div>
-          </div>
 
-          {/* ----- LABEL 2B: DRONE-B SPECS (CENTER - UPPER RIGHT OF DRONE) ----- */}
-          <div
-            onClick={() => onLaunchStudio("drone-b")}
-            onMouseEnter={() => setHoveredMachine("drone-b")}
-            onMouseLeave={() => setHoveredMachine(null)}
-            className={`absolute left-[56%] sm:left-[58%] lg:left-[60%] top-[39%] md:top-[38%] text-left pointer-events-auto cursor-pointer transition-all duration-300 hidden sm:block ${
-              hoveredMachine === "drone-b" ? "scale-105" : "opacity-90 hover:opacity-100"
-            }`}
-          >
-            <div className="space-y-0.5 text-[9px] sm:text-[10px] font-mono-tech tracking-wider text-[#94A3B8] uppercase">
-              <div className="hover:text-white transition-colors">400Hz SIMULATION</div>
-              <div className="hover:text-white transition-colors">ESP32 CONTROL</div>
+            {/* Sub-specs badge */}
+            <div className="hidden sm:flex items-center gap-2 mt-1 text-[8px] sm:text-[9px] font-mono-tech tracking-widest text-slate-400 uppercase">
+              <span className="bg-[#121826]/80 px-2 py-0.5 rounded border border-slate-800 text-slate-300">400Hz DYNAMICS</span>
+              <span className="text-slate-600">•</span>
+              <span className="bg-[#121826]/80 px-2 py-0.5 rounded border border-slate-800 text-slate-300">ESP32 FUSION</span>
             </div>
+
+            {/* Vertical leader line dropping down towards drone */}
+            <svg
+              width="2"
+              height="26"
+              viewBox="0 0 2 26"
+              fill="none"
+              className={`mt-1 transition-colors duration-200 ${
+                hoveredMachine === "drone-b" ? "stroke-[#FF6A1A]" : "stroke-white/40"
+              }`}
+            >
+              <line x1="1" y1="0" x2="1" y2="26" strokeWidth="1.5" strokeDasharray="3 2" />
+            </svg>
           </div>
 
           {/* ----- LABEL 3: TJ-01 WALKING MECHANISM (RIGHT) ----- */}
@@ -420,33 +417,36 @@ export default function HeroScene({ onLaunchStudio, onOpenAR }: HeroSceneProps) 
             onClick={() => onLaunchStudio("walking-robot")}
             onMouseEnter={() => setHoveredMachine("walking-robot")}
             onMouseLeave={() => setHoveredMachine(null)}
-            className={`absolute right-[2%] sm:right-[5%] lg:right-[7%] top-[43%] md:top-[42%] text-right pointer-events-auto cursor-pointer transition-all duration-300 ${
+            className={`absolute right-[3%] sm:right-[6%] lg:right-[8%] top-[51%] md:top-[50%] text-right pointer-events-auto cursor-pointer transition-all duration-300 flex flex-col items-end ${
               hoveredMachine === "walking-robot" ? "scale-105" : "opacity-90 hover:opacity-100"
             }`}
           >
-            {/* Title & Leader Line extending left and down toward walker linkage */}
-            <div className="relative pb-1">
-              <span className="text-[9px] sm:text-xs font-mono-tech tracking-[0.12em] sm:tracking-[0.16em] text-white font-medium uppercase drop-shadow-sm">
-                TJ-01 / WALKING MECHANISM
-              </span>
-              <svg
-                width="110"
-                height="38"
-                viewBox="0 0 130 42"
-                fill="none"
-                className={`ml-auto transition-colors duration-200 mt-0.5 ${
-                  hoveredMachine === "walking-robot" ? "stroke-[#FF6A1A]" : "stroke-white/40"
-                }`}
-              >
-                <path d="M130 1H45L10 40" strokeWidth="1" strokeDasharray="3 2" />
-              </svg>
+            {/* High-contrast CAD Card */}
+            <div className="bg-[#0b0f19]/90 border border-slate-700/80 hover:border-orange-500/80 shadow-[0_10px_30px_rgba(0,0,0,0.8)] backdrop-blur-md px-3 py-1.5 rounded-xl inline-flex flex-col gap-0.5 items-end">
+              <div className="flex items-center gap-1.5">
+                <span className="text-[10px] sm:text-xs font-mono-tech tracking-[0.14em] text-white font-bold uppercase drop-shadow-sm whitespace-nowrap">
+                  TJ-01 / WALKING MECHANISM
+                </span>
+                <span className="w-1.5 h-1.5 rounded-full bg-cyan-400" />
+              </div>
+              <div className="hidden sm:flex items-center gap-1.5 text-[8px] sm:text-[9px] font-mono-tech tracking-wider text-slate-400 uppercase">
+                <span>LINKAGE DRIVE</span>
+                <span className="text-slate-600">•</span>
+                <span>LOW POWER</span>
+              </div>
             </div>
-
-            {/* Technical Sub-Specs */}
-            <div className="hidden sm:block space-y-0.5 text-[9px] sm:text-[10px] font-mono-tech tracking-wider text-[#94A3B8] uppercase">
-              <div className="hover:text-white transition-colors">LINKAGE DRIVE</div>
-              <div className="hover:text-white transition-colors">LOW POWER</div>
-            </div>
+            {/* Leader Line extending left and down toward walker linkage */}
+            <svg
+              width="100"
+              height="30"
+              viewBox="0 0 100 30"
+              fill="none"
+              className={`ml-auto transition-colors duration-200 mt-1 ${
+                hoveredMachine === "walking-robot" ? "stroke-[#FF6A1A]" : "stroke-white/40"
+              }`}
+            >
+              <path d="M100 1H35L5 28" strokeWidth="1.5" strokeDasharray="3 2" />
+            </svg>
           </div>
 
         </div>

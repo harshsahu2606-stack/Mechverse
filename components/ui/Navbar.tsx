@@ -220,25 +220,34 @@ export default function Navbar({
             />
           </button>
 
-          {/* ================= CONSOLIDATED PROJECTS DROPDOWN MENU ================= */}
+          {/* ================= CONSOLIDATED PROJECTS DROPDOWN MENU (100% OPAQUE SOLID HIGH-CONTRAST) ================= */}
           {isProjectsOpen && (
             <div
-              className={`absolute left-0 mt-2 w-72 sm:w-80 rounded-2xl border shadow-2xl backdrop-blur-2xl p-2 z-50 animate-in fade-in slide-in-from-top-2 duration-150 ${
+              className={`absolute left-0 mt-2 w-80 sm:w-96 rounded-2xl border p-2.5 z-[9999] animate-in fade-in slide-in-from-top-2 duration-150 ${
                 isLight
-                  ? "bg-white/95 border-gray-200 shadow-gray-400/20"
-                  : "bg-[#0b0e17]/95 border-white/15 shadow-black/80"
+                  ? "bg-white border-slate-300 shadow-[0_25px_60px_rgba(0,0,0,0.2)] text-slate-900"
+                  : "bg-[#0d111a] border-slate-700 shadow-[0_30px_70px_rgba(0,0,0,0.95)] text-white"
               }`}
             >
-              <div className="px-2.5 py-1.5 flex items-center justify-between border-b border-white/10 mb-1">
-                <span className="text-[10px] font-mono uppercase tracking-wider text-gray-400 flex items-center gap-1.5 font-bold">
-                  <Layers size={12} className="text-orange-400" />
-                  Project Library (8 Machines)
+              {/* Dropdown Header */}
+              <div
+                className={`px-3 py-2 rounded-xl border mb-2 flex items-center justify-between ${
+                  isLight ? "bg-slate-100 border-slate-200" : "bg-[#070911] border-white/10"
+                }`}
+              >
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                  <span className="text-[10px] font-mono uppercase tracking-wider font-bold text-gray-400">
+                    Project Library (8 Machines)
+                  </span>
+                </div>
+                <span className="text-[10px] font-mono text-orange-400 font-bold bg-orange-500/10 px-2 py-0.5 rounded border border-orange-500/20">
+                  Select Model
                 </span>
-                <span className="text-[10px] font-mono text-orange-400 font-semibold">Active Studio</span>
               </div>
 
               {/* Machine Items List */}
-              <div className="max-h-[340px] overflow-y-auto custom-scrollbar space-y-1 py-1">
+              <div className="max-h-[380px] overflow-y-auto custom-scrollbar space-y-1.5 py-1 pr-0.5">
                 {PROJECT_LIBRARY.map((item) => {
                   const ItemIcon = item.icon;
                   const isSelected = selectedMachineId === item.id;
@@ -250,39 +259,62 @@ export default function Navbar({
                         onSelectMachine(item.id);
                         setIsProjectsOpen(false);
                       }}
-                      className={`w-full flex items-center justify-between p-2 rounded-xl transition text-left cursor-pointer group ${
+                      className={`w-full flex items-center justify-between p-2.5 rounded-xl transition text-left cursor-pointer group border ${
                         isSelected
-                          ? "bg-orange-500/15 border border-orange-500/40 text-white"
+                          ? isLight
+                            ? "bg-orange-50 border-orange-500 text-slate-950 shadow-sm"
+                            : "bg-[#251b14] border-orange-500 text-white shadow-lg shadow-orange-500/10"
                           : isLight
-                          ? "hover:bg-gray-100 text-gray-700"
-                          : "hover:bg-white/5 text-gray-300"
+                          ? "bg-slate-50 hover:bg-slate-100/90 border-slate-200 text-slate-800"
+                          : "bg-[#151926] hover:bg-[#1e2538] border-slate-800 hover:border-orange-500/40 text-slate-100"
                       }`}
                     >
-                      <div className="flex items-center gap-2.5 min-w-0">
+                      <div className="flex items-center gap-3 min-w-0">
                         <div
-                          className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 transition ${
+                          className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 transition ${
                             isSelected
                               ? "bg-orange-500 text-black shadow-md shadow-orange-500/30"
-                              : "bg-white/5 text-gray-400 group-hover:text-white group-hover:bg-white/10"
+                              : isLight
+                              ? "bg-white text-slate-700 border border-slate-200"
+                              : "bg-[#0b0e17] text-slate-200 border border-slate-700 group-hover:border-orange-500/40"
                           }`}
                         >
-                          <ItemIcon size={14} />
+                          <ItemIcon size={16} />
                         </div>
-                        <div className="min-w-0">
+                        <div className="min-w-0 space-y-0.5">
                           <div className="flex items-center gap-1.5">
-                            <span className="text-xs font-bold truncate block">{item.name}</span>
-                            <span className="text-[9px] font-mono px-1 rounded bg-black/40 text-orange-300 border border-white/10 shrink-0">
+                            <span className="text-xs font-bold truncate block text-white group-hover:text-orange-400 transition">
+                              {item.name}
+                            </span>
+                            <span
+                              className={`text-[9px] font-mono font-bold px-1.5 py-0.2 rounded border shrink-0 ${
+                                isLight
+                                  ? "bg-amber-100 text-amber-800 border-amber-300"
+                                  : "bg-black/70 text-amber-300 border-amber-500/30"
+                              }`}
+                            >
                               {item.badge}
                             </span>
                           </div>
-                          <span className="text-[10px] text-gray-500 block truncate">
+                          <span
+                            className={`text-[10px] block truncate font-medium ${
+                              isLight ? "text-slate-600" : "text-slate-300"
+                            }`}
+                          >
                             {item.category}
                           </span>
                         </div>
                       </div>
 
-                      {isSelected && (
-                        <Check size={14} className="text-orange-400 shrink-0 ml-1.5" />
+                      {isSelected ? (
+                        <div className="w-5 h-5 rounded-full bg-orange-500/20 border border-orange-500 flex items-center justify-center shrink-0 ml-1.5">
+                          <Check size={12} className="text-orange-400 stroke-[3]" />
+                        </div>
+                      ) : (
+                        <ChevronDown
+                          size={13}
+                          className="text-gray-500 opacity-0 group-hover:opacity-100 -rotate-90 transition shrink-0 ml-1.5"
+                        />
                       )}
                     </button>
                   );
@@ -290,19 +322,23 @@ export default function Navbar({
               </div>
 
               {/* Secondary Navigation Footer within Library Dropdown */}
-              <div className="pt-2 mt-1 border-t border-white/10 grid grid-cols-2 gap-1.5">
+              <div
+                className={`pt-2.5 mt-2 border-t grid grid-cols-2 gap-2 ${
+                  isLight ? "border-slate-200" : "border-white/10"
+                }`}
+              >
                 <button
                   onClick={() => {
                     setCurrentTab("home");
                     setIsProjectsOpen(false);
                   }}
-                  className={`px-2.5 py-1.5 rounded-lg text-xs font-medium flex items-center justify-center gap-1.5 transition cursor-pointer ${
+                  className={`px-3 py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition cursor-pointer border ${
                     isLight
-                      ? "bg-gray-100 hover:bg-gray-200 text-gray-800"
-                      : "bg-white/5 hover:bg-white/10 text-gray-300 hover:text-white"
+                      ? "bg-slate-100 hover:bg-slate-200 text-slate-800 border-slate-200"
+                      : "bg-[#151926] hover:bg-[#1e2538] text-slate-200 hover:text-white border-slate-800"
                   }`}
                 >
-                  <Grid size={12} />
+                  <Grid size={13} className="text-orange-400" />
                   <span>Full Catalog</span>
                 </button>
 
@@ -311,13 +347,13 @@ export default function Navbar({
                     onOpenSavedDesigns();
                     setIsProjectsOpen(false);
                   }}
-                  className={`px-2.5 py-1.5 rounded-lg text-xs font-medium flex items-center justify-center gap-1.5 transition cursor-pointer ${
+                  className={`px-3 py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition cursor-pointer border ${
                     isLight
-                      ? "bg-gray-100 hover:bg-gray-200 text-gray-800"
-                      : "bg-white/5 hover:bg-white/10 text-gray-300 hover:text-white"
+                      ? "bg-slate-100 hover:bg-slate-200 text-slate-800 border-slate-200"
+                      : "bg-[#151926] hover:bg-[#1e2538] text-slate-200 hover:text-white border-slate-800"
                   }`}
                 >
-                  <Bookmark size={12} />
+                  <Bookmark size={13} className="text-orange-400" />
                   <span>Saved ({savedCount})</span>
                 </button>
               </div>
