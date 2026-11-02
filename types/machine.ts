@@ -220,6 +220,7 @@ export interface CustomizationSettings {
   // ESP32 Phone-Controlled Micro Drone Configuration
   esp32DroneFrameColor?: string;
   esp32DronePropsColor?: string;
+  esp32DroneRearPropsColor?: string;
   // ROBO-RACER AI Vision Bot Configuration
   roboRacerChassisColor?: string;
   roboRacerAccentColor?: string;

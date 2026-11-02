@@ -135,6 +135,8 @@ export default function WalkingRobotModel({
       chassisColor = "#dc2626";
       chassisRoughness = 0.4;
       chassisMetalness = 0.2;
+    } else if (customization.paintColor) {
+      chassisColor = customization.paintColor;
     }
 
     // Leg material selection

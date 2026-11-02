@@ -95,6 +95,39 @@ export default function RobotConfigPanel({
               );
             })}
           </div>
+
+          {/* Acrylic Tint Color Swatches */}
+          {customization.robotChassisMaterial === "acrylic" && (
+            <div className="pt-2 border-t border-white/10 space-y-1.5">
+              <span className="text-[10px] font-mono text-gray-400 block">Acrylic Chassis Tint:</span>
+              <div className="grid grid-cols-6 gap-1.5">
+                {[
+                  { name: "Cyan Teal", val: "#0284c7" },
+                  { name: "Neon Lime", val: "#84cc16" },
+                  { name: "Laser Red", val: "#dc2626" },
+                  { name: "Sunset Orange", val: "#f97316" },
+                  { name: "Dark Smoke", val: "#1e293b" },
+                  { name: "Crystal White", val: "#f8fafc" },
+                ].map((col) => (
+                  <button
+                    key={col.val}
+                    title={col.name}
+                    onClick={() => onChangeCustomization({ ...customization, paintColor: col.val })}
+                    style={{ backgroundColor: col.val }}
+                    className={`h-6 rounded-lg border transition cursor-pointer flex items-center justify-center ${
+                      (customization.paintColor || "#0284c7") === col.val
+                        ? "border-white scale-110 shadow-sm shadow-white/30"
+                        : "border-white/20"
+                    }`}
+                  >
+                    {(customization.paintColor || "#0284c7") === col.val && (
+                      <Check size={12} className={col.val === "#f8fafc" || col.val === "#84cc16" ? "text-black" : "text-white"} />
+                    )}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
         </section>
 
         {/* 2. Leg Linkage Material */}

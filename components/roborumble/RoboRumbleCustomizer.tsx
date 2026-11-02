@@ -13,6 +13,8 @@ import {
   BookmarkPlus,
   RefreshCw,
   Coins,
+  Palette,
+  Check,
 } from "lucide-react";
 import { BattleCarId, CustomizationSettings } from "@/types/machine";
 import { BATTLE_CARS_SPEC } from "@/data/roboRumbleData";
@@ -200,6 +202,37 @@ export default function RoboRumbleCustomizer({
                 <div className="text-[10px] opacity-75">{v.desc}</div>
               </button>
             ))}
+          </div>
+
+          {/* Body Armor Paint Color Swatches */}
+          <div className="pt-3 border-t border-white/10 space-y-2">
+            <span className="text-xs font-mono font-semibold text-gray-400 block">Armor Paint Coating:</span>
+            <div className="grid grid-cols-6 gap-1.5">
+              {[
+                { name: "Striker Orange", val: "#f97316" },
+                { name: "Titan Crimson", val: "#dc2626" },
+                { name: "Viper Blue", val: "#2563eb" },
+                { name: "Cyber Yellow", val: "#eab308" },
+                { name: "Toxic Lime", val: "#84cc16" },
+                { name: "Stealth Black", val: "#18181b" },
+              ].map((c) => (
+                <button
+                  key={c.val}
+                  title={c.name}
+                  onClick={() => handleUpdate({ paintColor: c.val })}
+                  style={{ backgroundColor: c.val }}
+                  className={`h-7 rounded-lg border transition cursor-pointer flex items-center justify-center ${
+                    (customization.paintColor || "#f97316") === c.val
+                      ? "border-white scale-110 shadow-sm shadow-white/30"
+                      : "border-white/20 hover:border-white/50"
+                  }`}
+                >
+                  {(customization.paintColor || "#f97316") === c.val && (
+                    <Check size={13} className={c.val === "#eab308" || c.val === "#84cc16" ? "text-black" : "text-white"} />
+                  )}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
 

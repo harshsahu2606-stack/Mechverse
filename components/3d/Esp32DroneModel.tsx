@@ -40,9 +40,9 @@ export default function Esp32DroneModel({
   const armOffset = 0.0336;
 
   // Materials & Colors
-  const frameColor = customization?.esp32DroneFrameColor || "#1e293b"; // Dark Polycarbonate
-  const frontPropColor = customization?.esp32DronePropsColor || "#ef4444"; // Red Front Props
-  const rearPropColor = "#0f172a"; // Black Rear Props
+  const frameColor = customization?.esp32DroneFrameColor || customization?.paintColor || "#1e293b"; // Frame & Guards
+  const frontPropColor = customization?.esp32DronePropsColor || "#ef4444"; // Front Props
+  const rearPropColor = customization?.esp32DroneRearPropsColor || "#0f172a"; // Rear Props
 
   const materials = useMemo(() => {
     return {

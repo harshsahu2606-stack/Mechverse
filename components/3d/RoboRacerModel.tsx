@@ -53,12 +53,16 @@ export default function RoboRacerModel({
   const bodyColor = customization?.roboRacerChassisColor || customization?.paintColor || "#17171c";
   const accentColor = customization?.roboRacerAccentColor || "#ca8a04"; // Amber / Golden brackets
 
+  const finish = customization?.finish || "metallic";
+  const finishRoughness = finish === "matte" ? 0.85 : finish === "metallic" ? 0.2 : 0.45;
+  const finishMetalness = finish === "metallic" ? 0.85 : finish === "matte" ? 0.1 : 0.4;
+
   const materials = useMemo(() => {
     return {
       chassisBody: new THREE.MeshStandardMaterial({
         color: bodyColor,
-        roughness: 0.45,
-        metalness: 0.4,
+        roughness: finishRoughness,
+        metalness: finishMetalness,
       }),
       chassisMatte: new THREE.MeshStandardMaterial({
         color: "#18181b",
@@ -71,7 +75,7 @@ export default function RoboRacerModel({
         metalness: 0.1,
       }),
       bracketGold: new THREE.MeshStandardMaterial({
-        color: "#ca8a04", // Golden / Brass anodized metal
+        color: accentColor, // Golden / Brass anodized metal
         roughness: 0.25,
         metalness: 0.85,
       }),
@@ -171,9 +175,9 @@ export default function RoboRacerModel({
         metalness: 0.1,
       }),
       hoodAcrylic: new THREE.MeshStandardMaterial({
-        color: "#18181b",
-        roughness: 0.3,
-        metalness: 0.5,
+        color: bodyColor,
+        roughness: finishRoughness,
+        metalness: finishMetalness,
         transparent: true,
         opacity: 0.95,
       }),
@@ -182,7 +186,7 @@ export default function RoboRacerModel({
         wireframe: true,
       }),
     };
-  }, [bodyColor, accentColor]);
+  }, [bodyColor, accentColor, finishRoughness, finishMetalness]);
 
   // Dynamic animation loop: wheel rotation, steering pivot, and camera pan
   useFrame((_, delta) => {

@@ -164,6 +164,18 @@ const DEFAULT_CUSTOMIZATION: CustomizationSettings = {
   droneCamera: "runcam-split-hd",
   droneLandingGear: "tall-arched",
   dronePropGuards: false,
+  // Drone B (Industrial Octagonal UAV)
+  droneBChassisColor: "#475569",
+  droneBArmColor: "#334155",
+  droneBMotorColor: "#1e293b",
+  droneBPropellerColor: "#0f172a",
+  // ESP32 Micro Drone
+  esp32DroneFrameColor: "#1e293b",
+  esp32DronePropsColor: "#ef4444",
+  esp32DroneRearPropsColor: "#0f172a",
+  // ROBO-RACER Rover
+  roboRacerChassisColor: "#17171c",
+  roboRacerAccentColor: "#ca8a04",
 };
 
 const DEFAULT_FAN_SIMULATION: FanSimulationState = {
