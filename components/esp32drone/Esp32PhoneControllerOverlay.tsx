@@ -32,6 +32,7 @@ import {
 } from "lucide-react";
 import { AppTheme, Esp32DroneNavTab } from "@/types/machine";
 import { ESP32_DRONE_SHOPPING_LIST } from "@/data/esp32DroneData";
+import BuyLinkButtons from "@/components/ui/BuyLinkButtons";
 
 interface Esp32PhoneControllerOverlayProps {
   theme?: AppTheme;
@@ -47,6 +48,7 @@ interface Esp32PhoneControllerOverlayProps {
   explosionLevel?: number;
   onChangeExplosionLevel?: (level: number) => void;
   onResetCamera?: () => void;
+  hideNavHeader?: boolean;
 }
 
 export default function Esp32PhoneControllerOverlay({
@@ -63,6 +65,7 @@ export default function Esp32PhoneControllerOverlay({
   explosionLevel = 0,
   onChangeExplosionLevel,
   onResetCamera,
+  hideNavHeader = false,
 }: Esp32PhoneControllerOverlayProps) {
   const isLight = theme === "light";
   const [batteryVoltage, setBatteryVoltage] = useState<number>(3.84);
@@ -121,63 +124,142 @@ export default function Esp32PhoneControllerOverlay({
         activeTab === "simulator" ? "pointer-events-none" : "pointer-events-auto"
       }`}
     >
-      {/* ================= WORKSHOP NAVIGATION TAB BAR ================= */}
-      <div
-        className={`w-full border-b px-4 py-2.5 flex items-center justify-between gap-3 overflow-x-auto custom-scrollbar backdrop-blur-md pointer-events-auto z-40 ${
-          isLight ? "bg-white/95 border-gray-200 shadow-sm" : "bg-[#090b10]/95 border-white/10"
-        }`}
-      >
-        <div className="flex items-center gap-2">
-          <div className="p-1.5 rounded-lg bg-indigo-500/10 border border-indigo-500/30 text-indigo-500">
-            <Smartphone size={16} />
-          </div>
-          <div>
-            <div className="flex items-center gap-1.5">
-              <span className={`text-xs font-black tracking-wider ${isLight ? "text-gray-900" : "text-white"}`}>
-                AERO-ESP NANO DRONE
-              </span>
-              <span className="text-[9px] font-mono px-1.5 py-0.2 rounded bg-indigo-500/20 text-indigo-400 font-bold">
-                ₹1,955 INR
-              </span>
+      {/* ================= WORKSHOP NAVIGATION TAB BAR (Suppressed when UniversalWorkshopNav is active) ================= */}
+      {!hideNavHeader && (
+        <>
+          <div
+            className={`w-full border-b px-4 py-2.5 flex items-center justify-between gap-3 overflow-x-auto custom-scrollbar backdrop-blur-md pointer-events-auto z-40 ${
+              isLight ? "bg-white/95 border-gray-200 shadow-sm" : "bg-[#090b10]/95 border-white/10"
+            }`}
+          >
+            <div className="flex items-center gap-2">
+              <div className="p-1.5 rounded-lg bg-indigo-500/10 border border-indigo-500/30 text-indigo-500">
+                <Smartphone size={16} />
+              </div>
+              <div>
+                <div className="flex items-center gap-1.5">
+                  <span className={`text-xs font-black tracking-wider ${isLight ? "text-gray-900" : "text-white"}`}>
+                    AERO-ESP NANO DRONE
+                  </span>
+                  <span className="text-[9px] font-mono px-1.5 py-0.2 rounded bg-indigo-500/20 text-indigo-400 font-bold">
+                    ₹1,955 INR
+                  </span>
+                </div>
+                <p className="text-[8px] uppercase tracking-widest text-gray-400 font-mono">
+                  Phone Wi-Fi SoftAP Quadcopter
+                </p>
+              </div>
             </div>
-            <p className="text-[8px] uppercase tracking-widest text-gray-400 font-mono">
-              Phone Wi-Fi SoftAP Quadcopter
-            </p>
-          </div>
-        </div>
 
-        {/* Navigation Tabs */}
-        <div className="flex items-center gap-1.5 shrink-0">
-          {[
-            { id: "simulator", label: "3D CAD & Flight HUD", icon: Smartphone },
-            { id: "how-it-works", label: "Architecture", icon: Cpu },
-            { id: "build-guide", label: "Step-by-Step Build", icon: BookOpen },
-            { id: "schematic", label: "Schematic & Wiring", icon: Zap },
-            { id: "firmware", label: "Arduino Firmware", icon: FileCode },
-            { id: "bom", label: "₹1,955 Shopping List", icon: ShoppingBag },
-            { id: "dgca-rules", label: "DGCA Nano Rules (<250g)", icon: ShieldAlert },
-          ].map((tab) => {
-            const Icon = tab.icon;
-            const isActive = activeTab === tab.id;
-            return (
+            {/* Navigation Tabs - 5 Clean Pillars with Sub-Segments */}
+            <div className="flex items-center gap-1 sm:gap-1.5 overflow-x-auto no-scrollbar py-0.5">
+              {[
+                {
+                  id: "simulator" as Esp32DroneNavTab,
+                  label: "3D CAD & Flight HUD",
+                  icon: Smartphone,
+                  isActive: activeTab === "simulator",
+                },
+                {
+                  id: "how-it-works" as Esp32DroneNavTab,
+                  label: "Architecture & Specs",
+                  icon: Cpu,
+                  isActive: activeTab === "how-it-works" || activeTab === "dgca-rules",
+                },
+                {
+                  id: "schematic" as Esp32DroneNavTab,
+                  label: "Schematic & Wiring",
+                  icon: Zap,
+                  isActive: activeTab === "schematic",
+                },
+                {
+                  id: "bom" as Esp32DroneNavTab,
+                  label: "Indian BOM (₹)",
+                  icon: ShoppingBag,
+                  isActive: activeTab === "bom",
+                },
+                {
+                  id: "build-guide" as Esp32DroneNavTab,
+                  label: "Build & Firmware",
+                  icon: BookOpen,
+                  isActive: activeTab === "build-guide" || activeTab === "firmware",
+                },
+              ].map((tab) => {
+                const Icon = tab.icon;
+                return (
+                  <button
+                    key={tab.id}
+                    onClick={() => onChangeTab(tab.id)}
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition cursor-pointer shrink-0 ${
+                      tab.isActive
+                        ? "bg-gradient-to-r from-amber-600 to-orange-600 text-white shadow-md shadow-amber-600/30 border border-amber-400/30"
+                        : isLight
+                        ? "bg-gray-100 hover:bg-gray-200 text-gray-700 border border-gray-200"
+                        : "bg-white/5 hover:bg-white/10 text-gray-300 border border-white/10"
+                    }`}
+                  >
+                    <Icon size={13} className={tab.isActive ? "text-white" : "text-amber-400"} />
+                    <span>{tab.label}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Sub-Tabs for Deep Content */}
+          {(activeTab === "how-it-works" || activeTab === "dgca-rules") && (
+            <div className="w-full border-b px-4 py-1.5 bg-black/40 border-white/5 flex items-center gap-2 pointer-events-auto">
+              <span className="text-[10px] font-mono text-gray-500 uppercase">Sections:</span>
               <button
-                key={tab.id}
-                onClick={() => onChangeTab(tab.id as Esp32DroneNavTab)}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition ${
-                  isActive
-                    ? "bg-indigo-600 text-white shadow-md shadow-indigo-600/30"
-                    : isLight
-                    ? "bg-gray-100 hover:bg-gray-200 text-gray-700"
-                    : "bg-white/5 hover:bg-white/10 text-gray-300"
+                onClick={() => onChangeTab("how-it-works")}
+                className={`px-2.5 py-1 rounded-lg text-xs font-semibold cursor-pointer ${
+                  activeTab === "how-it-works"
+                    ? "bg-amber-500/20 text-amber-300 border border-amber-500/40"
+                    : "text-gray-400 hover:text-white"
                 }`}
               >
-                <Icon size={13} className={isActive ? "text-white" : "text-indigo-400"} />
-                <span>{tab.label}</span>
+                Signal Flow & PID Loop
               </button>
-            );
-          })}
-        </div>
-      </div>
+              <button
+                onClick={() => onChangeTab("dgca-rules")}
+                className={`px-2.5 py-1 rounded-lg text-xs font-semibold cursor-pointer ${
+                  activeTab === "dgca-rules"
+                    ? "bg-amber-500/20 text-amber-300 border border-amber-500/40"
+                    : "text-gray-400 hover:text-white"
+                }`}
+              >
+                DGCA Nano Drone Rules (&lt;250g)
+              </button>
+            </div>
+          )}
+
+          {(activeTab === "build-guide" || activeTab === "firmware") && (
+            <div className="w-full border-b px-4 py-1.5 bg-black/40 border-white/5 flex items-center gap-2 pointer-events-auto">
+              <span className="text-[10px] font-mono text-gray-500 uppercase">Sections:</span>
+              <button
+                onClick={() => onChangeTab("build-guide")}
+                className={`px-2.5 py-1 rounded-lg text-xs font-semibold cursor-pointer ${
+                  activeTab === "build-guide"
+                    ? "bg-amber-500/20 text-amber-300 border border-amber-500/40"
+                    : "text-gray-400 hover:text-white"
+                }`}
+              >
+                Step-by-Step Build Guide
+              </button>
+              <button
+                onClick={() => onChangeTab("firmware")}
+                className={`px-2.5 py-1 rounded-lg text-xs font-semibold cursor-pointer ${
+                  activeTab === "firmware"
+                    ? "bg-amber-500/20 text-amber-300 border border-amber-500/40"
+                    : "text-gray-400 hover:text-white"
+                }`}
+              >
+                Arduino Production Firmware (SoftAP UDP)
+              </button>
+            </div>
+          )}
+        </>
+      )}
 
       {/* ================= TAB 1: 3D CAD & FLIGHT SIMULATOR HUD ================= */}
       {activeTab === "simulator" && (
@@ -234,186 +316,6 @@ export default function Esp32PhoneControllerOverlay({
             </div>
           </div>
 
-          {/* ================= FLOATING ASSEMBLE & EXPLODE CONTROLS ================= */}
-          {onChangeExplosionLevel && (
-            <div className="absolute top-20 right-4 sm:right-6 z-30 pointer-events-auto">
-              <div
-                className={`p-3 rounded-2xl border backdrop-blur-xl shadow-2xl flex flex-col gap-2.5 w-64 ${
-                  isLight
-                    ? "bg-white/95 border-gray-200 text-gray-800"
-                    : "bg-[#0e121a]/95 border-white/15 text-white"
-                }`}
-              >
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-1.5 text-xs font-bold">
-                    <Layers size={14} className="text-indigo-400" />
-                    <span>Assemble &amp; Explode</span>
-                  </div>
-                  <span className="text-xs font-mono font-black text-indigo-400">
-                    {Math.round(explosionLevel * 100)}%
-                  </span>
-                </div>
-
-                {/* Explosion Level Slider */}
-                <input
-                  type="range"
-                  min="0"
-                  max="1"
-                  step="0.01"
-                  value={explosionLevel}
-                  onChange={(e) => onChangeExplosionLevel(parseFloat(e.target.value))}
-                  className="w-full accent-indigo-500 h-1.5 bg-white/20 rounded-lg cursor-pointer"
-                />
-
-                {/* Quick Preset Buttons */}
-                <div className="grid grid-cols-3 gap-1.5">
-                  <button
-                    onClick={() => onChangeExplosionLevel(0)}
-                    className={`py-1 rounded-lg text-[10px] font-mono font-bold transition border ${
-                      explosionLevel === 0
-                        ? "bg-indigo-600 text-white border-indigo-500 shadow"
-                        : "bg-white/5 border-white/10 text-gray-400 hover:text-white"
-                    }`}
-                  >
-                    Assemble (0%)
-                  </button>
-                  <button
-                    onClick={() => onChangeExplosionLevel(0.5)}
-                    className={`py-1 rounded-lg text-[10px] font-mono font-bold transition border ${
-                      Math.abs(explosionLevel - 0.5) < 0.05
-                        ? "bg-indigo-600 text-white border-indigo-500 shadow"
-                        : "bg-white/5 border-white/10 text-gray-400 hover:text-white"
-                    }`}
-                  >
-                    50%
-                  </button>
-                  <button
-                    onClick={() => onChangeExplosionLevel(1.0)}
-                    className={`py-1 rounded-lg text-[10px] font-mono font-bold transition border ${
-                      explosionLevel === 1.0
-                        ? "bg-indigo-600 text-white border-indigo-500 shadow"
-                        : "bg-white/5 border-white/10 text-gray-400 hover:text-white"
-                    }`}
-                  >
-                    Explode (100%)
-                  </button>
-                </div>
-
-                {/* Mouse Navigation Instructions */}
-                <div className="pt-2 border-t border-white/10 flex flex-col gap-1 text-[10px] font-mono text-gray-400">
-                  <div className="flex items-center gap-1.5">
-                    <MousePointer size={11} className="text-indigo-400 shrink-0" />
-                    <span>Left Drag: Orbit 360°</span>
-                  </div>
-                  <div className="flex items-center gap-1.5">
-                    <ZoomIn size={11} className="text-indigo-400 shrink-0" />
-                    <span>Scroll Wheel: Zoom in close (3cm)</span>
-                  </div>
-                  {onResetCamera && (
-                    <button
-                      onClick={onResetCamera}
-                      className="mt-1 flex items-center justify-center gap-1 py-1 rounded bg-white/5 hover:bg-white/10 text-gray-300 text-[10px] transition"
-                    >
-                      <RotateCcw size={10} />
-                      <span>Reset Camera View</span>
-                    </button>
-                  )}
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* ================= VIRTUAL FLIGHT CONTROLS (IF ACTIVE) ================= */}
-          {showFlightJoysticks && (
-            <>
-              {/* Left Virtual Joystick: Throttle & Yaw */}
-              <div className="absolute bottom-6 left-6 z-30 pointer-events-auto flex flex-col items-center gap-2">
-                <div
-                  className={`w-36 h-36 rounded-full border-2 relative flex items-center justify-center backdrop-blur-xl shadow-2xl ${
-                    isLight
-                      ? "bg-white/80 border-gray-300 shadow-gray-300/50"
-                      : "bg-black/70 border-white/20 shadow-black/80"
-                  }`}
-                >
-                  {/* Virtual Stick Knob */}
-                  <div
-                    className="w-12 h-12 rounded-full bg-gradient-to-br from-indigo-500 to-indigo-700 shadow-lg flex items-center justify-center text-white text-[10px] font-mono font-bold transition-transform"
-                    style={{
-                      transform: `translate(${(yaw / 180) * 45}px, -${((throttle - 1500) / 500) * 45}px)`,
-                    }}
-                  >
-                    <span>{Math.round(((throttle - 1000) / 1000) * 100)}%</span>
-                  </div>
-                  {/* Axis Crosshairs */}
-                  <div className="absolute inset-x-0 h-px bg-white/10" />
-                  <div className="absolute inset-y-0 w-px bg-white/10" />
-                </div>
-                <div className="text-[10px] font-mono font-bold uppercase tracking-wider text-gray-400">
-                  Throttle / Yaw (W/S/A/D)
-                </div>
-              </div>
-
-              {/* Center Artificial Horizon & Attitude Telemetry */}
-              <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-30 pointer-events-auto">
-                <div
-                  className={`px-4 py-2.5 rounded-2xl border backdrop-blur-xl shadow-2xl flex items-center gap-4 text-xs font-mono ${
-                    isLight
-                      ? "bg-white/90 border-gray-200 text-gray-800"
-                      : "bg-black/75 border-white/15 text-gray-300"
-                  }`}
-                >
-                  <div className="text-center">
-                    <span className="text-[9px] text-gray-400 uppercase block">Pitch</span>
-                    <span className="font-bold text-sky-400">{pitch.toFixed(1)}°</span>
-                  </div>
-                  <div className="w-px h-6 bg-white/10" />
-                  <div className="text-center">
-                    <span className="text-[9px] text-gray-400 uppercase block">Roll</span>
-                    <span className="font-bold text-emerald-400">{roll.toFixed(1)}°</span>
-                  </div>
-                  <div className="w-px h-6 bg-white/10" />
-                  <div className="text-center">
-                    <span className="text-[9px] text-gray-400 uppercase block">Yaw Rate</span>
-                    <span className="font-bold text-amber-400">{yaw.toFixed(0)}°/s</span>
-                  </div>
-                  <div className="w-px h-6 bg-white/10" />
-                  <button
-                    onClick={() => onControlChange({ throttle: 1000, pitch: 0, roll: 0, yaw: 0 })}
-                    title="Level Off to Hover"
-                    className="p-1.5 rounded-lg bg-white/5 hover:bg-white/15 text-gray-300"
-                  >
-                    <RotateCcw size={14} />
-                  </button>
-                </div>
-              </div>
-
-              {/* Right Virtual Joystick: Pitch & Roll */}
-              <div className="absolute bottom-6 right-6 z-30 pointer-events-auto flex flex-col items-center gap-2">
-                <div
-                  className={`w-36 h-36 rounded-full border-2 relative flex items-center justify-center backdrop-blur-xl shadow-2xl ${
-                    isLight
-                      ? "bg-white/80 border-gray-300 shadow-gray-300/50"
-                      : "bg-black/70 border-white/20 shadow-black/80"
-                  }`}
-                >
-                  {/* Virtual Stick Knob */}
-                  <div
-                    className="w-12 h-12 rounded-full bg-gradient-to-br from-emerald-500 to-teal-700 shadow-lg flex items-center justify-center text-white text-[10px] font-mono font-bold transition-transform"
-                    style={{
-                      transform: `translate(${(roll / 25) * 45}px, -${(pitch / 25) * 45}px)`,
-                    }}
-                  >
-                    <span>DIR</span>
-                  </div>
-                  <div className="absolute inset-x-0 h-px bg-white/10" />
-                  <div className="absolute inset-y-0 w-px bg-white/10" />
-                </div>
-                <div className="text-[10px] font-mono font-bold uppercase tracking-wider text-gray-400">
-                  Pitch / Roll (Arrow Keys)
-                </div>
-              </div>
-            </>
-          )}
         </div>
       )}
 
@@ -688,6 +590,63 @@ export default function Esp32PhoneControllerOverlay({
               </div>
             ))}
           </div>
+
+          {/* Part 2: Pre-Flight Testing & Bench Calibration Suite */}
+          <div className="space-y-4 pt-4 border-t border-white/10">
+            <h3 className="text-base font-bold text-white flex items-center gap-2 font-mono uppercase tracking-wider text-emerald-400">
+              <span>Part 2: Pre-Flight Sensor Calibration & Bench Testing Suite</span>
+            </h3>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="p-4 rounded-xl border border-white/10 bg-[#0c0f18] space-y-2">
+                <span className="text-xs font-mono font-bold text-emerald-400 uppercase block">
+                  Test 01: MOSFET Gate Switching & Continuity Test
+                </span>
+                <p className="text-xs text-gray-300 leading-relaxed">
+                  Before attaching propellers or battery, set your multimeter to resistance (Ω) mode. Probe between MOSFET Drain and Source with the gate pulled LOW (GND via 10kΩ). Resistance must read infinite. Apply 3.3V to the gate via a 100Ω probe: the resistance must drop to under 0.15Ω. This verifies that no gate is shorted and motors will not spontaneously spin upon arming.
+                </p>
+                <div className="text-[11px] font-mono text-emerald-400 bg-emerald-500/10 p-2 rounded-lg border border-emerald-500/20">
+                  Pass Criteria: R_off &gt; 1MΩ, R_on &lt; 0.15Ω per MOSFET
+                </div>
+              </div>
+
+              <div className="p-4 rounded-xl border border-white/10 bg-[#0c0f18] space-y-2">
+                <span className="text-xs font-mono font-bold text-emerald-400 uppercase block">
+                  Test 02: MPU-6050 400kHz I2C Telemetry & Level Verification
+                </span>
+                <p className="text-xs text-gray-300 leading-relaxed">
+                  Power the ESP32 via USB and open the Serial Monitor at 115200 baud. Confirm the MPU-6050 is detected at I2C address 0x68. Place the drone on a flat, level surface. The pitch and roll angles must read within ±0.5° of zero. Gently tilt the nose down: pitch angle must increase positively. Tilt to the right: roll angle must increase positively.
+                </p>
+                <div className="text-[11px] font-mono text-emerald-400 bg-emerald-500/10 p-2 rounded-lg border border-emerald-500/20">
+                  Target Sensor Drift: &lt; 0.05°/sec after 100-sample calibration
+                </div>
+              </div>
+
+              <div className="p-4 rounded-xl border border-white/10 bg-[#0c0f18] space-y-2">
+                <span className="text-xs font-mono font-bold text-emerald-400 uppercase block">
+                  Test 03: Props-Off SoftAP Wi-Fi Heartbeat & Latency Check
+                </span>
+                <p className="text-xs text-gray-300 leading-relaxed">
+                  Connect your smartphone to 'AERO_ESP32_DRONE' Wi-Fi. In the telemetry dock, verify packet ping displays 7-12ms. Advance throttle to 30%: all four coreless motor shafts must spin smoothly without stutter. Turn off Wi-Fi on the phone: the ESP32 watchdog timer must trigger within 500ms, ramping all four motors down to 0 RPM stop.
+                </p>
+                <div className="text-[11px] font-mono text-emerald-400 bg-emerald-500/10 p-2 rounded-lg border border-emerald-500/20">
+                  Watchdog Reaction: Emergency throttle zero within 500ms
+                </div>
+              </div>
+
+              <div className="p-4 rounded-xl border border-white/10 bg-[#0c0f18] space-y-2">
+                <span className="text-xs font-mono font-bold text-emerald-400 uppercase block">
+                  Test 04: Center of Gravity (CG) Balance & Maiden Hover
+                </span>
+                <p className="text-xs text-gray-300 leading-relaxed">
+                  Mount the red (front) and black (rear) 55mm propellers. Support the drone with two fingertips directly underneath the diagonal arm intersection. Adjust the battery position until the frame balances perfectly level. Conduct maiden flight indoors over a carpeted floor. Advance throttle smoothly to 45%: the quadcopter should lift cleanly off the ground with minimal drift.
+                </p>
+                <div className="text-[11px] font-mono text-emerald-400 bg-emerald-500/10 p-2 rounded-lg border border-emerald-500/20">
+                  Takeoff Throttle: 42% – 48% with fresh 4.2V LiPo
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       )}
 
@@ -730,21 +689,76 @@ export default function Esp32PhoneControllerOverlay({
                   <p className="text-xs text-gray-400 mt-1">{item.specs}</p>
                 </div>
 
-                <div className="pt-2 border-t border-white/5 flex items-center justify-between text-xs">
+                <div className="pt-2 border-t border-white/5 flex flex-wrap items-center justify-between gap-2 text-xs">
                   <span className="text-[11px] text-gray-400 font-mono">
                     Vendor: <strong className="text-gray-200">{item.seller}</strong>
                   </span>
-                  <a
-                    href={item.url}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="px-2.5 py-1 rounded-lg bg-indigo-600/20 hover:bg-indigo-600/30 text-indigo-400 border border-indigo-500/30 font-semibold text-[11px] transition"
-                  >
-                    View Product &rarr;
-                  </a>
+                  <BuyLinkButtons
+                    componentName={item.model}
+                    officialUrl={item.url}
+                    vendorName={item.seller}
+                    compact={true}
+                  />
                 </div>
               </div>
             ))}
+          </div>
+
+          {/* Part 2: Pre-Flight Testing & Bench Calibration Suite */}
+          <div className="space-y-4 pt-4 border-t border-white/10">
+            <h3 className="text-base font-bold text-white flex items-center gap-2 font-mono uppercase tracking-wider text-emerald-400">
+              <span>Part 2: Pre-Flight Sensor Calibration & Bench Testing Suite</span>
+            </h3>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="p-4 rounded-xl border border-white/10 bg-[#0c0f18] space-y-2">
+                <span className="text-xs font-mono font-bold text-emerald-400 uppercase block">
+                  Test 01: MOSFET Gate Switching & Continuity Test
+                </span>
+                <p className="text-xs text-gray-300 leading-relaxed">
+                  Before attaching propellers or battery, set your multimeter to resistance (Ω) mode. Probe between MOSFET Drain and Source with the gate pulled LOW (GND via 10kΩ). Resistance must read infinite. Apply 3.3V to the gate via a 100Ω probe: the resistance must drop to under 0.15Ω. This verifies that no gate is shorted and motors will not spontaneously spin upon arming.
+                </p>
+                <div className="text-[11px] font-mono text-emerald-400 bg-emerald-500/10 p-2 rounded-lg border border-emerald-500/20">
+                  Pass Criteria: R_off &gt; 1MΩ, R_on &lt; 0.15Ω per MOSFET
+                </div>
+              </div>
+
+              <div className="p-4 rounded-xl border border-white/10 bg-[#0c0f18] space-y-2">
+                <span className="text-xs font-mono font-bold text-emerald-400 uppercase block">
+                  Test 02: MPU-6050 400kHz I2C Telemetry & Level Verification
+                </span>
+                <p className="text-xs text-gray-300 leading-relaxed">
+                  Power the ESP32 via USB and open the Serial Monitor at 115200 baud. Confirm the MPU-6050 is detected at I2C address 0x68. Place the drone on a flat, level surface. The pitch and roll angles must read within ±0.5° of zero. Gently tilt the nose down: pitch angle must increase positively. Tilt to the right: roll angle must increase positively.
+                </p>
+                <div className="text-[11px] font-mono text-emerald-400 bg-emerald-500/10 p-2 rounded-lg border border-emerald-500/20">
+                  Target Sensor Drift: &lt; 0.05°/sec after 100-sample calibration
+                </div>
+              </div>
+
+              <div className="p-4 rounded-xl border border-white/10 bg-[#0c0f18] space-y-2">
+                <span className="text-xs font-mono font-bold text-emerald-400 uppercase block">
+                  Test 03: Props-Off SoftAP Wi-Fi Heartbeat & Latency Check
+                </span>
+                <p className="text-xs text-gray-300 leading-relaxed">
+                  Connect your smartphone to 'AERO_ESP32_DRONE' Wi-Fi. In the telemetry dock, verify packet ping displays 7-12ms. Advance throttle to 30%: all four coreless motor shafts must spin smoothly without stutter. Turn off Wi-Fi on the phone: the ESP32 watchdog timer must trigger within 500ms, ramping all four motors down to 0 RPM stop.
+                </p>
+                <div className="text-[11px] font-mono text-emerald-400 bg-emerald-500/10 p-2 rounded-lg border border-emerald-500/20">
+                  Watchdog Reaction: Emergency throttle zero within 500ms
+                </div>
+              </div>
+
+              <div className="p-4 rounded-xl border border-white/10 bg-[#0c0f18] space-y-2">
+                <span className="text-xs font-mono font-bold text-emerald-400 uppercase block">
+                  Test 04: Center of Gravity (CG) Balance & Maiden Hover
+                </span>
+                <p className="text-xs text-gray-300 leading-relaxed">
+                  Mount the red (front) and black (rear) 55mm propellers. Support the drone with two fingertips directly underneath the diagonal arm intersection. Adjust the battery position until the frame balances perfectly level. Conduct maiden flight indoors over a carpeted floor. Advance throttle smoothly to 45%: the quadcopter should lift cleanly off the ground with minimal drift.
+                </p>
+                <div className="text-[11px] font-mono text-emerald-400 bg-emerald-500/10 p-2 rounded-lg border border-emerald-500/20">
+                  Takeoff Throttle: 42% – 48% with fresh 4.2V LiPo
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       )}

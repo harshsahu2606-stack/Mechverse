@@ -1,4 +1,13 @@
-export type MachineId = "sports-car" | "electric-fan" | "walking-robot" | "robo-rumble" | "aero-450" | "drone-b" | "esp32-drone" | "ropeway-robot";
+export type MachineId =
+  | "sports-car"
+  | "electric-fan"
+  | "walking-robot"
+  | "robo-rumble"
+  | "aero-450"
+  | "drone-b"
+  | "esp32-drone"
+  | "robo-racer"
+  | "ropeway-robot";
 
 export type ViewMode = "view" | "exploded" | "components" | "customize" | "subassembly" | "arena" | "electronic";
 export type AppTheme = "dark" | "light";
@@ -12,6 +21,15 @@ export type RopewayNavTab =
   | "troubleshooting"
   | "engineering-docs"
   | "customizer";
+
+export type RoboRacerNavTab =
+  | "simulator"
+  | "how-it-works"
+  | "schematic"
+  | "firmware"
+  | "bom"
+  | "build-guide"
+  | "ai-vision";
 
 export type Esp32DroneNavTab =
   | "simulator"
@@ -221,6 +239,10 @@ export interface CustomizationSettings {
   // ESP32 Phone-Controlled Micro Drone Configuration
   esp32DroneFrameColor?: string;
   esp32DronePropsColor?: string;
+  esp32DroneRearPropsColor?: string;
+  // ROBO-RACER AI Vision Bot Configuration
+  roboRacerChassisColor?: string;
+  roboRacerAccentColor?: string;
   // Ropeway Climbing Robot Configuration
   ropewayChassisColor?: string;
   ropewayArmColor?: string;

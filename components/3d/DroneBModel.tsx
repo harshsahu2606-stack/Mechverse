@@ -38,17 +38,21 @@ export default function DroneBModel({
   const motorColor = customization?.droneBMotorColor || "#1e293b";
   const propColor = customization?.droneBPropellerColor || "#0f172a";
 
+  const finish = customization?.finish || "metallic";
+  const frameRoughness = finish === "matte" ? 0.85 : finish === "metallic" ? 0.2 : 0.45;
+  const frameMetalness = finish === "metallic" ? 0.85 : finish === "matte" ? 0.1 : 0.5;
+
   const materials = useMemo(() => {
     return {
       frame: new THREE.MeshStandardMaterial({
         color: chassisColor,
-        roughness: 0.45,
-        metalness: 0.5,
+        roughness: frameRoughness,
+        metalness: frameMetalness,
       }),
       coverPlate: new THREE.MeshStandardMaterial({
         color: chassisColor,
-        roughness: 0.4,
-        metalness: 0.55,
+        roughness: frameRoughness,
+        metalness: frameMetalness,
       }),
       sideCover: new THREE.MeshStandardMaterial({
         color: "#64748b",
@@ -103,7 +107,7 @@ export default function DroneBModel({
         metalness: 0.5,
       }),
     };
-  }, [chassisColor, armColor, motorColor, propColor]);
+  }, [chassisColor, armColor, motorColor, propColor, frameRoughness, frameMetalness]);
 
   // Propeller dynamic spin loop
   useFrame((_, delta) => {

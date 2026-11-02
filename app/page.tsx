@@ -26,6 +26,7 @@ import FanSimulationControls from "@/components/ui/FanSimulationControls";
 import BottomToolbar from "@/components/ui/BottomToolbar";
 import SavedDesignsModal from "@/components/ui/SavedDesignsModal";
 import ComponentHierarchyTree from "@/components/ui/ComponentHierarchyTree";
+import WebARModal from "@/components/ar/WebARModal";
 import { CameraPreset } from "@/components/3d/SceneViewer";
 
 // Walking Robot Dedicated Workshop Components
@@ -66,12 +67,12 @@ import AeroShoppingList from "@/components/aerodrone/AeroShoppingList";
 import AeroAssemblyGuide from "@/components/aerodrone/AeroAssemblyGuide";
 import AeroWiringDiagram from "@/components/aerodrone/AeroWiringDiagram";
 import AeroElectronicView from "@/components/aerodrone/AeroElectronicView";
+import UniversalElectronicWorkbench from "@/components/electronics/UniversalElectronicWorkbench";
 import AeroCalibrationGuide from "@/components/aerodrone/AeroCalibrationGuide";
 import AeroTroubleshooting from "@/components/aerodrone/AeroTroubleshooting";
 import AeroBOM from "@/components/aerodrone/AeroBOM";
 import AeroEngineeringDocs from "@/components/aerodrone/AeroEngineeringDocs";
 import Esp32PhoneControllerOverlay from "@/components/esp32drone/Esp32PhoneControllerOverlay";
-
 // Ropeway Climbing Robot Dedicated Workshop Components
 import RopewayWorkshopNav from "@/components/ropeway/RopewayWorkshopNav";
 import RopewaySimulationControls from "@/components/ropeway/RopewaySimulationControls";
@@ -82,7 +83,14 @@ import RopewayBOM from "@/components/ropeway/RopewayBOM";
 import RopewayTroubleshooting from "@/components/ropeway/RopewayTroubleshooting";
 import RopewayEngineeringDocs from "@/components/ropeway/RopewayEngineeringDocs";
 import RopewayCustomizer from "@/components/ropeway/RopewayCustomizer";
-import { AeroNavTab, AppTheme, Esp32DroneNavTab, RopewayNavTab, RopewaySimulationState } from "@/types/machine";
+import Esp32FlightDock from "@/components/esp32drone/Esp32FlightDock";
+import RoboRacerWorkshopOverlay from "@/components/roboracer/RoboRacerWorkshopOverlay";
+import RoboRacerDriveDock from "@/components/roboracer/RoboRacerDriveDock";
+import UniversalWorkshopNav, { UniversalPillar } from "@/components/ui/UniversalWorkshopNav";
+import DroneBWorkshopNav, { DroneBNavPillar } from "@/components/droneb/DroneBWorkshopNav";
+import DroneBWorkshopView from "@/components/droneb/DroneBWorkshopView";
+import { AeroNavTab, AppTheme, Esp32DroneNavTab, RoboRacerNavTab, RopewayNavTab, RopewaySimulationState } from "@/types/machine";
+import { explosionAudio } from "@/lib/audio/explosionSoundEngine";
 
 // Dynamic import with SSR disabled to prevent WebGL server rendering errors
 const SceneViewer = dynamic(() => import("@/components/3d/SceneViewer"), {
@@ -168,6 +176,18 @@ const DEFAULT_CUSTOMIZATION: CustomizationSettings = {
   droneCamera: "runcam-split-hd",
   droneLandingGear: "tall-arched",
   dronePropGuards: false,
+  // Drone B (Industrial Octagonal UAV)
+  droneBChassisColor: "#475569",
+  droneBArmColor: "#334155",
+  droneBMotorColor: "#1e293b",
+  droneBPropellerColor: "#0f172a",
+  // ESP32 Micro Drone
+  esp32DroneFrameColor: "#1e293b",
+  esp32DronePropsColor: "#ef4444",
+  esp32DroneRearPropsColor: "#0f172a",
+  // ROBO-RACER Rover
+  roboRacerChassisColor: "#17171c",
+  roboRacerAccentColor: "#ca8a04",
   // Ropeway Climbing Robot Configuration
   ropewayChassisColor: "#0284c7",
   ropewayPulleyColor: "#0f172a",
@@ -213,6 +233,29 @@ export default function Home() {
   const [theme, setTheme] = useState<AppTheme>("dark");
   const [showElectronicOverlay, setShowElectronicOverlay] = useState<boolean>(false);
 
+  // Web AR Interactive Studio State
+  const [isWebAROpen, setIsWebAROpen] = useState<boolean>(false);
+  const [arTargetMachineId, setArTargetMachineId] = useState<MachineId>("drone-b");
+
+  // Deep-link direct AR launcher via URL: ?ar=machineId
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      const arParam = params.get("ar") as MachineId;
+      if (arParam && MACHINES_DATA[arParam]) {
+        setArTargetMachineId(arParam);
+        setSelectedMachineId(arParam);
+        setIsWebAROpen(true);
+      }
+    }
+  }, []);
+
+  const handleOpenAR = (machineId?: MachineId) => {
+    const target = machineId || selectedMachineId || "drone-b";
+    setArTargetMachineId(target);
+    setIsWebAROpen(true);
+  };
+
   // Walking Robot Workshop Project Tab
   const [robotProjectTab, setRobotProjectTab] = useState<RobotProjectTab>("simulator");
 
@@ -222,6 +265,9 @@ export default function Home() {
 
   // AERO-450 Quadcopter Dedicated Workshop State
   const [aeroProjectTab, setAeroProjectTab] = useState<AeroNavTab>("explorer");
+
+  // Drone B Industrial Octocopter Dedicated Workshop State
+  const [droneBProjectPillar, setDroneBProjectPillar] = useState<DroneBNavPillar>("simulator");
 
   // AERO-ESP Phone-Controlled Nano Drone State
   const [esp32ProjectTab, setEsp32ProjectTab] = useState<Esp32DroneNavTab>("simulator");
@@ -233,9 +279,19 @@ export default function Home() {
     yaw: 0,
   });
 
+  // ROBO-RACER AI Vision & Obstacle Bot State
+  const [roboRacerTab, setRoboRacerTab] = useState<RoboRacerNavTab>("simulator");
+  const [roboRacerDriving, setRoboRacerDriving] = useState<boolean>(false);
+  const [roboRacerHoodOpen, setRoboRacerHoodOpen] = useState<boolean>(true);
+  const [roboRacerControls, setRoboRacerControls] = useState({
+    speed: 0,
+    steering: 0,
+    cameraPan: 0,
+  });
+
   // Robo Rumble Dedicated Workshop, Arena & Track State
   const [roboRumbleProjectTab, setRoboRumbleProjectTab] = useState<RoboRumbleProjectTab>("simulator");
-  const [roboSimulatorMode, setRoboSimulatorMode] = useState<"arena" | "track" | "explorer" | "customizer" | "compare">("arena");
+  const [roboSimulatorMode, setRoboSimulatorMode] = useState<"explorer" | "arena" | "track" | "customizer" | "compare">("explorer");
   const [playerBattleCar, setPlayerBattleCar] = useState<BattleCarId>("striker");
   const [aiBattleCar, setAiBattleCar] = useState<BattleCarId>("titan");
   const [arenaCameraView, setArenaCameraView] = useState<CameraViewMode>("follow");
@@ -457,10 +513,13 @@ export default function Home() {
     setExplosionLevel(0);
     setCameraPreset("default");
     setCameraResetCount((c) => c + 1);
+    if ((id === "sports-car" || id === "electric-fan") && viewMode === "electronic") {
+      setViewMode("view");
+    }
     setRobotProjectTab("simulator");
     if (id === "robo-rumble") {
       setRoboRumbleProjectTab("simulator");
-      setRoboSimulatorMode("arena");
+      setRoboSimulatorMode("explorer");
       setMatchState((prev) => ({ ...prev, status: "idle", winner: null }));
     }
     if (id === "esp32-drone") {
@@ -471,6 +530,15 @@ export default function Home() {
     if (id === "ropeway-robot") {
       setRopewayProjectTab("simulator");
       setRopewaySimulation(DEFAULT_ROPEWAY_SIMULATION);
+    }
+    if (id === "robo-racer") {
+      setRoboRacerTab("simulator");
+      setRoboRacerDriving(false);
+      setRoboRacerHoodOpen(true);
+      setRoboRacerControls({ speed: 0, steering: 0, cameraPan: 0 });
+    }
+    if (id === "drone-b") {
+      setDroneBProjectPillar("simulator");
     }
   };
 
@@ -506,16 +574,31 @@ export default function Home() {
   // Render Full-Page Mechverse Landing Page if active
   if (currentTab === "landing") {
     return (
-      <LandingPage
-        theme={theme}
-        onToggleTheme={() => setTheme((t) => (t === "dark" ? "light" : "dark"))}
-        onLaunchStudio={(machineId) => {
-          if (machineId) {
-            handleSelectMachine(machineId);
-          }
-          setCurrentTab("explore");
-        }}
-      />
+      <>
+        <LandingPage
+          theme={theme}
+          onToggleTheme={() => setTheme((t) => (t === "dark" ? "light" : "dark"))}
+          onLaunchStudio={(machineId) => {
+            if (machineId) {
+              handleSelectMachine(machineId);
+            }
+            setCurrentTab("explore");
+          }}
+          onOpenAR={handleOpenAR}
+        />
+
+        {/* Global Interactive Web AR Modal */}
+        <WebARModal
+          isOpen={isWebAROpen}
+          machineId={arTargetMachineId}
+          customization={customization}
+          onClose={() => setIsWebAROpen(false)}
+          onSelectMachine={(id) => {
+            setArTargetMachineId(id);
+            setSelectedMachineId(id);
+          }}
+        />
+      </>
     );
   }
 
@@ -543,6 +626,7 @@ export default function Home() {
         savedCount={savedDesigns.length}
         theme={theme}
         onToggleTheme={() => setTheme((t) => (t === "dark" ? "light" : "dark"))}
+        onOpenAR={() => handleOpenAR(selectedMachineId)}
       />
 
       {/* Main Full-Height Viewport Container */}
@@ -588,6 +672,8 @@ export default function Home() {
                     setRoboRumbleProjectTab(tab);
                     if (tab !== "simulator") {
                       setViewMode("view");
+                    } else {
+                      setRoboSimulatorMode("explorer");
                     }
                   }}
                 />
@@ -621,6 +707,112 @@ export default function Home() {
                       setViewMode("view");
                     }
                   }}
+                  theme={theme}
+                />
+              </div>
+            )}
+
+            {/* If Drone B Octocopter, Render Dedicated Workshop Nav Bar */}
+            {selectedMachineId === "drone-b" && (
+              <div className="z-30 shrink-0">
+                <DroneBWorkshopNav
+                  activePillar={droneBProjectPillar}
+                  onChangePillar={(pillar) => {
+                    setDroneBProjectPillar(pillar);
+                    if (pillar !== "simulator") {
+                      setViewMode("view");
+                    }
+                  }}
+                  theme={theme}
+                />
+              </div>
+            )}
+
+            {/* If AERO-ESP Drone, Render Dedicated Universal Workshop Nav Bar (Consistent 5 Pillars) */}
+            {selectedMachineId === "esp32-drone" && (
+              <div className="z-30 shrink-0">
+                <UniversalWorkshopNav
+                  machineId="esp32-drone"
+                  activePillar={
+                    esp32ProjectTab === "simulator"
+                      ? "simulator"
+                      : esp32ProjectTab === "how-it-works" || esp32ProjectTab === "dgca-rules"
+                      ? "engineering"
+                      : esp32ProjectTab === "schematic"
+                      ? "electronics"
+                      : esp32ProjectTab === "bom"
+                      ? "bom"
+                      : "guide"
+                  }
+                  onChangePillar={(pillar) => {
+                    const tabMap: Record<UniversalPillar, Esp32DroneNavTab> = {
+                      simulator: "simulator",
+                      engineering: "how-it-works",
+                      electronics: "schematic",
+                      bom: "bom",
+                      guide: "build-guide",
+                    };
+                    setEsp32ProjectTab(tabMap[pillar]);
+                    if (pillar !== "simulator") {
+                      setViewMode("view");
+                    }
+                  }}
+                  subTab={
+                    esp32ProjectTab === "how-it-works" || esp32ProjectTab === "dgca-rules"
+                      ? esp32ProjectTab
+                      : esp32ProjectTab === "build-guide" || esp32ProjectTab === "firmware"
+                      ? esp32ProjectTab
+                      : undefined
+                  }
+                  onChangeSubTab={(st) => setEsp32ProjectTab(st as Esp32DroneNavTab)}
+                  subTabs={
+                    esp32ProjectTab === "how-it-works" || esp32ProjectTab === "dgca-rules"
+                      ? [
+                          { id: "how-it-works", label: "Signal Flow & PID Loop" },
+                          { id: "dgca-rules", label: "DGCA Nano Drone Rules (<250g)" },
+                        ]
+                      : esp32ProjectTab === "build-guide" || esp32ProjectTab === "firmware"
+                      ? [
+                          { id: "build-guide", label: "Step-by-Step Build Guide" },
+                          { id: "firmware", label: "Arduino Production Firmware" },
+                        ]
+                      : undefined
+                  }
+                  theme={theme}
+                />
+              </div>
+            )}
+
+            {/* If Robo-Racer Rover, Render Dedicated Universal Workshop Nav Bar (Consistent 5 Pillars) */}
+            {selectedMachineId === "robo-racer" && (
+              <div className="z-30 shrink-0">
+                <UniversalWorkshopNav
+                  machineId="robo-racer"
+                  activePillar={
+                    roboRacerTab === "simulator"
+                      ? "simulator"
+                      : roboRacerTab === "how-it-works" || roboRacerTab === "ai-vision"
+                      ? "engineering"
+                      : roboRacerTab === "schematic"
+                      ? "electronics"
+                      : roboRacerTab === "bom"
+                      ? "bom"
+                      : "guide"
+                  }
+                  onChangePillar={(pillar) => {
+                    const tabMap: Record<UniversalPillar, RoboRacerNavTab> = {
+                      simulator: "simulator",
+                      engineering: "how-it-works",
+                      electronics: "schematic",
+                      bom: "bom",
+                      guide: "build-guide",
+                    };
+                    setRoboRacerTab(tabMap[pillar]);
+                    if (pillar !== "simulator") {
+                      setViewMode("view");
+                    }
+                  }}
+                  theme={theme}
                 />
               </div>
             )}
@@ -689,6 +881,15 @@ export default function Home() {
                 {aeroProjectTab === "bom" && <AeroBOM />}
                 {aeroProjectTab === "docs" && <AeroEngineeringDocs />}
               </div>
+            ) : selectedMachineId === "drone-b" && droneBProjectPillar !== "simulator" ? (
+              /* Content Area Based on Drone B Industrial Workshop Tab */
+              <div
+                className={`flex-1 overflow-y-auto custom-scrollbar flex flex-col ${
+                  theme === "light" ? "bg-slate-50" : "bg-[#090b0f]"
+                }`}
+              >
+                <DroneBWorkshopView activePillar={droneBProjectPillar} theme={theme} />
+              </div>
             ) : selectedMachineId === "esp32-drone" && esp32ProjectTab !== "simulator" ? (
               /* Content Area Based on ESP32 Drone Workshop Tab */
               <div
@@ -710,19 +911,45 @@ export default function Home() {
                   explosionLevel={explosionLevel}
                   onChangeExplosionLevel={setExplosionLevel}
                   onResetCamera={() => setCameraResetCount((c) => c + 1)}
+                  hideNavHeader={true}
+                />
+              </div>
+            ) : selectedMachineId === "robo-racer" && roboRacerTab !== "simulator" ? (
+              /* Content Area Based on ROBO-RACER Workshop Tab */
+              <div
+                className={`flex-1 overflow-y-auto custom-scrollbar flex flex-col ${
+                  theme === "light" ? "bg-slate-50" : "bg-[#090b0f]"
+                }`}
+              >
+                <RoboRacerWorkshopOverlay
+                  theme={theme}
+                  isDriving={roboRacerDriving}
+                  onToggleDrive={() => setRoboRacerDriving((prev) => !prev)}
+                  speed={roboRacerControls.speed}
+                  steering={roboRacerControls.steering}
+                  cameraPan={roboRacerControls.cameraPan}
+                  hoodOpen={roboRacerHoodOpen}
+                  onToggleHood={() => setRoboRacerHoodOpen((prev) => !prev)}
+                  onControlChange={setRoboRacerControls}
+                  activeTab={roboRacerTab}
+                  onChangeTab={setRoboRacerTab}
+                  explosionLevel={explosionLevel}
+                  onChangeExplosionLevel={setExplosionLevel}
+                  onResetCamera={() => setCameraResetCount((c) => c + 1)}
+                  hideNavHeader={true}
                 />
               </div>
             ) : (
               /* ================= 3D SIMULATOR VIEWPORT ================= */
               <div className="flex-1 relative w-full h-full overflow-hidden">
-                {/* Robo Rumble Mode Sub-Bar (Arena / Track / Explorer / Customizer / Compare) */}
+                {/* Robo Rumble Mode Sub-Bar (Explorer / Arena / Track / Customizer / Compare) */}
                 {selectedMachineId === "robo-rumble" && (
                   <div className="absolute top-3 left-1/2 -translate-x-1/2 z-30 pointer-events-auto">
                     <div className="flex items-center gap-1 bg-black/80 border border-white/15 p-1 rounded-2xl backdrop-blur-xl shadow-2xl">
                       {[
+                        { id: "explorer", label: "3D CAD Explorer", icon: "🔍" },
                         { id: "arena", label: "Battle Arena", icon: "⚔️" },
                         { id: "track", label: "Obstacle Track", icon: "🏁" },
-                        { id: "explorer", label: "3D Explorer", icon: "🔍" },
                         { id: "customizer", label: "Customizer", icon: "🛠️" },
                         { id: "compare", label: "Compare", icon: "⚖️" },
                       ].map((m) => (
@@ -872,9 +1099,15 @@ export default function Home() {
                       viewMode={viewMode}
                       setViewMode={(mode) => {
                         setViewMode(mode);
-                        if (mode === "exploded" && explosionLevel === 0) {
-                          setExplosionLevel(0.6);
+                        if (mode === "exploded") {
+                          explosionAudio.playCinematicExplode(0.8);
+                          if (explosionLevel === 0) {
+                            setExplosionLevel(0.6);
+                          }
                         } else if (mode === "view") {
+                          if (explosionLevel > 0) {
+                            explosionAudio.playMechanicalLatch();
+                          }
                           setExplosionLevel(0);
                         }
                       }}
@@ -885,7 +1118,9 @@ export default function Home() {
                           ? activeSubAssembly?.name || "SUB-ASSEMBLY"
                           : activeMachine.name
                       }
+                      machineId={selectedMachineId}
                       theme={theme}
+                      onOpenAR={() => handleOpenAR(selectedMachineId)}
                     />
 
                     {/* 3D Scene Viewer occupying 100% of the screen */}
@@ -905,6 +1140,13 @@ export default function Home() {
                       cameraPreset={cameraPreset}
                       cameraResetCount={cameraResetCount}
                       theme={theme}
+                      esp32Armed={esp32Armed}
+                      esp32Throttle={esp32Controls.throttle}
+                      roboRacerDriving={roboRacerDriving}
+                      roboRacerSpeed={roboRacerControls.speed}
+                      roboRacerSteering={roboRacerControls.steering}
+                      roboRacerCameraPan={roboRacerControls.cameraPan}
+                      roboRacerHoodOpen={roboRacerHoodOpen}
                       onSelectComponent={(id) => {
                         if (activeSubAssemblyId) {
                           setSelectedSubPartId(id);
@@ -914,50 +1156,50 @@ export default function Home() {
                       }}
                     />
 
-                    {/* AERO-ESP Phone Controller Overlay & Flight HUD */}
-                    {selectedMachineId === "esp32-drone" && (
-                      <div className="absolute inset-0 pointer-events-none z-20">
-                        <Esp32PhoneControllerOverlay
-                          theme={theme}
-                          isArmed={esp32Armed}
-                          onToggleArm={() => setEsp32Armed((prev) => !prev)}
-                          throttle={esp32Controls.throttle}
-                          pitch={esp32Controls.pitch}
-                          roll={esp32Controls.roll}
-                          yaw={esp32Controls.yaw}
-                          onControlChange={setEsp32Controls}
-                          activeTab={esp32ProjectTab}
-                          onChangeTab={setEsp32ProjectTab}
-                          explosionLevel={explosionLevel}
-                          onChangeExplosionLevel={setExplosionLevel}
-                          onResetCamera={() => setCameraResetCount((c) => c + 1)}
-                        />
-                      </div>
+                    {/* AERO-ESP Sleek Floating Bottom Flight Controller & Telemetry Dock (Zero Canvas Overlap) */}
+                    {selectedMachineId === "esp32-drone" && viewMode !== "exploded" && (
+                      <Esp32FlightDock
+                        theme={theme}
+                        isArmed={esp32Armed}
+                        onToggleArm={() => setEsp32Armed((prev) => !prev)}
+                        throttle={esp32Controls.throttle}
+                        pitch={esp32Controls.pitch}
+                        roll={esp32Controls.roll}
+                        yaw={esp32Controls.yaw}
+                        onControlChange={setEsp32Controls}
+                      />
                     )}
 
-                    {/* Electronic View Mode Floating Quick-Access Bar (Image 2 Schematic) */}
+                    {/* ROBO-RACER Sleek Floating Bottom Drive Controller & Telemetry Dock (Zero Overlap on Car) */}
+                    {selectedMachineId === "robo-racer" && viewMode !== "exploded" && (
+                      <RoboRacerDriveDock
+                        theme={theme}
+                        isDriving={roboRacerDriving}
+                        onToggleDrive={() => {
+                          setRoboRacerDriving((prev) => {
+                            const next = !prev;
+                            if (next && roboRacerControls.speed === 0) {
+                              setRoboRacerControls({ ...roboRacerControls, speed: 45 });
+                            }
+                            return next;
+                          });
+                        }}
+                        speed={roboRacerControls.speed}
+                        steering={roboRacerControls.steering}
+                        cameraPan={roboRacerControls.cameraPan}
+                        hoodOpen={roboRacerHoodOpen}
+                        onToggleHood={() => setRoboRacerHoodOpen((prev) => !prev)}
+                        onControlChange={setRoboRacerControls}
+                      />
+                    )}
+
+                    {/* Interactive Full Electronic Workbench (In-Place Engineering Schematic for each model) */}
                     {viewMode === "electronic" && (
-                      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-30 pointer-events-auto">
-                        <button
-                          onClick={() => setShowElectronicOverlay(true)}
-                          className="flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs shadow-xl shadow-amber-500/25 transition transform hover:scale-105"
-                        >
-                          <Zap size={15} />
-                          <span>Inspect ArduPilot Interconnect Schematic (Image 2)</span>
-                        </button>
-                      </div>
-                    )}
-
-                    {/* Full-screen Electronic Schematic Modal */}
-                    {showElectronicOverlay && (
-                      <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex flex-col p-4 sm:p-6 animate-in fade-in">
-                        <div className="relative w-full h-full max-w-7xl mx-auto rounded-3xl overflow-hidden shadow-2xl border border-white/20">
-                          <AeroElectronicView
-                            theme={theme}
-                            onClose={() => setShowElectronicOverlay(false)}
-                          />
-                        </div>
-                      </div>
+                      <UniversalElectronicWorkbench
+                        machineId={selectedMachineId}
+                        theme={theme}
+                        onClose={() => setViewMode("view")}
+                      />
                     )}
 
                     {/* Component Hierarchy Drawer (when in Components view) */}
@@ -1014,9 +1256,10 @@ export default function Home() {
                       />
                     )}
 
-                    {/* Robo Rumble Explorer Controls */}
+                    {/* Robo Rumble Explorer Controls (Only in standard 3D view mode; zero overlap with Exploded controls) */}
                     {selectedMachineId === "robo-rumble" &&
                       roboSimulatorMode === "explorer" &&
+                      viewMode === "view" &&
                       !activeSubAssemblyId && (
                         <RoboRumbleExplorerControls
                           selectedCarId={customization.battleCarId || "striker"}
@@ -1027,8 +1270,6 @@ export default function Home() {
                           onEnterArena={() => setRoboSimulatorMode("arena")}
                           onEnterTrack={() => setRoboSimulatorMode("track")}
                           onReset={() => setCameraResetCount((c) => c + 1)}
-                          explosionLevel={explosionLevel}
-                          onChangeExplosionLevel={setExplosionLevel}
                         />
                       )}
 
@@ -1042,6 +1283,7 @@ export default function Home() {
                         onToggleIsolate={handleToggleIsolate}
                         isHidden={hiddenComponents.includes(selectedComponent.id)}
                         isIsolated={isolatedComponentId === selectedComponent.id}
+                        theme={theme}
                       />
                     )}
 
@@ -1061,12 +1303,6 @@ export default function Home() {
                       <>
                         {selectedMachineId === "walking-robot" ? (
                           <RobotConfigPanel
-                            customization={customization}
-                            onChangeCustomization={setCustomization}
-                            onSaveDesign={handleSaveDesign}
-                          />
-                        ) : selectedMachineId === "robo-rumble" ? (
-                          <RoboRumbleCustomizer
                             customization={customization}
                             onChangeCustomization={setCustomization}
                             onSaveDesign={handleSaveDesign}
@@ -1104,6 +1340,18 @@ export default function Home() {
         savedDesigns={savedDesigns}
         onLoadDesign={handleApplySavedDesign}
         onDeleteDesign={handleDeleteDesign}
+      />
+
+      {/* Global Interactive Web AR Modal */}
+      <WebARModal
+        isOpen={isWebAROpen}
+        machineId={arTargetMachineId}
+        customization={customization}
+        onClose={() => setIsWebAROpen(false)}
+        onSelectMachine={(id) => {
+          setArTargetMachineId(id);
+          setSelectedMachineId(id);
+        }}
       />
     </div>
   );

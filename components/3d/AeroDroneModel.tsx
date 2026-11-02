@@ -42,9 +42,9 @@ export default function AeroDroneModel({
   const armDiagonalDist = (customization.droneFrameSize || 450) / 1000;
   const armOffset = (armDiagonalDist / 2) * Math.SQRT1_2; // ~0.159m along X and Z
 
-  // Colors based on authentic F450 architecture (Image 1: Front arms white, Rear arms red)
-  const frontArmColor = customization.droneArmColorFront || "#f8fafc"; // White PA66
-  const rearArmColor = customization.droneArmColorRear || "#dc2626"; // Red PA66
+  // Colors based on authentic F450 architecture
+  const frontArmColor = customization.droneArmColorFront || customization.paintColor || "#f8fafc"; // Front PA66
+  const rearArmColor = customization.droneArmColorRear || "#dc2626"; // Rear PA66
 
   // Materials system: adapts automatically between standard CAD and Electronic Glass mode
   const materials = useMemo(() => {

@@ -1,16 +1,18 @@
 "use client";
 
 import { Box, BookOpen, Calculator, Cpu, HelpCircle, Layers, Recycle, Wrench, FileText, SlidersHorizontal, Cable } from "lucide-react";
-import { RopewayNavTab } from "@/types/machine";
+import { RopewayNavTab, AppTheme } from "@/types/machine";
 
 interface RopewayWorkshopNavProps {
   activeTab: RopewayNavTab;
   onChangeTab: (tab: RopewayNavTab) => void;
+  theme?: AppTheme;
 }
 
 export default function RopewayWorkshopNav({
   activeTab,
   onChangeTab,
+  theme = "dark",
 }: RopewayWorkshopNavProps) {
   const tabs = [
     { id: "simulator", label: "3D Cable Simulator", icon: Box },

@@ -32,6 +32,7 @@ export default function Esp32DroneModel({
   const prop3Ref = useRef<THREE.Group>(null); // M3: Rear-Left (CCW)
   const prop4Ref = useRef<THREE.Group>(null); // M4: Rear-Right (CW)
   const statusLedRef = useRef<THREE.PointLight>(null);
+  const droneGroupRef = useRef<THREE.Group>(null);
 
   const t = explosionLevel; // 0 (assembled) to 1 (fully exploded)
 
@@ -39,9 +40,9 @@ export default function Esp32DroneModel({
   const armOffset = 0.0336;
 
   // Materials & Colors
-  const frameColor = customization?.esp32DroneFrameColor || "#1e293b"; // Dark Polycarbonate
-  const frontPropColor = customization?.esp32DronePropsColor || "#ef4444"; // Red Front Props
-  const rearPropColor = "#0f172a"; // Black Rear Props
+  const frameColor = customization?.esp32DroneFrameColor || customization?.paintColor || "#1e293b"; // Frame & Guards
+  const frontPropColor = customization?.esp32DronePropsColor || "#ef4444"; // Front Props
+  const rearPropColor = customization?.esp32DroneRearPropsColor || "#0f172a"; // Rear Props
 
   const materials = useMemo(() => {
     return {
@@ -131,19 +132,42 @@ export default function Esp32DroneModel({
     };
   }, [frameColor, frontPropColor, rearPropColor]);
 
-  // Propeller dynamic spin loop (50,000 RPM coreless scaled)
+  // Propeller dynamic spin loop (50,000 RPM coreless scaled) + Active Hover
   useFrame((_, delta) => {
-    if (!isArmed) return;
-    const baseSpeed = 22 + (throttlePct / 100) * 35;
+    if (!isArmed) {
+      if (statusLedRef.current) {
+        statusLedRef.current.intensity = 0.2;
+      }
+      if (droneGroupRef.current) {
+        droneGroupRef.current.position.y = -0.015;
+        droneGroupRef.current.rotation.x = 0;
+        droneGroupRef.current.rotation.z = 0;
+      }
+      return;
+    }
+
+    // High speed dynamic spin proportional to throttle
+    const baseSpeed = 28 + (throttlePct / 100) * 55;
     const spin = baseSpeed * delta;
     if (prop1Ref.current) prop1Ref.current.rotation.y -= spin; // M1: CCW
     if (prop2Ref.current) prop2Ref.current.rotation.y += spin; // M2: CW
     if (prop3Ref.current) prop3Ref.current.rotation.y -= spin; // M3: CCW
     if (prop4Ref.current) prop4Ref.current.rotation.y += spin; // M4: CW
 
+    // Flashing blue heartbeat LED
     if (statusLedRef.current) {
-      const time = Date.now() * 0.005;
-      statusLedRef.current.intensity = Math.sin(time) > 0 ? 1.8 : 0.2;
+      const time = Date.now() * 0.01;
+      statusLedRef.current.intensity = Math.sin(time) > 0 ? 2.5 : 0.3;
+    }
+
+    // Realistic hovering lift and micro-bobbing when armed
+    if (droneGroupRef.current && explosionLevel === 0) {
+      const time = Date.now() * 0.004;
+      const hoverLift = (throttlePct / 100) * 0.025; // Up to 2.5cm lift
+      const bob = Math.sin(time * 3) * 0.002;
+      droneGroupRef.current.position.y = -0.015 + hoverLift + bob;
+      droneGroupRef.current.rotation.z = Math.sin(time * 2) * 0.012;
+      droneGroupRef.current.rotation.x = Math.cos(time * 2.5) * 0.012;
     }
   });
 
@@ -159,7 +183,7 @@ export default function Esp32DroneModel({
   };
 
   return (
-    <group position={[0, -0.015, 0]}>
+    <group ref={droneGroupRef} position={[0, -0.015, 0]}>
       {/* ================= 1. 95MM X-QUAD MICRO-FRAME WITH PROP GUARDS ================= */}
       {(() => {
         const { visible, mat } = getVisual("micro-frame");
@@ -414,6 +438,18 @@ export default function Esp32DroneModel({
                 <boxGeometry args={[0.055, 0.001, 0.006]} />
                 <primitive object={mat(materials.propFront)} attach="material" />
               </mesh>
+              {/* High-speed motion blur disc when armed */}
+              {isArmed && (
+                <mesh position={[0, 0.0005, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+                  <ringGeometry args={[0.003, 0.0275, 32]} />
+                  <meshBasicMaterial
+                    color={frontPropColor}
+                    transparent
+                    opacity={0.35 + (throttlePct / 100) * 0.25}
+                    side={THREE.DoubleSide}
+                  />
+                </mesh>
+              )}
             </group>
 
             {/* Propeller 2: Front-Left (CW, Red) */}
@@ -433,6 +469,18 @@ export default function Esp32DroneModel({
                 <boxGeometry args={[0.055, 0.001, 0.006]} />
                 <primitive object={mat(materials.propFront)} attach="material" />
               </mesh>
+              {/* High-speed motion blur disc when armed */}
+              {isArmed && (
+                <mesh position={[0, 0.0005, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+                  <ringGeometry args={[0.003, 0.0275, 32]} />
+                  <meshBasicMaterial
+                    color={frontPropColor}
+                    transparent
+                    opacity={0.35 + (throttlePct / 100) * 0.25}
+                    side={THREE.DoubleSide}
+                  />
+                </mesh>
+              )}
             </group>
 
             {/* Propeller 3: Rear-Left (CCW, Black) */}
@@ -452,6 +500,18 @@ export default function Esp32DroneModel({
                 <boxGeometry args={[0.055, 0.001, 0.006]} />
                 <primitive object={mat(materials.propRear)} attach="material" />
               </mesh>
+              {/* High-speed motion blur disc when armed */}
+              {isArmed && (
+                <mesh position={[0, 0.0005, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+                  <ringGeometry args={[0.003, 0.0275, 32]} />
+                  <meshBasicMaterial
+                    color={rearPropColor}
+                    transparent
+                    opacity={0.35 + (throttlePct / 100) * 0.25}
+                    side={THREE.DoubleSide}
+                  />
+                </mesh>
+              )}
             </group>
 
             {/* Propeller 4: Rear-Right (CW, Black) */}
@@ -471,6 +531,18 @@ export default function Esp32DroneModel({
                 <boxGeometry args={[0.055, 0.001, 0.006]} />
                 <primitive object={mat(materials.propRear)} attach="material" />
               </mesh>
+              {/* High-speed motion blur disc when armed */}
+              {isArmed && (
+                <mesh position={[0, 0.0005, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+                  <ringGeometry args={[0.003, 0.0275, 32]} />
+                  <meshBasicMaterial
+                    color={rearPropColor}
+                    transparent
+                    opacity={0.35 + (throttlePct / 100) * 0.25}
+                    side={THREE.DoubleSide}
+                  />
+                </mesh>
+              )}
             </group>
           </group>
         );

@@ -15,6 +15,7 @@ import AeroDroneModel from "./AeroDroneModel";
 import DroneBModel from "./DroneBModel";
 import Esp32DroneModel from "./Esp32DroneModel";
 import RopewayRobotModel from "./RopewayRobotModel";
+import RoboRacerModel from "./RoboRacerModel";
 
 export type CameraPreset = "default" | "front" | "side" | "top";
 
@@ -33,6 +34,13 @@ interface SceneViewerProps {
   cameraResetCount: number;
   onSelectComponent: (id: string) => void;
   theme?: AppTheme;
+  esp32Armed?: boolean;
+  esp32Throttle?: number;
+  roboRacerDriving?: boolean;
+  roboRacerSpeed?: number;
+  roboRacerSteering?: number;
+  roboRacerCameraPan?: number;
+  roboRacerHoodOpen?: boolean;
 }
 
 // Controller component to smoothly reposition camera on preset changes
@@ -71,6 +79,22 @@ function CameraController({
           break;
         default:
           targetPos.set(0.16, 0.11, 0.18);
+          break;
+      }
+    } else if (machineId === "robo-racer") {
+      lookTarget.set(0, 0, 0);
+      switch (preset) {
+        case "front":
+          targetPos.set(0, 0.08, 0.35);
+          break;
+        case "side":
+          targetPos.set(0.35, 0.08, 0);
+          break;
+        case "top":
+          targetPos.set(0, 0.45, 0.01);
+          break;
+        default:
+          targetPos.set(0.28, 0.18, 0.32);
           break;
       }
     } else if (machineId === "aero-450" || machineId === "drone-b") {
@@ -195,8 +219,8 @@ function CameraController({
     controls.update();
   }, [preset, resetCount, machineId, isSubAssembly]);
 
-  const minDist = machineId === "esp32-drone" ? 0.03 : isSubAssembly ? 0.15 : 0.25;
-  const maxDist = machineId === "esp32-drone" ? 3.5 : 16;
+  const minDist = (machineId === "esp32-drone" || machineId === "robo-racer") ? 0.03 : isSubAssembly ? 0.15 : 0.25;
+  const maxDist = (machineId === "esp32-drone" || machineId === "robo-racer") ? 4.0 : 16;
 
   return (
     <OrbitControls
@@ -271,6 +295,13 @@ export default function SceneViewer({
   cameraResetCount,
   onSelectComponent,
   theme = "dark",
+  esp32Armed = false,
+  esp32Throttle = 1000,
+  roboRacerDriving = false,
+  roboRacerSpeed = 0,
+  roboRacerSteering = 0,
+  roboRacerCameraPan = 0,
+  roboRacerHoodOpen = false,
 }: SceneViewerProps) {
   const isSubAssembly = viewMode === "subassembly";
   const isLight = theme === "light";
@@ -400,8 +431,29 @@ export default function SceneViewer({
               isolatedComponent={isolatedComponent}
               hiddenComponents={hiddenComponents}
               onSelect={onSelectComponent}
-              isArmed={true}
-              throttlePct={40}
+              isArmed={esp32Armed}
+              throttlePct={
+                esp32Armed
+                  ? Math.max(15, Math.min(100, Math.round(((esp32Throttle - 1000) / 1000) * 100)))
+                  : 0
+              }
+            />
+          )}
+
+          {/* ROBO-RACER AI Autonomous Vision Bot */}
+          {machineId === "robo-racer" && (
+            <RoboRacerModel
+              customization={customization}
+              explosionLevel={explosionLevel}
+              selectedComponent={selectedComponent}
+              isolatedComponent={isolatedComponent}
+              hiddenComponents={hiddenComponents}
+              onSelect={onSelectComponent}
+              isDriving={roboRacerDriving}
+              driveSpeed={roboRacerDriving ? (roboRacerSpeed !== 0 ? roboRacerSpeed : 50) : roboRacerSpeed}
+              steeringAngle={roboRacerSteering}
+              cameraPanAngle={roboRacerCameraPan}
+              hoodOpen={roboRacerHoodOpen}
             />
           )}
 

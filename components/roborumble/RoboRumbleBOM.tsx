@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { BOMItem } from "@/types/machine";
 import { ROBO_RUMBLE_BOM_PRESETS } from "@/data/roboRumbleData";
+import BuyLinkButtons from "@/components/ui/BuyLinkButtons";
 
 export default function RoboRumbleBOM() {
   const [selectedPreset, setSelectedPreset] = useState<"budget" | "balanced" | "performance">("balanced");
@@ -231,6 +232,7 @@ export default function RoboRumbleBOM() {
                 <th className="p-3.5 w-20 text-center">Qty</th>
                 <th className="p-3.5 w-28 text-right">Unit Price (₹)</th>
                 <th className="p-3.5 w-28 text-right">Subtotal</th>
+                <th className="p-3.5 text-center">Buy Online</th>
                 <th className="p-3.5 w-12 text-center">Action</th>
               </tr>
             </thead>
@@ -295,6 +297,14 @@ export default function RoboRumbleBOM() {
                   {/* Subtotal */}
                   <td className="p-3.5 text-right font-bold text-white font-mono">
                     ₹{(item.actualPriceINR * item.qty).toLocaleString()}
+                  </td>
+
+                  {/* Buy Online (Amazon / Flipkart / Robu) */}
+                  <td className="p-3.5 text-center">
+                    <BuyLinkButtons
+                      componentName={item.name}
+                      compact={true}
+                    />
                   </td>
 
                   {/* Delete */}

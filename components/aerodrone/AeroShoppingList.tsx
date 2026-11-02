@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { ShoppingBag, ExternalLink, Check, Download, IndianRupee, Store, Search } from "lucide-react";
 import { AERO_COMPONENTS_DATA } from "@/data/aeroDroneData";
+import BuyLinkButtons from "@/components/ui/BuyLinkButtons";
 
 export default function AeroShoppingList() {
   const [selectedSupplier, setSelectedSupplier] = useState<string>("all");
@@ -181,15 +182,12 @@ export default function AeroShoppingList() {
                   </div>
                 </div>
 
-                <a
-                  href={c.sourcing.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-600/20 hover:bg-emerald-600 text-emerald-300 hover:text-white border border-emerald-500/30 text-xs font-semibold transition"
-                >
-                  <span>{c.sourcing.supplier}</span>
-                  <ExternalLink size={12} />
-                </a>
+                <BuyLinkButtons
+                  componentName={`${c.name} ${c.model}`}
+                  officialUrl={c.sourcing.url}
+                  vendorName={c.sourcing.supplier}
+                  compact={true}
+                />
               </div>
             </div>
           );
