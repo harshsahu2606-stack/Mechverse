@@ -458,6 +458,10 @@ export default function HeroScene({ onLaunchStudio, onOpenAR }: HeroSceneProps) 
           {/* Primary Orange Button: EXPLORE MACHINES → */}
           <a
             href="#catalog"
+            onClick={(e) => {
+              e.preventDefault();
+              document.getElementById("catalog")?.scrollIntoView({ behavior: "smooth", block: "start" });
+            }}
             className="w-full sm:w-auto text-center justify-center px-6 sm:px-8 py-3 sm:py-3.5 rounded-full text-xs font-mono-tech font-semibold tracking-wider text-white flex items-center gap-2 transition-all transform active:scale-95 cursor-pointer shadow-lg hover:brightness-110"
             style={{
               backgroundColor: TOKENS.colors.accent,
@@ -486,17 +490,26 @@ export default function HeroScene({ onLaunchStudio, onOpenAR }: HeroSceneProps) 
           </button>
         </div>
 
-        {/* Minimal Animated Mouse Scroll Indicator */}
-        <a
-          href="#showcase"
-          className="flex flex-col items-center gap-1.5 text-white/50 hover:text-white transition-colors cursor-pointer pt-1"
-          aria-label="Scroll Down to Showcase"
+        {/* Minimal Animated Mouse Scroll Indicator with Smooth Scroll */}
+        <button
+          onClick={(e) => {
+            e.preventDefault();
+            const target = document.getElementById("reveal") || document.getElementById("showcase");
+            if (target) {
+              target.scrollIntoView({ behavior: "smooth", block: "start" });
+            }
+          }}
+          className="flex flex-col items-center gap-1.5 text-slate-400 hover:text-white transition-all duration-300 cursor-pointer pt-1 group"
+          aria-label="Scroll Down to Reveal Section"
         >
-          <div className="w-4 h-7 rounded-full border border-white/40 flex items-start justify-center p-1">
-            <div className="w-1 h-1.5 rounded-full bg-white animate-bounce mt-0.5" />
+          <span className="text-[10px] font-mono-tech tracking-widest uppercase opacity-75 group-hover:opacity-100 group-hover:text-orange-400 transition-all">
+            Scroll to Explore
+          </span>
+          <div className="w-4 h-7 rounded-full border border-white/30 group-hover:border-orange-500/80 flex items-start justify-center p-1 transition-colors">
+            <div className="w-1 h-1.5 rounded-full bg-orange-400 animate-bounce mt-0.5 shadow-[0_0_6px_#ff6a1a]" />
           </div>
-          <ChevronDown size={14} className="text-white/40 -mt-0.5" />
-        </a>
+          <ChevronDown size={14} className="text-white/40 group-hover:text-orange-400 -mt-0.5 transition-colors" />
+        </button>
       </div>
     </section>
   );

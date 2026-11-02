@@ -211,44 +211,69 @@ export default function MachineReveal({ onLaunchStudio }: MachineRevealProps) {
     <section
       ref={sectionRef}
       id="reveal"
-      className="relative w-full py-20 px-6 md:px-12 border-t border-white/5 overflow-hidden"
+      className="relative w-full py-16 sm:py-24 px-4 sm:px-6 md:px-12 border-t border-white/5 overflow-hidden"
       style={{ backgroundColor: TOKENS.colors.background }}
     >
-      <div className="max-w-6xl mx-auto flex flex-col items-center">
+      {/* Background Studio Vignette Gradient */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          background: `
+            radial-gradient(circle at 50% 15%, rgba(255,106,26,0.04) 0%, transparent 60%),
+            radial-gradient(circle at 50% 80%, rgba(255,255,255,0.02) 0%, transparent 50%)
+          `,
+        }}
+      />
+
+      <div className="relative z-10 max-w-6xl mx-auto flex flex-col items-center">
         {/* Section Header */}
-        <div className="text-center space-y-3 mb-8">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/10 bg-[#0F1114]">
-            <Sparkles size={12} style={{ color: TOKENS.colors.accent }} />
-            <span className="text-[11px] font-mono tracking-widest text-[#9AA0A9] uppercase">
-              Scroll-Driven Reveal
+        <div className="text-center space-y-3 mb-8 sm:mb-10">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-orange-500/20 bg-[#0F1114]/90 shadow-sm">
+            <Sparkles size={12} className="text-[#FF6A1A] animate-pulse" />
+            <span className="text-[11px] font-mono-tech tracking-widest text-[#9AA0A9] uppercase font-medium">
+              Autonomous Shroud Reveal
             </span>
           </div>
 
-          <h2 className="text-3xl sm:text-4xl font-light text-[#F4F5F7] tracking-tight">
+          <h2 className="text-2xl sm:text-4xl md:text-5xl font-light text-[#F4F5F7] tracking-tight">
             Scroll to Unveil Engineering{" "}
-            <span className="font-semibold" style={{ color: TOKENS.colors.accent }}>
+            <span className="font-semibold text-[#FF6A1A]">
               Precision
             </span>
             .
           </h2>
-          <p className="text-sm text-[#9AA0A9] max-w-lg mx-auto">
+          <p className="text-xs sm:text-sm text-[#9AA0A9] max-w-xl mx-auto leading-relaxed">
             As you scroll down the page, the aerodynamic protective shroud automatically glides away to
             uncover the internal carbon airframe, BLDC power systems, and APM flight avionics.
           </p>
         </div>
 
         {/* 3D Viewport with Shroud & Model */}
-        <div className="relative w-full h-[420px] sm:h-[520px] rounded-2xl border border-white/5 bg-[#0F1114]/80 overflow-hidden flex items-center justify-center shadow-2xl">
+        <div className="relative w-full h-[400px] sm:h-[520px] rounded-2xl border border-white/10 bg-[#0A0D14]/90 overflow-hidden flex items-center justify-center shadow-[0_20px_60px_rgba(0,0,0,0.8)]">
+          {/* CAD Technical Corner Crosshairs */}
+          <div className="absolute top-3 left-3 z-20 font-mono text-[10px] text-white/30 pointer-events-none">
+            + [SEC-02]
+          </div>
+          <div className="absolute top-3 right-3 z-20 font-mono text-[10px] text-white/30 pointer-events-none">
+            [F450-UAV] +
+          </div>
+          <div className="absolute bottom-3 left-3 z-20 font-mono text-[10px] text-white/30 pointer-events-none">
+            + [Z-AXIS TRANSLATION]
+          </div>
+          <div className="absolute bottom-3 right-3 z-20 font-mono text-[10px] text-white/30 pointer-events-none">
+            [DATUM-0] +
+          </div>
+
           {/* Status Overlay */}
-          <div className="absolute top-4 left-4 z-20 flex items-center gap-3 pointer-events-none">
+          <div className="absolute top-4 left-4 sm:left-6 z-20 flex items-center gap-2.5 sm:gap-3 pointer-events-none bg-[#07080A]/80 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/10">
             <span
-              className="w-2.5 h-2.5 rounded-full transition-colors duration-300"
+              className="w-2 h-2 rounded-full transition-colors duration-300 shrink-0"
               style={{
                 backgroundColor: progress > 0.85 ? TOKENS.colors.status.verified : TOKENS.colors.accent,
                 boxShadow: `0 0 10px ${progress > 0.85 ? TOKENS.colors.status.verified : TOKENS.colors.accent}`,
               }}
             />
-            <span className="text-xs font-mono text-[#9AA0A9] tracking-wider uppercase">
+            <span className="text-[10px] sm:text-xs font-mono text-[#E2E8F0] tracking-wider uppercase font-semibold">
               {progress < 0.15
                 ? "State: Shrouded Silhouette"
                 : progress > 0.85
@@ -260,12 +285,24 @@ export default function MachineReveal({ onLaunchStudio }: MachineRevealProps) {
           {/* Quick Manual Toggle Button */}
           <button
             onClick={toggleManualReveal}
-            className="absolute top-4 right-4 z-20 px-3 py-1.5 rounded-lg border border-white/10 bg-[#161A1F] text-xs font-mono text-[#F4F5F7] hover:text-white hover:border-white/30 flex items-center gap-2 transition-all cursor-pointer shadow-md"
+            className="absolute top-4 right-4 sm:right-6 z-20 px-3 py-1.5 rounded-full border border-white/10 bg-[#161A1F]/90 backdrop-blur-md text-[11px] font-mono text-[#F4F5F7] hover:text-white hover:border-orange-500/50 flex items-center gap-2 transition-all cursor-pointer shadow-md"
             aria-label={progress > 0.5 ? "Cover Machine" : "Instant Reveal"}
           >
-            {progress > 0.5 ? <EyeOff size={14} /> : <Eye size={14} />}
-            <span>{progress > 0.5 ? "Cover Machine" : "Instant Reveal"}</span>
+            {progress > 0.5 ? <EyeOff size={13} className="text-orange-400" /> : <Eye size={13} className="text-orange-400" />}
+            <span>{progress > 0.5 ? "Cover" : "Reveal"}</span>
           </button>
+
+          {/* Telemetry pill floating at bottom of canvas */}
+          <div className="absolute bottom-4 z-20 hidden md:flex items-center gap-3 px-4 py-1.5 rounded-full bg-[#07080A]/85 backdrop-blur-md border border-white/10 text-[10px] font-mono text-slate-300 pointer-events-none">
+            <span className="flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+              <span>AIRFRAME: 450mm CARBON</span>
+            </span>
+            <span className="text-slate-600">•</span>
+            <span>AUTOPILOT: PIXHAWK APM</span>
+            <span className="text-slate-600">•</span>
+            <span>MOTORS: 4× 2212 920KV</span>
+          </div>
 
           {/* 3D Canvas */}
           <Canvas camera={{ position: [0, 0.45, 0.75], fov: 40 }} className="w-full h-full">
@@ -280,7 +317,7 @@ export default function MachineReveal({ onLaunchStudio }: MachineRevealProps) {
           {/* Automatic Scroll Track Line */}
           <div className="relative w-full h-2 bg-white/10 rounded-full overflow-hidden shadow-inner">
             <div
-              className="h-full transition-all duration-75"
+              className="h-full transition-all duration-75 rounded-full"
               style={{
                 width: `${Math.round(progress * 100)}%`,
                 backgroundColor: TOKENS.colors.accent,
