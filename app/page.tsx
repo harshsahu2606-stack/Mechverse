@@ -1194,6 +1194,7 @@ export default function Home() {
                         onToggleIsolate={handleToggleIsolate}
                         isHidden={hiddenComponents.includes(selectedComponent.id)}
                         isIsolated={isolatedComponentId === selectedComponent.id}
+                        theme={theme}
                       />
                     )}
 
