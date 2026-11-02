@@ -18,6 +18,7 @@ import {
   Compass,
 } from "lucide-react";
 import { DRONE_B_SHOPPING_LIST, DRONE_B_ENGINEERING_SPECS } from "@/data/droneBSourcingData";
+import BuyLinkButtons from "@/components/ui/BuyLinkButtons";
 
 interface DroneBWorkshopViewProps {
   activePillar: "engineering" | "electronics" | "bom" | "guide";
@@ -250,16 +251,14 @@ export default function DroneBWorkshopView({
                   </span>
                 </div>
                 <p className="text-[11px] text-gray-300 leading-snug">{item.purpose}</p>
-                <div className="flex items-center justify-between pt-1 border-t border-white/5 text-[10px] font-mono text-gray-400">
+                <div className="flex flex-wrap items-center justify-between gap-2 pt-1 border-t border-white/5 text-[10px] font-mono text-gray-400">
                   <span>Vendor: {item.seller}</span>
-                  <a
-                    href={item.url}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="text-indigo-400 hover:text-indigo-300 font-bold flex items-center gap-1"
-                  >
-                    Source Link <ChevronRight size={12} />
-                  </a>
+                  <BuyLinkButtons
+                    componentName={item.model}
+                    officialUrl={item.url}
+                    vendorName={item.seller}
+                    compact={true}
+                  />
                 </div>
               </div>
             ))}

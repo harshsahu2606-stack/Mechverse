@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import { MachineId, AppTheme } from "@/types/machine";
 import { ELECTRONICS_DATA_MAP, MachineElectronicsData } from "@/data/electronicsData";
+import BuyLinkButtons from "@/components/ui/BuyLinkButtons";
 
 interface UniversalElectronicWorkbenchProps {
   machineId: MachineId;
@@ -299,6 +300,7 @@ export default function UniversalElectronicWorkbench({
                     <th className="p-3">Signal Type</th>
                     <th className="p-3">Voltage Domain</th>
                     <th className="p-3">Function & Purpose</th>
+                    <th className="p-3 text-center">Buy Component</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-white/5 text-neutral-300">
@@ -314,6 +316,9 @@ export default function UniversalElectronicWorkbench({
                       </td>
                       <td className="p-3 text-emerald-400">{pin.voltage}</td>
                       <td className="p-3 text-neutral-400 font-sans text-xs">{pin.functionDesc}</td>
+                      <td className="p-3 text-center">
+                        <BuyLinkButtons componentName={pin.component} compact={true} />
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -422,6 +427,17 @@ export default function UniversalElectronicWorkbench({
                   <span className="text-neutral-400 text-[11px]">{rail.voltage}</span>
                 </div>
               ))}
+            </div>
+            <div className="space-y-2 pt-2 border-t border-white/10">
+              <div className="text-[11px] font-mono text-neutral-400 uppercase">Buy Key Components</div>
+              <div className="space-y-1.5">
+                {data.blocks.slice(0, 3).map((block) => (
+                  <div key={block.id} className="p-2 rounded-lg bg-black/40 border border-white/5 space-y-1">
+                    <div className="text-[11px] font-bold text-white truncate">{block.title}</div>
+                    <BuyLinkButtons componentName={block.title} compact={true} />
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
 

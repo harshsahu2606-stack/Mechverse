@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { Calculator, CheckCircle2, RotateCcw, TrendingDown, IndianRupee, Layers } from "lucide-react";
 import { BOMItem } from "@/types/machine";
 import { DEFAULT_BOM_ITEMS } from "@/data/walkingRobotData";
+import BuyLinkButtons from "@/components/ui/BuyLinkButtons";
 
 export default function RobotBOM() {
   const [bomItems, setBomItems] = useState<BOMItem[]>(DEFAULT_BOM_ITEMS);
@@ -144,6 +145,7 @@ export default function RobotBOM() {
                 <th className="py-2.5 px-3">Est. Cost</th>
                 <th className="py-2.5 px-3">Actual Cost (₹)</th>
                 <th className="py-2.5 px-3">Source Type</th>
+                <th className="py-2.5 px-3 text-center">Buy Online</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-white/5">
@@ -232,6 +234,13 @@ export default function RobotBOM() {
                       >
                         {item.sourceType}
                       </span>
+                    </td>
+
+                    <td className="py-3 px-3 text-center">
+                      <BuyLinkButtons
+                        componentName={item.name}
+                        compact={true}
+                      />
                     </td>
                   </tr>
                 );

@@ -32,6 +32,7 @@ import {
 } from "lucide-react";
 import { AppTheme, Esp32DroneNavTab } from "@/types/machine";
 import { ESP32_DRONE_SHOPPING_LIST } from "@/data/esp32DroneData";
+import BuyLinkButtons from "@/components/ui/BuyLinkButtons";
 
 interface Esp32PhoneControllerOverlayProps {
   theme?: AppTheme;
@@ -631,18 +632,16 @@ export default function Esp32PhoneControllerOverlay({
                   <p className="text-xs text-gray-400 mt-1">{item.specs}</p>
                 </div>
 
-                <div className="pt-2 border-t border-white/5 flex items-center justify-between text-xs">
+                <div className="pt-2 border-t border-white/5 flex flex-wrap items-center justify-between gap-2 text-xs">
                   <span className="text-[11px] text-gray-400 font-mono">
                     Vendor: <strong className="text-gray-200">{item.seller}</strong>
                   </span>
-                  <a
-                    href={item.url}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="px-2.5 py-1 rounded-lg bg-indigo-600/20 hover:bg-indigo-600/30 text-indigo-400 border border-indigo-500/30 font-semibold text-[11px] transition"
-                  >
-                    View Product &rarr;
-                  </a>
+                  <BuyLinkButtons
+                    componentName={item.model}
+                    officialUrl={item.url}
+                    vendorName={item.seller}
+                    compact={true}
+                  />
                 </div>
               </div>
             ))}
