@@ -1,7 +1,7 @@
 "use client";
 
 import { ArrowLeft, Box, Eye, Layers, Palette, Zap, Camera } from "lucide-react";
-import { ViewMode, AppTheme } from "@/types/machine";
+import { ViewMode, AppTheme, MachineId } from "@/types/machine";
 
 interface ControlsHeaderProps {
   viewMode: ViewMode;
@@ -9,6 +9,7 @@ interface ControlsHeaderProps {
   isSubAssembly: boolean;
   onExitSubAssembly: () => void;
   machineTitle: string;
+  machineId?: MachineId;
   theme?: AppTheme;
   onOpenAR?: () => void;
 }
@@ -19,10 +20,12 @@ export default function ControlsHeader({
   isSubAssembly,
   onExitSubAssembly,
   machineTitle,
+  machineId,
   theme = "dark",
   onOpenAR,
 }: ControlsHeaderProps) {
   const isLight = theme === "light";
+  const hasElectronicMode = machineId !== "sports-car" && machineId !== "electric-fan";
 
   return (
     <div className="absolute top-2 sm:top-4 left-2 sm:left-4 right-2 sm:right-4 z-20 flex flex-col sm:flex-row sm:items-center justify-between gap-2 pointer-events-none">
@@ -94,20 +97,22 @@ export default function ControlsHeader({
           <span>Exploded</span>
         </button>
 
-        <button
-          onClick={() => setViewMode("electronic")}
-          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition ${
-            viewMode === "electronic"
-              ? "bg-amber-500 text-white shadow-md shadow-amber-500/30 animate-pulse"
-              : isLight
-              ? "text-gray-600 hover:text-gray-900 hover:bg-gray-100"
-              : "text-gray-400 hover:text-white"
-          }`}
-          title="Electronic Wiring & Signal Trace Mode"
-        >
-          <Zap size={13} />
-          <span>Electronic</span>
-        </button>
+        {hasElectronicMode && (
+          <button
+            onClick={() => setViewMode("electronic")}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition ${
+              viewMode === "electronic"
+                ? "bg-amber-500 text-white shadow-md shadow-amber-500/30 animate-pulse"
+                : isLight
+                ? "text-gray-600 hover:text-gray-900 hover:bg-gray-100"
+                : "text-gray-400 hover:text-white"
+            }`}
+            title="Electronic Wiring & Signal Trace Mode"
+          >
+            <Zap size={13} />
+            <span>Electronic</span>
+          </button>
+        )}
 
         <button
           onClick={() => setViewMode("components")}

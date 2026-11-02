@@ -67,6 +67,7 @@ import AeroShoppingList from "@/components/aerodrone/AeroShoppingList";
 import AeroAssemblyGuide from "@/components/aerodrone/AeroAssemblyGuide";
 import AeroWiringDiagram from "@/components/aerodrone/AeroWiringDiagram";
 import AeroElectronicView from "@/components/aerodrone/AeroElectronicView";
+import UniversalElectronicWorkbench from "@/components/electronics/UniversalElectronicWorkbench";
 import AeroCalibrationGuide from "@/components/aerodrone/AeroCalibrationGuide";
 import AeroTroubleshooting from "@/components/aerodrone/AeroTroubleshooting";
 import AeroBOM from "@/components/aerodrone/AeroBOM";
@@ -477,6 +478,9 @@ export default function Home() {
     setExplosionLevel(0);
     setCameraPreset("default");
     setCameraResetCount((c) => c + 1);
+    if ((id === "sports-car" || id === "electric-fan") && viewMode === "electronic") {
+      setViewMode("view");
+    }
     setRobotProjectTab("simulator");
     if (id === "robo-rumble") {
       setRoboRumbleProjectTab("simulator");
@@ -1043,6 +1047,7 @@ export default function Home() {
                           ? activeSubAssembly?.name || "SUB-ASSEMBLY"
                           : activeMachine.name
                       }
+                      machineId={selectedMachineId}
                       theme={theme}
                       onOpenAR={() => handleOpenAR(selectedMachineId)}
                     />
@@ -1116,29 +1121,13 @@ export default function Home() {
                       />
                     )}
 
-                    {/* Electronic View Mode Floating Quick-Access Bar (Image 2 Schematic) */}
+                    {/* Interactive Full Electronic Workbench (In-Place Engineering Schematic for each model) */}
                     {viewMode === "electronic" && (
-                      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-30 pointer-events-auto">
-                        <button
-                          onClick={() => setShowElectronicOverlay(true)}
-                          className="flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs shadow-xl shadow-amber-500/25 transition transform hover:scale-105"
-                        >
-                          <Zap size={15} />
-                          <span>Inspect ArduPilot Interconnect Schematic (Image 2)</span>
-                        </button>
-                      </div>
-                    )}
-
-                    {/* Full-screen Electronic Schematic Modal */}
-                    {showElectronicOverlay && (
-                      <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex flex-col p-4 sm:p-6 animate-in fade-in">
-                        <div className="relative w-full h-full max-w-7xl mx-auto rounded-3xl overflow-hidden shadow-2xl border border-white/20">
-                          <AeroElectronicView
-                            theme={theme}
-                            onClose={() => setShowElectronicOverlay(false)}
-                          />
-                        </div>
-                      </div>
+                      <UniversalElectronicWorkbench
+                        machineId={selectedMachineId}
+                        theme={theme}
+                        onClose={() => setViewMode("view")}
+                      />
                     )}
 
                     {/* Component Hierarchy Drawer (when in Components view) */}
