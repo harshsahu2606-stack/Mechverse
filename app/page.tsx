@@ -79,6 +79,7 @@ import UniversalWorkshopNav, { UniversalPillar } from "@/components/ui/Universal
 import DroneBWorkshopNav, { DroneBNavPillar } from "@/components/droneb/DroneBWorkshopNav";
 import DroneBWorkshopView from "@/components/droneb/DroneBWorkshopView";
 import { AeroNavTab, AppTheme, Esp32DroneNavTab, RoboRacerNavTab } from "@/types/machine";
+import { explosionAudio } from "@/lib/audio/explosionSoundEngine";
 
 // Dynamic import with SSR disabled to prevent WebGL server rendering errors
 const SceneViewer = dynamic(() => import("@/components/3d/SceneViewer"), {
@@ -1023,9 +1024,15 @@ export default function Home() {
                       viewMode={viewMode}
                       setViewMode={(mode) => {
                         setViewMode(mode);
-                        if (mode === "exploded" && explosionLevel === 0) {
-                          setExplosionLevel(0.6);
+                        if (mode === "exploded") {
+                          explosionAudio.playCinematicExplode(0.8);
+                          if (explosionLevel === 0) {
+                            setExplosionLevel(0.6);
+                          }
                         } else if (mode === "view") {
+                          if (explosionLevel > 0) {
+                            explosionAudio.playMechanicalLatch();
+                          }
                           setExplosionLevel(0);
                         }
                       }}
