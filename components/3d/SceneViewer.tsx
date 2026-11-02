@@ -32,6 +32,11 @@ interface SceneViewerProps {
   cameraResetCount: number;
   onSelectComponent: (id: string) => void;
   theme?: AppTheme;
+  roboRacerDriving?: boolean;
+  roboRacerSpeed?: number;
+  roboRacerSteering?: number;
+  roboRacerCameraPan?: number;
+  roboRacerHoodOpen?: boolean;
 }
 
 // Controller component to smoothly reposition camera on preset changes
@@ -268,6 +273,11 @@ export default function SceneViewer({
   cameraResetCount,
   onSelectComponent,
   theme = "dark",
+  roboRacerDriving = false,
+  roboRacerSpeed = 0,
+  roboRacerSteering = 0,
+  roboRacerCameraPan = 0,
+  roboRacerHoodOpen = false,
 }: SceneViewerProps) {
   const isSubAssembly = viewMode === "subassembly";
   const isLight = theme === "light";
@@ -411,11 +421,11 @@ export default function SceneViewer({
               isolatedComponent={isolatedComponent}
               hiddenComponents={hiddenComponents}
               onSelect={onSelectComponent}
-              isDriving={true}
-              driveSpeed={35}
-              steeringAngle={0}
-              cameraPanAngle={0}
-              hoodOpen={true}
+              isDriving={roboRacerDriving}
+              driveSpeed={roboRacerDriving ? (roboRacerSpeed !== 0 ? roboRacerSpeed : 50) : roboRacerSpeed}
+              steeringAngle={roboRacerSteering}
+              cameraPanAngle={roboRacerCameraPan}
+              hoodOpen={roboRacerHoodOpen}
             />
           )}
 

@@ -73,6 +73,8 @@ import AeroBOM from "@/components/aerodrone/AeroBOM";
 import AeroEngineeringDocs from "@/components/aerodrone/AeroEngineeringDocs";
 import Esp32PhoneControllerOverlay from "@/components/esp32drone/Esp32PhoneControllerOverlay";
 import RoboRacerWorkshopOverlay from "@/components/roboracer/RoboRacerWorkshopOverlay";
+import RoboRacerDriveDock from "@/components/roboracer/RoboRacerDriveDock";
+import UniversalWorkshopNav, { UniversalPillar } from "@/components/ui/UniversalWorkshopNav";
 import DroneBWorkshopNav, { DroneBNavPillar } from "@/components/droneb/DroneBWorkshopNav";
 import DroneBWorkshopView from "@/components/droneb/DroneBWorkshopView";
 import { AeroNavTab, AppTheme, Esp32DroneNavTab, RoboRacerNavTab } from "@/types/machine";
@@ -651,6 +653,40 @@ export default function Home() {
               </div>
             )}
 
+            {/* If Robo-Racer Rover, Render Dedicated Universal Workshop Nav Bar (Consistent 5 Pillars) */}
+            {selectedMachineId === "robo-racer" && (
+              <div className="z-30 shrink-0">
+                <UniversalWorkshopNav
+                  machineId="robo-racer"
+                  activePillar={
+                    roboRacerTab === "simulator"
+                      ? "simulator"
+                      : roboRacerTab === "how-it-works" || roboRacerTab === "ai-vision"
+                      ? "engineering"
+                      : roboRacerTab === "schematic"
+                      ? "electronics"
+                      : roboRacerTab === "bom"
+                      ? "bom"
+                      : "guide"
+                  }
+                  onChangePillar={(pillar) => {
+                    const tabMap: Record<UniversalPillar, RoboRacerNavTab> = {
+                      simulator: "simulator",
+                      engineering: "how-it-works",
+                      electronics: "schematic",
+                      bom: "bom",
+                      guide: "build-guide",
+                    };
+                    setRoboRacerTab(tabMap[pillar]);
+                    if (pillar !== "simulator") {
+                      setViewMode("view");
+                    }
+                  }}
+                  theme={theme}
+                />
+              </div>
+            )}
+
             {/* Content Area Based on Robot Workshop Tab */}
             {selectedMachineId === "walking-robot" && robotProjectTab !== "simulator" ? (
               <div className="flex-1 overflow-y-auto custom-scrollbar bg-[#090b0f]">
@@ -753,6 +789,7 @@ export default function Home() {
                   explosionLevel={explosionLevel}
                   onChangeExplosionLevel={setExplosionLevel}
                   onResetCamera={() => setCameraResetCount((c) => c + 1)}
+                  hideNavHeader={true}
                 />
               </div>
             ) : (
@@ -948,6 +985,11 @@ export default function Home() {
                       cameraPreset={cameraPreset}
                       cameraResetCount={cameraResetCount}
                       theme={theme}
+                      roboRacerDriving={roboRacerDriving}
+                      roboRacerSpeed={roboRacerControls.speed}
+                      roboRacerSteering={roboRacerControls.steering}
+                      roboRacerCameraPan={roboRacerControls.cameraPan}
+                      roboRacerHoodOpen={roboRacerHoodOpen}
                       onSelectComponent={(id) => {
                         if (activeSubAssemblyId) {
                           setSelectedSubPartId(id);
@@ -978,26 +1020,27 @@ export default function Home() {
                       </div>
                     )}
 
-                    {/* ROBO-RACER Autonomous Drive Controller & Telemetry HUD */}
-                    {selectedMachineId === "robo-racer" && (
-                      <div className="absolute inset-0 pointer-events-none z-20">
-                        <RoboRacerWorkshopOverlay
-                          theme={theme}
-                          isDriving={roboRacerDriving}
-                          onToggleDrive={() => setRoboRacerDriving((prev) => !prev)}
-                          speed={roboRacerControls.speed}
-                          steering={roboRacerControls.steering}
-                          cameraPan={roboRacerControls.cameraPan}
-                          hoodOpen={roboRacerHoodOpen}
-                          onToggleHood={() => setRoboRacerHoodOpen((prev) => !prev)}
-                          onControlChange={setRoboRacerControls}
-                          activeTab={roboRacerTab}
-                          onChangeTab={setRoboRacerTab}
-                          explosionLevel={explosionLevel}
-                          onChangeExplosionLevel={setExplosionLevel}
-                          onResetCamera={() => setCameraResetCount((c) => c + 1)}
-                        />
-                      </div>
+                    {/* ROBO-RACER Sleek Floating Bottom Drive Controller & Telemetry Dock (Zero Overlap on Car) */}
+                    {selectedMachineId === "robo-racer" && viewMode !== "exploded" && (
+                      <RoboRacerDriveDock
+                        theme={theme}
+                        isDriving={roboRacerDriving}
+                        onToggleDrive={() => {
+                          setRoboRacerDriving((prev) => {
+                            const next = !prev;
+                            if (next && roboRacerControls.speed === 0) {
+                              setRoboRacerControls({ ...roboRacerControls, speed: 45 });
+                            }
+                            return next;
+                          });
+                        }}
+                        speed={roboRacerControls.speed}
+                        steering={roboRacerControls.steering}
+                        cameraPan={roboRacerControls.cameraPan}
+                        hoodOpen={roboRacerHoodOpen}
+                        onToggleHood={() => setRoboRacerHoodOpen((prev) => !prev)}
+                        onControlChange={setRoboRacerControls}
+                      />
                     )}
 
                     {/* Electronic View Mode Floating Quick-Access Bar (Image 2 Schematic) */}

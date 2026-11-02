@@ -48,6 +48,7 @@ interface RoboRacerWorkshopOverlayProps {
   explosionLevel?: number;
   onChangeExplosionLevel?: (level: number) => void;
   onResetCamera?: () => void;
+  hideNavHeader?: boolean;
 }
 
 export default function RoboRacerWorkshopOverlay({
@@ -65,6 +66,7 @@ export default function RoboRacerWorkshopOverlay({
   explosionLevel = 0,
   onChangeExplosionLevel,
   onResetCamera,
+  hideNavHeader = false,
 }: RoboRacerWorkshopOverlayProps) {
   const isLight = theme === "light";
   const [driveMode, setDriveMode] = useState<"manual" | "obstacle" | "ai-track">("manual");
@@ -109,75 +111,77 @@ export default function RoboRacerWorkshopOverlay({
   return (
     <div className="w-full flex flex-col pointer-events-auto">
       {/* ================= WORKSHOP TOP NAVIGATION BAR ================= */}
-      <div
-        className={`px-3 py-2 border-b flex items-center justify-between gap-2 overflow-x-auto ${
-          isLight ? "bg-white/95 border-gray-200" : "bg-[#0b0f19]/90 border-white/10 backdrop-blur-md"
-        }`}
-      >
-        <div className="flex items-center gap-1.5 shrink-0">
-          <div className="w-6 h-6 rounded-lg bg-gradient-to-tr from-amber-500 to-orange-600 flex items-center justify-center text-white font-black text-xs shadow-md">
-            RR
+      {!hideNavHeader && (
+        <div
+          className={`px-3 py-2 border-b flex items-center justify-between gap-2 overflow-x-auto ${
+            isLight ? "bg-white/95 border-gray-200" : "bg-[#0b0f19]/90 border-white/10 backdrop-blur-md"
+          }`}
+        >
+          <div className="flex items-center gap-1.5 shrink-0">
+            <div className="w-6 h-6 rounded-lg bg-gradient-to-tr from-amber-500 to-orange-600 flex items-center justify-center text-white font-black text-xs shadow-md">
+              RR
+            </div>
+            <div className="hidden sm:block">
+              <span className="text-xs font-bold tracking-wider text-amber-500 uppercase">ROBO-RACER</span>
+              <span className="text-[10px] text-gray-400 block font-mono">SolidWorks CAD Edition</span>
+            </div>
           </div>
-          <div className="hidden sm:block">
-            <span className="text-xs font-bold tracking-wider text-amber-500 uppercase">ROBO-RACER</span>
-            <span className="text-[10px] text-gray-400 block font-mono">SolidWorks CAD Edition</span>
-          </div>
-        </div>
 
-        {/* Tab Buttons - 5 Clean Pillars */}
-        <div className="flex items-center gap-1 sm:gap-1.5 overflow-x-auto no-scrollbar py-0.5">
-          {[
-            {
-              id: "simulator" as RoboRacerNavTab,
-              label: "Live Telemetry",
-              icon: Gauge,
-              isActive: activeTab === "simulator",
-            },
-            {
-              id: "how-it-works" as RoboRacerNavTab,
-              label: "Architecture & AI",
-              icon: Layers,
-              isActive: activeTab === "how-it-works" || activeTab === "ai-vision",
-            },
-            {
-              id: "schematic" as RoboRacerNavTab,
-              label: "Schematics",
-              icon: Zap,
-              isActive: activeTab === "schematic",
-            },
-            {
-              id: "bom" as RoboRacerNavTab,
-              label: "Indian BOM (₹)",
-              icon: ShoppingBag,
-              isActive: activeTab === "bom",
-            },
-            {
-              id: "build-guide" as RoboRacerNavTab,
-              label: "Build & Firmware",
-              icon: BookOpen,
-              isActive: activeTab === "build-guide" || activeTab === "firmware",
-            },
-          ].map((tab) => {
-            const Icon = tab.icon;
-            return (
-              <button
-                key={tab.id}
-                onClick={() => onChangeTab(tab.id)}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition whitespace-nowrap cursor-pointer shrink-0 ${
-                  tab.isActive
-                    ? "bg-amber-500 text-black font-bold shadow-lg shadow-amber-500/25 scale-102"
-                    : isLight
-                    ? "bg-gray-100 hover:bg-gray-200 text-gray-700"
-                    : "text-gray-300 hover:text-white bg-white/5 hover:bg-white/10 border border-white/10"
-                }`}
-              >
-                <Icon size={13} />
-                <span>{tab.label}</span>
-              </button>
-            );
-          })}
+          {/* Tab Buttons - 5 Clean Pillars */}
+          <div className="flex items-center gap-1 sm:gap-1.5 overflow-x-auto no-scrollbar py-0.5">
+            {[
+              {
+                id: "simulator" as RoboRacerNavTab,
+                label: "Live Telemetry",
+                icon: Gauge,
+                isActive: activeTab === "simulator",
+              },
+              {
+                id: "how-it-works" as RoboRacerNavTab,
+                label: "Architecture & AI",
+                icon: Layers,
+                isActive: activeTab === "how-it-works" || activeTab === "ai-vision",
+              },
+              {
+                id: "schematic" as RoboRacerNavTab,
+                label: "Schematics",
+                icon: Zap,
+                isActive: activeTab === "schematic",
+              },
+              {
+                id: "bom" as RoboRacerNavTab,
+                label: "Indian BOM (₹)",
+                icon: ShoppingBag,
+                isActive: activeTab === "bom",
+              },
+              {
+                id: "build-guide" as RoboRacerNavTab,
+                label: "Build & Firmware",
+                icon: BookOpen,
+                isActive: activeTab === "build-guide" || activeTab === "firmware",
+              },
+            ].map((tab) => {
+              const Icon = tab.icon;
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => onChangeTab(tab.id)}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition whitespace-nowrap cursor-pointer shrink-0 ${
+                    tab.isActive
+                      ? "bg-amber-500 text-black font-bold shadow-lg shadow-amber-500/25 scale-102"
+                      : isLight
+                      ? "bg-gray-100 hover:bg-gray-200 text-gray-700"
+                      : "text-gray-300 hover:text-white bg-white/5 hover:bg-white/10 border border-white/10"
+                  }`}
+                >
+                  <Icon size={13} />
+                  <span>{tab.label}</span>
+                </button>
+              );
+            })}
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Sub-Tabs for Deep Content */}
       {(activeTab === "how-it-works" || activeTab === "ai-vision") && (

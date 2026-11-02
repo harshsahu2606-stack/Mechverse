@@ -30,7 +30,7 @@ export default function RoboRacerModel({
   driveSpeed = 0,
   steeringAngle = 0,
   cameraPanAngle = 0,
-  hoodOpen = true,
+  hoodOpen = false,
 }: RoboRacerModelProps) {
   const t = explosionLevel; // 0 (assembled) to 1 (fully exploded)
 
@@ -39,6 +39,10 @@ export default function RoboRacerModel({
   const wheelFRRef = useRef<THREE.Group>(null);
   const wheelRLRef = useRef<THREE.Group>(null);
   const wheelRRRef = useRef<THREE.Group>(null);
+
+  // Front wheel steering refs
+  const steerFLRef = useRef<THREE.Group>(null);
+  const steerFRRef = useRef<THREE.Group>(null);
 
   // Camera swivel ref
   const cameraSwivelRef = useRef<THREE.Group>(null);
@@ -180,15 +184,35 @@ export default function RoboRacerModel({
     };
   }, [bodyColor, accentColor]);
 
-  // Dynamic animation loop: wheel rotation and camera pan
+  // Dynamic animation loop: wheel rotation, steering pivot, and camera pan
   useFrame((_, delta) => {
-    // Wheel spin when driving
-    if (isDriving || Math.abs(driveSpeed) > 1) {
-      const speedFactor = (driveSpeed / 100) * 25 * delta;
+    // Determine active wheel drive speed
+    const effectiveSpeed = isDriving ? (driveSpeed !== 0 ? driveSpeed : 50) : driveSpeed;
+
+    // Wheel spin when driving or speed slider active
+    if (Math.abs(effectiveSpeed) > 1) {
+      const speedFactor = (effectiveSpeed / 100) * 28 * delta;
       if (wheelFLRef.current) wheelFLRef.current.rotation.x += speedFactor;
       if (wheelFRRef.current) wheelFRRef.current.rotation.x += speedFactor;
       if (wheelRLRef.current) wheelRLRef.current.rotation.x += speedFactor;
       if (wheelRRRef.current) wheelRRRef.current.rotation.x += speedFactor;
+    }
+
+    // Front Wheel Steering Pivot (Yaw)
+    const targetSteerRad = THREE.MathUtils.degToRad(-steeringAngle);
+    if (steerFLRef.current) {
+      steerFLRef.current.rotation.y = THREE.MathUtils.lerp(
+        steerFLRef.current.rotation.y,
+        targetSteerRad,
+        delta * 8
+      );
+    }
+    if (steerFRRef.current) {
+      steerFRRef.current.rotation.y = THREE.MathUtils.lerp(
+        steerFRRef.current.rotation.y,
+        targetSteerRad,
+        delta * 8
+      );
     }
 
     // Dynamic Camera Pan Swivel
@@ -586,7 +610,7 @@ export default function RoboRacerModel({
             onSelect("racing-wheels");
           }}
         >
-          {/* Wheel Front-Left */}
+          {/* Wheel Front-Left (with Steering Pivot) */}
           <group
             position={[
               -chassisWidth * 0.58 - t * 0.24,
@@ -594,12 +618,14 @@ export default function RoboRacerModel({
               0.065 + t * 0.08,
             ]}
           >
-            <group ref={wheelFLRef}>
-              <WheelMesh materials={materials} isSelected={isSelected("racing-wheels")} isLeft={true} />
+            <group ref={steerFLRef}>
+              <group ref={wheelFLRef}>
+                <WheelMesh materials={materials} isSelected={isSelected("racing-wheels")} isLeft={true} />
+              </group>
             </group>
           </group>
 
-          {/* Wheel Front-Right */}
+          {/* Wheel Front-Right (with Steering Pivot) */}
           <group
             position={[
               chassisWidth * 0.58 + t * 0.24,
@@ -607,8 +633,10 @@ export default function RoboRacerModel({
               0.065 + t * 0.08,
             ]}
           >
-            <group ref={wheelFRRef}>
-              <WheelMesh materials={materials} isSelected={isSelected("racing-wheels")} isLeft={false} />
+            <group ref={steerFRRef}>
+              <group ref={wheelFRRef}>
+                <WheelMesh materials={materials} isSelected={isSelected("racing-wheels")} isLeft={false} />
+              </group>
             </group>
           </group>
 
