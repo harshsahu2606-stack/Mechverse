@@ -590,6 +590,63 @@ export default function Esp32PhoneControllerOverlay({
               </div>
             ))}
           </div>
+
+          {/* Part 2: Pre-Flight Testing & Bench Calibration Suite */}
+          <div className="space-y-4 pt-4 border-t border-white/10">
+            <h3 className="text-base font-bold text-white flex items-center gap-2 font-mono uppercase tracking-wider text-emerald-400">
+              <span>Part 2: Pre-Flight Sensor Calibration & Bench Testing Suite</span>
+            </h3>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="p-4 rounded-xl border border-white/10 bg-[#0c0f18] space-y-2">
+                <span className="text-xs font-mono font-bold text-emerald-400 uppercase block">
+                  Test 01: MOSFET Gate Switching & Continuity Test
+                </span>
+                <p className="text-xs text-gray-300 leading-relaxed">
+                  Before attaching propellers or battery, set your multimeter to resistance (Ω) mode. Probe between MOSFET Drain and Source with the gate pulled LOW (GND via 10kΩ). Resistance must read infinite. Apply 3.3V to the gate via a 100Ω probe: the resistance must drop to under 0.15Ω. This verifies that no gate is shorted and motors will not spontaneously spin upon arming.
+                </p>
+                <div className="text-[11px] font-mono text-emerald-400 bg-emerald-500/10 p-2 rounded-lg border border-emerald-500/20">
+                  Pass Criteria: R_off &gt; 1MΩ, R_on &lt; 0.15Ω per MOSFET
+                </div>
+              </div>
+
+              <div className="p-4 rounded-xl border border-white/10 bg-[#0c0f18] space-y-2">
+                <span className="text-xs font-mono font-bold text-emerald-400 uppercase block">
+                  Test 02: MPU-6050 400kHz I2C Telemetry & Level Verification
+                </span>
+                <p className="text-xs text-gray-300 leading-relaxed">
+                  Power the ESP32 via USB and open the Serial Monitor at 115200 baud. Confirm the MPU-6050 is detected at I2C address 0x68. Place the drone on a flat, level surface. The pitch and roll angles must read within ±0.5° of zero. Gently tilt the nose down: pitch angle must increase positively. Tilt to the right: roll angle must increase positively.
+                </p>
+                <div className="text-[11px] font-mono text-emerald-400 bg-emerald-500/10 p-2 rounded-lg border border-emerald-500/20">
+                  Target Sensor Drift: &lt; 0.05°/sec after 100-sample calibration
+                </div>
+              </div>
+
+              <div className="p-4 rounded-xl border border-white/10 bg-[#0c0f18] space-y-2">
+                <span className="text-xs font-mono font-bold text-emerald-400 uppercase block">
+                  Test 03: Props-Off SoftAP Wi-Fi Heartbeat & Latency Check
+                </span>
+                <p className="text-xs text-gray-300 leading-relaxed">
+                  Connect your smartphone to 'AERO_ESP32_DRONE' Wi-Fi. In the telemetry dock, verify packet ping displays 7-12ms. Advance throttle to 30%: all four coreless motor shafts must spin smoothly without stutter. Turn off Wi-Fi on the phone: the ESP32 watchdog timer must trigger within 500ms, ramping all four motors down to 0 RPM stop.
+                </p>
+                <div className="text-[11px] font-mono text-emerald-400 bg-emerald-500/10 p-2 rounded-lg border border-emerald-500/20">
+                  Watchdog Reaction: Emergency throttle zero within 500ms
+                </div>
+              </div>
+
+              <div className="p-4 rounded-xl border border-white/10 bg-[#0c0f18] space-y-2">
+                <span className="text-xs font-mono font-bold text-emerald-400 uppercase block">
+                  Test 04: Center of Gravity (CG) Balance & Maiden Hover
+                </span>
+                <p className="text-xs text-gray-300 leading-relaxed">
+                  Mount the red (front) and black (rear) 55mm propellers. Support the drone with two fingertips directly underneath the diagonal arm intersection. Adjust the battery position until the frame balances perfectly level. Conduct maiden flight indoors over a carpeted floor. Advance throttle smoothly to 45%: the quadcopter should lift cleanly off the ground with minimal drift.
+                </p>
+                <div className="text-[11px] font-mono text-emerald-400 bg-emerald-500/10 p-2 rounded-lg border border-emerald-500/20">
+                  Takeoff Throttle: 42% – 48% with fresh 4.2V LiPo
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       )}
 
@@ -645,6 +702,63 @@ export default function Esp32PhoneControllerOverlay({
                 </div>
               </div>
             ))}
+          </div>
+
+          {/* Part 2: Pre-Flight Testing & Bench Calibration Suite */}
+          <div className="space-y-4 pt-4 border-t border-white/10">
+            <h3 className="text-base font-bold text-white flex items-center gap-2 font-mono uppercase tracking-wider text-emerald-400">
+              <span>Part 2: Pre-Flight Sensor Calibration & Bench Testing Suite</span>
+            </h3>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="p-4 rounded-xl border border-white/10 bg-[#0c0f18] space-y-2">
+                <span className="text-xs font-mono font-bold text-emerald-400 uppercase block">
+                  Test 01: MOSFET Gate Switching & Continuity Test
+                </span>
+                <p className="text-xs text-gray-300 leading-relaxed">
+                  Before attaching propellers or battery, set your multimeter to resistance (Ω) mode. Probe between MOSFET Drain and Source with the gate pulled LOW (GND via 10kΩ). Resistance must read infinite. Apply 3.3V to the gate via a 100Ω probe: the resistance must drop to under 0.15Ω. This verifies that no gate is shorted and motors will not spontaneously spin upon arming.
+                </p>
+                <div className="text-[11px] font-mono text-emerald-400 bg-emerald-500/10 p-2 rounded-lg border border-emerald-500/20">
+                  Pass Criteria: R_off &gt; 1MΩ, R_on &lt; 0.15Ω per MOSFET
+                </div>
+              </div>
+
+              <div className="p-4 rounded-xl border border-white/10 bg-[#0c0f18] space-y-2">
+                <span className="text-xs font-mono font-bold text-emerald-400 uppercase block">
+                  Test 02: MPU-6050 400kHz I2C Telemetry & Level Verification
+                </span>
+                <p className="text-xs text-gray-300 leading-relaxed">
+                  Power the ESP32 via USB and open the Serial Monitor at 115200 baud. Confirm the MPU-6050 is detected at I2C address 0x68. Place the drone on a flat, level surface. The pitch and roll angles must read within ±0.5° of zero. Gently tilt the nose down: pitch angle must increase positively. Tilt to the right: roll angle must increase positively.
+                </p>
+                <div className="text-[11px] font-mono text-emerald-400 bg-emerald-500/10 p-2 rounded-lg border border-emerald-500/20">
+                  Target Sensor Drift: &lt; 0.05°/sec after 100-sample calibration
+                </div>
+              </div>
+
+              <div className="p-4 rounded-xl border border-white/10 bg-[#0c0f18] space-y-2">
+                <span className="text-xs font-mono font-bold text-emerald-400 uppercase block">
+                  Test 03: Props-Off SoftAP Wi-Fi Heartbeat & Latency Check
+                </span>
+                <p className="text-xs text-gray-300 leading-relaxed">
+                  Connect your smartphone to 'AERO_ESP32_DRONE' Wi-Fi. In the telemetry dock, verify packet ping displays 7-12ms. Advance throttle to 30%: all four coreless motor shafts must spin smoothly without stutter. Turn off Wi-Fi on the phone: the ESP32 watchdog timer must trigger within 500ms, ramping all four motors down to 0 RPM stop.
+                </p>
+                <div className="text-[11px] font-mono text-emerald-400 bg-emerald-500/10 p-2 rounded-lg border border-emerald-500/20">
+                  Watchdog Reaction: Emergency throttle zero within 500ms
+                </div>
+              </div>
+
+              <div className="p-4 rounded-xl border border-white/10 bg-[#0c0f18] space-y-2">
+                <span className="text-xs font-mono font-bold text-emerald-400 uppercase block">
+                  Test 04: Center of Gravity (CG) Balance & Maiden Hover
+                </span>
+                <p className="text-xs text-gray-300 leading-relaxed">
+                  Mount the red (front) and black (rear) 55mm propellers. Support the drone with two fingertips directly underneath the diagonal arm intersection. Adjust the battery position until the frame balances perfectly level. Conduct maiden flight indoors over a carpeted floor. Advance throttle smoothly to 45%: the quadcopter should lift cleanly off the ground with minimal drift.
+                </p>
+                <div className="text-[11px] font-mono text-emerald-400 bg-emerald-500/10 p-2 rounded-lg border border-emerald-500/20">
+                  Takeoff Throttle: 42% – 48% with fresh 4.2V LiPo
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       )}

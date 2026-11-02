@@ -522,65 +522,166 @@ export default function RoboRacerWorkshopOverlay({
         </div>
       )}
 
-      {/* ================= TAB 6: STEP-BY-STEP BUILD GUIDE ================= */}
+      {/* ================= TAB 6: STEP-BY-STEP BUILD GUIDE & TESTING ================= */}
       {activeTab === "build-guide" && (
-        <div className="p-4 sm:p-6 space-y-5 max-h-[70vh] overflow-y-auto">
-          <div>
-            <h3 className="text-lg font-bold text-white flex items-center gap-2">
-              <BookOpen className="text-amber-400" />
-              Mechanical & Electrical Step-by-Step Assembly
-            </h3>
-            <p className="text-xs text-gray-400 mt-0.5">
-              Follow this 6-stage engineering walkthrough to build and calibrate your Robo-Racer from scratch.
-            </p>
+        <div className="p-4 sm:p-6 space-y-6 max-h-[70vh] overflow-y-auto">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-5 rounded-2xl border border-amber-500/30 bg-gradient-to-br from-[#1c1409] via-[#120d06] to-[#070503] shadow-xl">
+            <div>
+              <div className="flex items-center gap-2 text-amber-400 text-xs font-mono font-bold uppercase tracking-wider">
+                <BookOpen size={16} />
+                <span>SolidWorks CAD & Autonomous Robotics Manual</span>
+              </div>
+              <h3 className="text-xl sm:text-2xl font-black text-white mt-1">
+                ROBO-RACER Mechanical Assembly & Track Testing
+              </h3>
+              <p className="text-xs text-gray-300 mt-1 max-w-2xl leading-relaxed">
+                Complete engineering manual covering SolidWorks chassis fabrication, L298N PWM motor drive wiring, ultrasonic sonar calibration, and OpenCV vision alignment.
+              </p>
+            </div>
+
+            <div className="flex items-center gap-2 p-2 rounded-xl bg-white/5 border border-white/10 text-xs font-mono shrink-0">
+              <span className="text-amber-400 font-bold px-2 py-1 bg-amber-500/10 rounded-lg">
+                BUILD TIME: 3 - 4 HRS
+              </span>
+              <span className="text-gray-400 px-2">DIFFICULTY: INTERMEDIATE</span>
+            </div>
           </div>
 
-          <div className="space-y-3">
-            {[
-              {
-                step: "01",
-                title: "Chassis Baseplate & Motor Mounts",
-                desc: "Bolt the four golden brass brackets onto the lower chassis plate ('Body Part.SLDPRT') using M3 hex screws. Mount the four 300 RPM DC gearmotors so their drive shafts protrude symmetrically outwards.",
-              },
-              {
-                step: "02",
-                title: "Wheel Press-Fit & Alignment",
-                desc: "Align the D-flat shaft cutouts on the four 65mm chevron racing tires with the motor output shafts. Press them firmly into place until flush and secure with locking hub screws.",
-              },
-              {
-                step: "03",
-                title: "Front HC-SR04 & Camera Pan Servo",
-                desc: "Mount the blue HC-SR04 ultrasonic sensor into the front bumper slot with both acoustic cylinders pointing forward. Install the TowerPro SG90 servo in the top neck holder and attach the Hikvision DS-U02 camera bracket.",
-              },
-              {
-                step: "04",
-                title: "Cabin Box & Gullwing Hood (Dhakna) Installation",
-                desc: "Secure the mid-cabin box ('Box Part.SLDPRT') to the chassis base. Fasten the sloped inspection hood ('Dhakna.SLDPRT') using the rear hinge pivot pins so it opens smoothly at 38 degrees for pit-stop access.",
-              },
-              {
-                step: "05",
-                title: "Power Harness & LM2596 Calibration",
-                desc: "Connect the 2S 7.4V battery pack to the SPST master switch. Wire the output to the LM2596 buck converter and calibrate the trimmer potentiometer with a multimeter to output exactly 5.05V DC before powering the ESP32.",
-              },
-              {
-                step: "06",
-                title: "Firmware Flash & Track Calibration",
-                desc: "Flash the production Arduino/ESP32 sketch over USB. Run the sensor calibration routine on a flat surface to test ultrasonic obstacle stopping distance (25cm) and camera pan range of motion (180°).",
-              },
-            ].map((s) => (
-              <div
-                key={s.step}
-                className="p-4 rounded-xl border border-white/10 bg-white/5 flex items-start gap-4 hover:border-amber-500/40 transition"
-              >
-                <div className="w-8 h-8 rounded-lg bg-amber-500/20 border border-amber-500/30 flex items-center justify-center text-amber-400 font-mono font-black text-sm shrink-0">
-                  {s.step}
+          {/* Section 1: Mechanical & Electrical Assembly */}
+          <div className="space-y-4">
+            <h4 className="text-xs font-mono font-bold uppercase tracking-wider text-amber-400 flex items-center gap-2">
+              <span>Part 1: Mechanical Assembly & Hardware Wiring</span>
+            </h4>
+
+            <div className="space-y-3.5">
+              {[
+                {
+                  step: "01",
+                  title: "SolidWorks CAD Baseplate & 4WD DC Geared Motor Mounting",
+                  time: "35 mins",
+                  tools: "2.5mm Allen key, M3 hex nuts, Loctite Blue",
+                  desc: "Mount the four gold-anodized brass L-brackets to the 3mm laser-cut acrylic lower chassis plate ('Body Part.SLDPRT') using countersunk M3×10mm screws. Align the four 300 RPM TT dual-shaft gearmotors so their drive shafts protrude outward with exact 140mm lateral track width.",
+                  qualityCheck: "Check axle perpendicularity: Motors must sit at 90° to the chassis centerline with zero wobble.",
+                },
+                {
+                  step: "02",
+                  title: "Chevron Tread 65mm Tires Press-Fit & Shaft Locking",
+                  time: "20 mins",
+                  tools: "Hand press, M2.5 hub set screws",
+                  desc: "Align the D-flat keyway of the four 65mm chevron-tread racing tires with the motor output shafts. Press each wheel onto the shaft until seated against the motor collar. Tighten the hub locking screw against the flat face to eliminate wheel slip under high acceleration.",
+                  qualityCheck: "Spin each wheel by hand to verify true axial rotation with less than 0.5mm radial runout.",
+                },
+                {
+                  step: "03",
+                  title: "Front HC-SR04 Sonar & Hikvision Camera Pan Neck Assembly",
+                  time: "40 mins",
+                  tools: "Small Phillips screwdriver, hot-melt adhesive",
+                  desc: "Seat the dual-transducer HC-SR04 ultrasonic rangefinder into the front bumper bracket with acoustic horns pointing forward. Center the TowerPro SG90 micro servo horn at 90° (neutral). Secure the Hikvision DS-U02 1080p camera bracket to the servo spline using the center M2 retaining screw.",
+                  qualityCheck: "Gently turn the camera by hand to verify full unobstructed 180° horizontal pan arc (-90° left to +90° right).",
+                },
+                {
+                  step: "04",
+                  title: "Cabin Enclosure & 38° Gullwing Hood ('Dhakna') Installation",
+                  time: "30 mins",
+                  tools: "M3 brass standoffs, 2mm stainless hinge pins",
+                  desc: "Fasten the mid-cabin electronic bay enclosure ('Box Part.SLDPRT') to the chassis floor using four 25mm female brass standoffs. Slide the stainless hinge pins through the sloped aerodynamic hood ('Dhakna.SLDPRT') to enable smooth 38° gullwing opening for pit-stop battery swaps.",
+                  qualityCheck: "The hood must latch firmly closed without rattling against the camera pan neck.",
+                },
+                {
+                  step: "05",
+                  title: "LM2596 DC-DC Buck Voltage Calibration & Common Ground",
+                  time: "35 mins",
+                  tools: "Digital Multimeter, Precision flathead trimpot screwdriver",
+                  desc: "Connect the 2S 7.4V Li-ion pack through the master rocker switch to the LM2596 buck converter VIN. Connect a multimeter to the VOUT terminals. Adjust the 25-turn brass potentiometer screw counter-clockwise until output voltage reads exactly 5.05V DC. Tie battery (-), buck GND, L298N GND, and ESP32 GND into a single common ground bus.",
+                  qualityCheck: "NEVER connect the buck converter to the ESP32 until multimeter confirms 5.05V ± 0.05V (over-voltage destroys ESP32 instantly).",
+                },
+              ].map((s) => (
+                <div
+                  key={s.step}
+                  className="p-4 sm:p-5 rounded-2xl border border-white/10 bg-[#0e0c08] space-y-3 hover:border-amber-500/40 transition"
+                >
+                  <div className="flex flex-wrap items-center justify-between gap-2 border-b border-white/5 pb-2">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-lg bg-amber-500/20 border border-amber-500/30 flex items-center justify-center text-amber-400 font-mono font-black text-sm shrink-0">
+                        {s.step}
+                      </div>
+                      <div>
+                        <h4 className="text-sm font-bold text-white uppercase tracking-wider">{s.title}</h4>
+                        <span className="text-[11px] font-mono text-gray-400">⏱️ {s.time}</span>
+                      </div>
+                    </div>
+                    <div className="text-[10px] font-mono text-neutral-400 bg-white/5 px-2.5 py-1 rounded-md border border-white/5">
+                      Tools: {s.tools}
+                    </div>
+                  </div>
+
+                  <p className="text-xs text-gray-300 leading-relaxed font-sans">{s.desc}</p>
+
+                  <div className="p-2.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-xs text-amber-300 flex items-start gap-2">
+                    <span className="font-bold uppercase font-mono text-[10px] shrink-0">Quality Check:</span>
+                    <span className="text-[11px]">{s.qualityCheck}</span>
+                  </div>
                 </div>
-                <div>
-                  <h4 className="text-xs font-bold text-white uppercase tracking-wider">{s.title}</h4>
-                  <p className="text-xs text-gray-300 mt-1 leading-relaxed">{s.desc}</p>
+              ))}
+            </div>
+          </div>
+
+          {/* Section 2: Bench Testing & Autonomous Track Tuning */}
+          <div className="space-y-4 pt-2">
+            <h4 className="text-xs font-mono font-bold uppercase tracking-wider text-emerald-400 flex items-center gap-2">
+              <span>Part 2: Bench Sensor Calibration & Track Testing Suite</span>
+            </h4>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="p-4 rounded-xl border border-white/10 bg-[#0c0d10] space-y-2">
+                <span className="text-xs font-mono font-bold text-emerald-400 uppercase block">
+                  Test 01: Ultrasonic Sonar Reflex Braking Calibration
+                </span>
+                <p className="text-xs text-gray-300 leading-relaxed">
+                  Prop the car on a block so wheels spin in air. Hold a flat cardboard target 50cm in front of the HC-SR04 sensor and advance throttle. Slowly move the target closer. At exactly 25cm, the ESP32 reflex interrupt must trigger: both motor channels immediately reverse polarity for 80ms to provide active regenerative braking, then lock to 0% stop.
+                </p>
+                <div className="text-[11px] font-mono text-emerald-400 bg-emerald-500/10 p-2 rounded-lg border border-emerald-500/20">
+                  Target Stopping Distance: 25cm ± 1.5cm at 60% cruise speed
                 </div>
               </div>
-            ))}
+
+              <div className="p-4 rounded-xl border border-white/10 bg-[#0c0d10] space-y-2">
+                <span className="text-xs font-mono font-bold text-emerald-400 uppercase block">
+                  Test 02: Skid-Steering Straight-Line Tracking & Trim
+                </span>
+                <p className="text-xs text-gray-300 leading-relaxed">
+                  Due to slight manufacturing variations between DC gearmotors, one side may spin slightly faster. Place the car on a 3-meter flat tile surface. Drive straight for 3 meters. If the car drifts more than 5cm off centerline, adjust the software motor trim constants in firmware:
+                  Left_Trim = 1.00; Right_Trim = 0.94.
+                </p>
+                <div className="text-[11px] font-mono text-emerald-400 bg-emerald-500/10 p-2 rounded-lg border border-emerald-500/20">
+                  Pass Criteria: Drift &lt; 3cm over 3-meter straight burst
+                </div>
+              </div>
+
+              <div className="p-4 rounded-xl border border-white/10 bg-[#0c0d10] space-y-2">
+                <span className="text-xs font-mono font-bold text-emerald-400 uppercase block">
+                  Test 03: Camera Pan Servo Range & Jitter Test
+                </span>
+                <p className="text-xs text-gray-300 leading-relaxed">
+                  Power the camera and SG90 servo from the 5V buck rail. Command the servo across its full sweep (-90° to +90°). Verify smooth movement without gear jitter or humming. Ensure the USB camera cable has sufficient slack so it does not pull tight or restrict rotation during extreme left/right cornering scans.
+                </p>
+                <div className="text-[11px] font-mono text-emerald-400 bg-emerald-500/10 p-2 rounded-lg border border-emerald-500/20">
+                  PWM Frequency: 50Hz (500µs to 2500µs pulse duration)
+                </div>
+              </div>
+
+              <div className="p-4 rounded-xl border border-white/10 bg-[#0c0d10] space-y-2">
+                <span className="text-xs font-mono font-bold text-emerald-400 uppercase block">
+                  Test 04: Wi-Fi Heartbeat & Loss-of-Signal Fail-Safe
+                </span>
+                <p className="text-xs text-gray-300 leading-relaxed">
+                  Drive the vehicle via phone hotspot Wi-Fi telemetry. Turn off phone Wi-Fi while driving. The ESP32 watchdog timer must register the missing heartbeat packet within 300ms and immediately shut off PWM to all 4 motors, preventing runaway crashes.
+                </p>
+                <div className="text-[11px] font-mono text-emerald-400 bg-emerald-500/10 p-2 rounded-lg border border-emerald-500/20">
+                  Fail-Safe Reaction Time: &lt; 300ms emergency motor cutoff
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       )}

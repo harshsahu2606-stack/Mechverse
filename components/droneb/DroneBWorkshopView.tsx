@@ -269,65 +269,169 @@ export default function DroneBWorkshopView({
       {/* ================= 4. BUILD GUIDE & TUNING ================= */}
       {activePillar === "guide" && (
         <div className="space-y-6">
-          <div className="p-6 rounded-2xl border border-indigo-500/30 bg-gradient-to-br from-[#0e122b] via-[#090b1c] to-[#060812] space-y-2 shadow-2xl">
-            <div className="flex items-center gap-2 text-indigo-400 text-xs font-mono font-bold uppercase tracking-wider">
-              <Wrench size={16} />
-              <span>Assembly & Tuning Walkthrough</span>
+          <div className="p-6 rounded-2xl border border-indigo-500/30 bg-gradient-to-br from-[#0e122b] via-[#090b1c] to-[#060812] space-y-2 shadow-2xl flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div>
+              <div className="flex items-center gap-2 text-indigo-400 text-xs font-mono font-bold uppercase tracking-wider">
+                <Wrench size={16} />
+                <span>Industrial Aerospace Engineering Manual</span>
+              </div>
+              <h2 className="text-2xl sm:text-3xl font-black text-white mt-1">
+                Drone-B Assembly & Flight Calibration Guide
+              </h2>
+              <p className="text-xs sm:text-sm text-gray-300 max-w-3xl leading-relaxed">
+                Step-by-step mechanical assembly, high-voltage 6S electrical integration, sensor calibration in QGroundControl, and ground tether testing.
+              </p>
             </div>
-            <h2 className="text-2xl sm:text-3xl font-black text-white">
-              6-Stage Drone-B Production Build Guide
-            </h2>
-            <p className="text-xs sm:text-sm text-gray-300 max-w-3xl leading-relaxed">
-              Follow these professional aerospace assembly stages to construct, balance, and flight-test your Drone-B industrial UAV.
-            </p>
+
+            <div className="flex items-center gap-2 p-1.5 rounded-xl bg-white/5 border border-white/10 text-xs font-mono shrink-0">
+              <span className="text-indigo-400 font-bold px-2 py-1 bg-indigo-500/10 rounded-lg">
+                EST. BUILD: 6 - 8 HRS
+              </span>
+              <span className="text-gray-400 px-2">DIFFICULTY: ADVANCED</span>
+            </div>
           </div>
 
-          <div className="space-y-3">
-            {[
-              {
-                stage: "01",
-                title: "Fuselage Hull & Lattice Arms Clamping",
-                desc: "Bolt the four triangular truss arms into the octagonal corner sockets using high-tensile M8 bolts. Verify strict 90-degree arm orthogonality across diagonal centerlines (650mm).",
-              },
-              {
-                stage: "02",
-                title: "400KV Brushless Motors & Outrunner Mounting",
-                desc: "Secure the four Sunnysky V4014 motors to the arm tips with M3 blue thread-locker. Route motor phase wires through the arm lattice cutouts to the internal electronics bay.",
-              },
-              {
-                stage: "03",
-                title: "Power Distribution Board & Opto ESC Soldering",
-                desc: "Solder the 40A Opto ESC battery leads to the Matek PDB-HEX. Connect the main XT90-S pigtail and test all solder joints with a multimeter for zero short circuits before connecting power.",
-              },
-              {
-                stage: "04",
-                title: "Pixhawk 6C Vibration Isolation & GPS Mast",
-                desc: "Mount the Pixhawk 6C on the center fuselage floor using silicone anti-vibration damping grommets. Install the M9N GPS mast at least 15cm above the frame to isolate the compass from motor EMI.",
-              },
-              {
-                stage: "05",
-                title: "Firmware Flashing & Motor Direction Verification",
-                desc: "Connect via USB to QGroundControl. Select PX4 or ArduPilot Quad X airframe. Calibrate the accelerometer, compass, and ESC endpoints. Confirm CW and CCW motor spin directions.",
-              },
-              {
-                stage: "06",
-                title: "Ground Thrust Balance & First Hover Test",
-                desc: "Mount the balanced 18-inch carbon fiber propellers. Perform a ground tether test to evaluate vibration telemetry (target &lt; 15 m/s²). Conduct initial maiden hover in Stabilize / Alt-Hold mode.",
-              },
-            ].map((s) => (
-              <div
-                key={s.stage}
-                className="p-4 rounded-xl border border-white/10 bg-white/5 flex items-start gap-4 hover:border-indigo-500/40 transition"
-              >
-                <div className="w-8 h-8 rounded-lg bg-indigo-500/20 border border-indigo-500/30 flex items-center justify-center text-indigo-400 font-mono font-black text-sm shrink-0">
-                  {s.stage}
+          {/* Guide Section 1: Mechanical & Electrical Assembly */}
+          <div className="space-y-4">
+            <h3 className="text-base font-bold text-white flex items-center gap-2 font-mono uppercase tracking-wider text-indigo-400">
+              <span>Part 1: Mechanical Airframe & Power Assembly</span>
+            </h3>
+
+            <div className="grid grid-cols-1 gap-3.5">
+              {[
+                {
+                  stage: "01",
+                  title: "Fuselage Hull & Lattice Arms Orthogonal Clamping",
+                  time: "45 mins",
+                  torque: "M8 Bolts: 8.5 Nm Torque",
+                  tools: "M6 & M8 Hex T-Handles, Blue Loctite 242, Digital Calipers",
+                  desc: "Align the four triangular carbon-fiber truss arms into the 6061-T6 billet aluminum fuselage corner sockets. Insert the high-tensile M8 socket-head cap screws with split-lock washers. Apply blue thread-locker (Loctite 242) to all threads. Use digital calipers to verify exact 650.0mm diagonal center-to-center wheelbase and ensure 90.0° orthogonal alignment across opposing arms before final torquing.",
+                  criticalCheck: "Arm deflection under a 5kg test weight must not exceed 0.8mm at the motor mount tips.",
+                },
+                {
+                  stage: "02",
+                  title: "Sunnysky V4014 Motors & Coaxial Arm Tip Installation",
+                  time: "60 mins",
+                  torque: "M3 Motor Screws: 2.1 Nm",
+                  tools: "2.0mm Hex Driver, 18-inch Propeller Balancer",
+                  desc: "Mount the Sunnysky V4014 400KV outrunner motors to the arm end plates using M3×8mm hex screws with medium-strength thread-locker. Route the 3-phase silicone motor lead wires (16AWG) through the carbon lattice arm interior cutouts to shield them from aerodynamic turbulence and propeller wash.",
+                  criticalCheck: "Check motor screw thread penetration: Screws must enter stator base by 3-4mm without contacting the internal copper windings (which causes instant phase short).",
+                },
+                {
+                  stage: "03",
+                  title: "Matek PDB-HEX Power Bus & XT90-S Anti-Spark Soldering",
+                  time: "50 mins",
+                  torque: "Solder Temp: 380°C - 400°C",
+                  tools: "60W Soldering Iron, 63/37 Rosin Core Solder, Multimeter",
+                  desc: "Tin the heavy copper power pads on the Matek PDB-HEX power distribution board. Solder the 12AWG power leads from the 40A Opto ESCs directly to the respective ESC output pads. Solder the main XT90-S anti-spark battery pigtail (10AWG silicone wire). Ensure heavy, shiny concave solder fillets that fully encapsulate copper strands.",
+                  criticalCheck: "Perform continuity check with a digital multimeter in beep/resistance mode across XT90 (+) and (-) before connecting any battery. Resistance MUST read infinite (O.L.).",
+                },
+                {
+                  stage: "04",
+                  title: "Pixhawk 6C Vibration Dampened Avionics Deck",
+                  time: "40 mins",
+                  torque: "Finger-tight / Grommet Compression: 25%",
+                  tools: "Silicone Anti-Vibration Grommets, 3M VHB Tape",
+                  desc: "Install the Pixhawk 6C flight controller on the internal fuselage carbon plate using four silicone vibration-damping bobbins. Route the DShot signal wires from the 4 ESCs to MAIN OUT ports 1 through 4. Mount the Holybro H-RTK F9P GNSS antenna on an elevated 18cm carbon mast to ensure magnetic isolation from the high-amperage (140A) PDB bus.",
+                  criticalCheck: "Pixhawk orientation arrow must point precisely forward along the fuselage longitudinal roll axis.",
+                },
+              ].map((s) => (
+                <div
+                  key={s.stage}
+                  className="p-5 rounded-2xl border border-white/10 bg-[#0c0f18] space-y-3 hover:border-indigo-500/40 transition"
+                >
+                  <div className="flex flex-wrap items-center justify-between gap-2 border-b border-white/5 pb-2.5">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-lg bg-indigo-500/20 border border-indigo-500/30 flex items-center justify-center text-indigo-400 font-mono font-black text-sm shrink-0">
+                        {s.stage}
+                      </div>
+                      <div>
+                        <h4 className="text-sm font-bold text-white uppercase tracking-wider">{s.title}</h4>
+                        <div className="flex items-center gap-3 text-[11px] font-mono text-gray-400 mt-0.5">
+                          <span>⏱️ {s.time}</span>
+                          <span>•</span>
+                          <span className="text-amber-400 font-semibold">⚙️ {s.torque}</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="text-[11px] font-mono text-gray-400 bg-white/5 px-2.5 py-1 rounded-md border border-white/5">
+                      Tools: {s.tools}
+                    </div>
+                  </div>
+
+                  <p className="text-xs text-gray-300 leading-relaxed font-sans">{s.desc}</p>
+
+                  <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-xs text-amber-300 flex items-start gap-2">
+                    <span className="font-bold uppercase font-mono shrink-0">Mandatory Quality Check:</span>
+                    <span>{s.criticalCheck}</span>
+                  </div>
                 </div>
-                <div>
-                  <h4 className="text-xs font-bold text-white uppercase tracking-wider">{s.title}</h4>
-                  <p className="text-xs text-gray-300 mt-1 leading-relaxed">{s.desc}</p>
+              ))}
+            </div>
+          </div>
+
+          {/* Guide Section 2: Sensor Calibration & Flight Testing */}
+          <div className="space-y-4 pt-2">
+            <h3 className="text-base font-bold text-white flex items-center gap-2 font-mono uppercase tracking-wider text-emerald-400">
+              <span>Part 2: QGroundControl Sensor Calibration & Bench Testing Suite</span>
+            </h3>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="p-4 rounded-xl border border-white/10 bg-[#0c0f18] space-y-2">
+                <div className="flex items-center gap-2 text-xs font-mono font-bold text-emerald-400 uppercase">
+                  <span>Test 01: Bench Smoke-Stopper Current Test</span>
+                </div>
+                <p className="text-xs text-gray-300 leading-relaxed">
+                  Before plugging in the full 6S 22.2V LiPo directly, connect an automotive 12V 55W bulb or solid-state Smoke Stopper in series with the battery lead. Power on the system. If the bulb glows dimly and turns off, there is zero short circuit and the PDB is safe. If the bulb glows intensely, immediately disconnect and locate the solder bridge.
+                </p>
+                <div className="text-[11px] font-mono text-emerald-400 bg-emerald-500/10 p-2 rounded-lg border border-emerald-500/20">
+                  Target Standby Draw: &lt; 450mA at 22.2V DC
                 </div>
               </div>
-            ))}
+
+              <div className="p-4 rounded-xl border border-white/10 bg-[#0c0f18] space-y-2">
+                <div className="flex items-center gap-2 text-xs font-mono font-bold text-emerald-400 uppercase">
+                  <span>Test 02: DShot Digital ESC Motor Direction Check</span>
+                </div>
+                <p className="text-xs text-gray-300 leading-relaxed">
+                  In QGroundControl Motor Test tab, test motors at 5% idle (PROPELLERS DETACHED). Touch the motor bell lightly with a piece of tape to confirm rotation direction:
+                  Motor 1 (Front-Right): Counter-Clockwise (CCW).
+                  Motor 2 (Rear-Left): Counter-Clockwise (CCW).
+                  Motor 3 (Front-Left): Clockwise (CW).
+                  Motor 4 (Rear-Right): Clockwise (CW).
+                </p>
+                <div className="text-[11px] font-mono text-emerald-400 bg-emerald-500/10 p-2 rounded-lg border border-emerald-500/20">
+                  Direction reversible in software via BLHeli_32 / DShot commands
+                </div>
+              </div>
+
+              <div className="p-4 rounded-xl border border-white/10 bg-[#0c0f18] space-y-2">
+                <div className="flex items-center gap-2 text-xs font-mono font-bold text-emerald-400 uppercase">
+                  <span>Test 03: 6-Point Accelerometer & 3D Compass Calibration</span>
+                </div>
+                <p className="text-xs text-gray-300 leading-relaxed">
+                  Place the airframe on a dead-level granite or spirit-level surface. Complete the 6-axis orientation calibration in QGroundControl. Next, perform the 3D compass sphere calibration outdoors, away from metal buildings or parked cars. Rotate the drone smoothly around all axes until all sphere dots turn green.
+                </p>
+                <div className="text-[11px] font-mono text-emerald-400 bg-emerald-500/10 p-2 rounded-lg border border-emerald-500/20">
+                  Compass Offsets: Must be &lt; 350 on all three axes (X, Y, Z)
+                </div>
+              </div>
+
+              <div className="p-4 rounded-xl border border-white/10 bg-[#0c0f18] space-y-2">
+                <div className="flex items-center gap-2 text-xs font-mono font-bold text-emerald-400 uppercase">
+                  <span>Test 04: Ground Tether & Vibration Logging Test</span>
+                </div>
+                <p className="text-xs text-gray-300 leading-relaxed">
+                  Mount the factory-balanced 18-inch carbon propellers. Secure the landing skids to a heavy 25kg ground test rig with nylon safety straps. Arm the drone and ramp throttle to 50% hover thrust. Download flight dataflash logs and verify IMU vibration telemetry:
+                  CLIP0, CLIP1, CLIP2 must read 0.
+                  Vibration levels must remain below 12 m/s² on X and Y, and below 15 m/s² on Z.
+                </p>
+                <div className="text-[11px] font-mono text-emerald-400 bg-emerald-500/10 p-2 rounded-lg border border-emerald-500/20">
+                  Pass Criteria: Stable hover current ~28A across 4 motors at 22.2V
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       )}

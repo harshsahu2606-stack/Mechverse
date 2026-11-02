@@ -130,6 +130,74 @@ export default function RoboRumbleBuildGuide() {
           );
         })}
       </div>
+
+      {/* Part 2: Combat Robotics Bench Testing & Arena Pre-Match Inspection */}
+      <div className="space-y-4 pt-4 border-t border-white/10">
+        <div className="flex items-center gap-2">
+          <span className="text-[10px] font-mono font-bold tracking-widest text-emerald-400 uppercase bg-emerald-500/10 px-2.5 py-1 rounded-md border border-emerald-500/20">
+            PART 2: BENCH TESTING & ARENA VERIFICATION
+          </span>
+        </div>
+
+        <h3 className="text-xl font-bold text-white">
+          Combat Robotics Pre-Match Testing Protocols
+        </h3>
+        <p className="text-xs text-gray-400">
+          Conduct these 4 mandatory mechanical and electrical tests before placing the battle car in the combat arena.
+        </p>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="p-4 rounded-2xl border border-white/10 bg-[#111318] space-y-2">
+            <span className="text-xs font-mono font-bold text-orange-400 uppercase block">
+              Test 01: Stall Push Force & Tire Traction Test
+            </span>
+            <p className="text-xs text-gray-300 leading-relaxed">
+              Attach a digital luggage scale or spring pull gauge to the rear tow eyelet of the battle car. Place the vehicle on the arena surface and advance to 100% forward throttle against the fixed anchor. Measure the maximum sustained pulling force before the tires break traction:
+              • Striker (4WD TT Motors): Target &gt; 12.5 N (1.28 kg-f).
+              • Titan (Dual Geared 37D): Target &gt; 22.0 N (2.24 kg-f).
+            </p>
+            <div className="text-[11px] font-mono text-emerald-400 bg-emerald-500/10 p-2 rounded-lg border border-emerald-500/20">
+              Pass Criteria: Friction coefficient µ ≥ 0.90 with clean silicone rubber tires
+            </div>
+          </div>
+
+          <div className="p-4 rounded-2xl border border-white/10 bg-[#111318] space-y-2">
+            <span className="text-xs font-mono font-bold text-orange-400 uppercase block">
+              Test 02: 2.4GHz Loss-of-Signal Failsafe Cutoff
+            </span>
+            <p className="text-xs text-gray-300 leading-relaxed">
+              Prop the robot up on a wooden bench block so all 4 wheels spin freely in the air. Turn on the 2.4GHz radio transmitter and command 50% throttle. With the wheels spinning, physically switch OFF the radio transmitter. The microcontroller's watchdog routine MUST immediately kill all PWM signals to the L298N driver within 200ms.
+            </p>
+            <div className="text-[11px] font-mono text-emerald-400 bg-emerald-500/10 p-2 rounded-lg border border-emerald-500/20">
+              Mandatory Safety Rule: Zero motor spin with transmitter unpowered
+            </div>
+          </div>
+
+          <div className="p-4 rounded-2xl border border-white/10 bg-[#111318] space-y-2">
+            <span className="text-xs font-mono font-bold text-orange-400 uppercase block">
+              Test 03: Front Wedge Incline & Ground Clearance Gauge
+            </span>
+            <p className="text-xs text-gray-300 leading-relaxed">
+              Slide a standard plastic credit card (0.76mm thickness) underneath the leading edge of the front wedge on a flat surface. The wedge blade must scrape smoothly across the floor without snagging on surface joints, yet remain under 1.2mm total clearance so opposing wheels cannot roll over it without getting lifted.
+            </p>
+            <div className="text-[11px] font-mono text-emerald-400 bg-emerald-500/10 p-2 rounded-lg border border-emerald-500/20">
+              Ground Clearance Spec: 0.8mm – 1.2mm at 14° approach angle
+            </div>
+          </div>
+
+          <div className="p-4 rounded-2xl border border-white/10 bg-[#111318] space-y-2">
+            <span className="text-xs font-mono font-bold text-orange-400 uppercase block">
+              Test 04: Master Kill-Switch High-Load Disconnect
+            </span>
+            <p className="text-xs text-gray-300 leading-relaxed">
+              While running all 4 motors at 100% full forward throttle, physically flip the red master SPST disconnect switch mounted on the external top deck. The circuit must completely de-energize instantaneously with zero contact arcing or stuck-welded switch contacts.
+            </p>
+            <div className="text-[11px] font-mono text-emerald-400 bg-emerald-500/10 p-2 rounded-lg border border-emerald-500/20">
+              Switch Rating: 20A DC heavy-duty rocker or removable link key
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
