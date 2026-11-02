@@ -32,6 +32,8 @@ interface SceneViewerProps {
   cameraResetCount: number;
   onSelectComponent: (id: string) => void;
   theme?: AppTheme;
+  esp32Armed?: boolean;
+  esp32Throttle?: number;
   roboRacerDriving?: boolean;
   roboRacerSpeed?: number;
   roboRacerSteering?: number;
@@ -273,6 +275,8 @@ export default function SceneViewer({
   cameraResetCount,
   onSelectComponent,
   theme = "dark",
+  esp32Armed = false,
+  esp32Throttle = 1000,
   roboRacerDriving = false,
   roboRacerSpeed = 0,
   roboRacerSteering = 0,
@@ -407,8 +411,12 @@ export default function SceneViewer({
               isolatedComponent={isolatedComponent}
               hiddenComponents={hiddenComponents}
               onSelect={onSelectComponent}
-              isArmed={true}
-              throttlePct={40}
+              isArmed={esp32Armed}
+              throttlePct={
+                esp32Armed
+                  ? Math.max(15, Math.min(100, Math.round(((esp32Throttle - 1000) / 1000) * 100)))
+                  : 0
+              }
             />
           )}
 

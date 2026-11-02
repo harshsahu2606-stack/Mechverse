@@ -72,6 +72,7 @@ import AeroTroubleshooting from "@/components/aerodrone/AeroTroubleshooting";
 import AeroBOM from "@/components/aerodrone/AeroBOM";
 import AeroEngineeringDocs from "@/components/aerodrone/AeroEngineeringDocs";
 import Esp32PhoneControllerOverlay from "@/components/esp32drone/Esp32PhoneControllerOverlay";
+import Esp32FlightDock from "@/components/esp32drone/Esp32FlightDock";
 import RoboRacerWorkshopOverlay from "@/components/roboracer/RoboRacerWorkshopOverlay";
 import RoboRacerDriveDock from "@/components/roboracer/RoboRacerDriveDock";
 import UniversalWorkshopNav, { UniversalPillar } from "@/components/ui/UniversalWorkshopNav";
@@ -653,6 +654,61 @@ export default function Home() {
               </div>
             )}
 
+            {/* If AERO-ESP Drone, Render Dedicated Universal Workshop Nav Bar (Consistent 5 Pillars) */}
+            {selectedMachineId === "esp32-drone" && (
+              <div className="z-30 shrink-0">
+                <UniversalWorkshopNav
+                  machineId="esp32-drone"
+                  activePillar={
+                    esp32ProjectTab === "simulator"
+                      ? "simulator"
+                      : esp32ProjectTab === "how-it-works" || esp32ProjectTab === "dgca-rules"
+                      ? "engineering"
+                      : esp32ProjectTab === "schematic"
+                      ? "electronics"
+                      : esp32ProjectTab === "bom"
+                      ? "bom"
+                      : "guide"
+                  }
+                  onChangePillar={(pillar) => {
+                    const tabMap: Record<UniversalPillar, Esp32DroneNavTab> = {
+                      simulator: "simulator",
+                      engineering: "how-it-works",
+                      electronics: "schematic",
+                      bom: "bom",
+                      guide: "build-guide",
+                    };
+                    setEsp32ProjectTab(tabMap[pillar]);
+                    if (pillar !== "simulator") {
+                      setViewMode("view");
+                    }
+                  }}
+                  subTab={
+                    esp32ProjectTab === "how-it-works" || esp32ProjectTab === "dgca-rules"
+                      ? esp32ProjectTab
+                      : esp32ProjectTab === "build-guide" || esp32ProjectTab === "firmware"
+                      ? esp32ProjectTab
+                      : undefined
+                  }
+                  onChangeSubTab={(st) => setEsp32ProjectTab(st as Esp32DroneNavTab)}
+                  subTabs={
+                    esp32ProjectTab === "how-it-works" || esp32ProjectTab === "dgca-rules"
+                      ? [
+                          { id: "how-it-works", label: "Signal Flow & PID Loop" },
+                          { id: "dgca-rules", label: "DGCA Nano Drone Rules (<250g)" },
+                        ]
+                      : esp32ProjectTab === "build-guide" || esp32ProjectTab === "firmware"
+                      ? [
+                          { id: "build-guide", label: "Step-by-Step Build Guide" },
+                          { id: "firmware", label: "Arduino Production Firmware" },
+                        ]
+                      : undefined
+                  }
+                  theme={theme}
+                />
+              </div>
+            )}
+
             {/* If Robo-Racer Rover, Render Dedicated Universal Workshop Nav Bar (Consistent 5 Pillars) */}
             {selectedMachineId === "robo-racer" && (
               <div className="z-30 shrink-0">
@@ -765,6 +821,7 @@ export default function Home() {
                   explosionLevel={explosionLevel}
                   onChangeExplosionLevel={setExplosionLevel}
                   onResetCamera={() => setCameraResetCount((c) => c + 1)}
+                  hideNavHeader={true}
                 />
               </div>
             ) : selectedMachineId === "robo-racer" && roboRacerTab !== "simulator" ? (
@@ -985,6 +1042,8 @@ export default function Home() {
                       cameraPreset={cameraPreset}
                       cameraResetCount={cameraResetCount}
                       theme={theme}
+                      esp32Armed={esp32Armed}
+                      esp32Throttle={esp32Controls.throttle}
                       roboRacerDriving={roboRacerDriving}
                       roboRacerSpeed={roboRacerControls.speed}
                       roboRacerSteering={roboRacerControls.steering}
@@ -999,25 +1058,18 @@ export default function Home() {
                       }}
                     />
 
-                    {/* AERO-ESP Phone Controller Overlay & Flight HUD */}
-                    {selectedMachineId === "esp32-drone" && (
-                      <div className="absolute inset-0 pointer-events-none z-20">
-                        <Esp32PhoneControllerOverlay
-                          theme={theme}
-                          isArmed={esp32Armed}
-                          onToggleArm={() => setEsp32Armed((prev) => !prev)}
-                          throttle={esp32Controls.throttle}
-                          pitch={esp32Controls.pitch}
-                          roll={esp32Controls.roll}
-                          yaw={esp32Controls.yaw}
-                          onControlChange={setEsp32Controls}
-                          activeTab={esp32ProjectTab}
-                          onChangeTab={setEsp32ProjectTab}
-                          explosionLevel={explosionLevel}
-                          onChangeExplosionLevel={setExplosionLevel}
-                          onResetCamera={() => setCameraResetCount((c) => c + 1)}
-                        />
-                      </div>
+                    {/* AERO-ESP Sleek Floating Bottom Flight Controller & Telemetry Dock (Zero Canvas Overlap) */}
+                    {selectedMachineId === "esp32-drone" && viewMode !== "exploded" && (
+                      <Esp32FlightDock
+                        theme={theme}
+                        isArmed={esp32Armed}
+                        onToggleArm={() => setEsp32Armed((prev) => !prev)}
+                        throttle={esp32Controls.throttle}
+                        pitch={esp32Controls.pitch}
+                        roll={esp32Controls.roll}
+                        yaw={esp32Controls.yaw}
+                        onControlChange={setEsp32Controls}
+                      />
                     )}
 
                     {/* ROBO-RACER Sleek Floating Bottom Drive Controller & Telemetry Dock (Zero Overlap on Car) */}
