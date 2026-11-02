@@ -5,7 +5,7 @@ import { Canvas } from "@react-three/fiber";
 import { OrbitControls, ContactShadows } from "@react-three/drei";
 import type { OrbitControls as OrbitControlsImpl } from "three-stdlib";
 import * as THREE from "three";
-import { CustomizationSettings, FanSimulationState, MachineId, RobotSimulationState, ViewMode, AppTheme } from "@/types/machine";
+import { CustomizationSettings, FanSimulationState, MachineId, RobotSimulationState, RopewaySimulationState, ViewMode, AppTheme } from "@/types/machine";
 import SportsCarModel from "./SportsCarModel";
 import ElectricFanModel from "./ElectricFanModel";
 import EngineSubAssembly from "./EngineSubAssembly";
@@ -14,6 +14,7 @@ import RoboRumbleVehicleModel from "./RoboRumbleVehicleModel";
 import AeroDroneModel from "./AeroDroneModel";
 import DroneBModel from "./DroneBModel";
 import Esp32DroneModel from "./Esp32DroneModel";
+import RopewayRobotModel from "./RopewayRobotModel";
 
 export type CameraPreset = "default" | "front" | "side" | "top";
 
@@ -24,6 +25,7 @@ interface SceneViewerProps {
   customization: CustomizationSettings;
   simulation: FanSimulationState;
   robotSimulation: RobotSimulationState;
+  ropewaySimulation?: RopewaySimulationState;
   selectedComponent: string | null;
   isolatedComponent: string | null;
   hiddenComponents: string[];
@@ -101,6 +103,23 @@ function CameraController({
           break;
         default:
           targetPos.set(2.6, 1.6, 3.0);
+          break;
+      }
+    } else if (machineId === "ropeway-robot") {
+      lookTarget.set(0, 1.35, 0);
+      switch (preset) {
+        case "front":
+          targetPos.set(0, 1.45, 3.8);
+          break;
+        case "side":
+          // Profile inspection along the suspended cableway line
+          targetPos.set(4.6, 1.45, 0);
+          break;
+        case "top":
+          targetPos.set(0, 4.8, 0.1);
+          break;
+        default:
+          targetPos.set(3.0, 2.2, 3.6);
           break;
       }
     } else if (machineId === "walking-robot") {
@@ -244,6 +263,7 @@ export default function SceneViewer({
   customization,
   simulation,
   robotSimulation,
+  ropewaySimulation,
   selectedComponent,
   isolatedComponent,
   hiddenComponents,
@@ -382,6 +402,20 @@ export default function SceneViewer({
               onSelect={onSelectComponent}
               isArmed={true}
               throttlePct={40}
+            />
+          )}
+
+          {/* AeroClimb RC-1 Ropeway Climbing Robot */}
+          {machineId === "ropeway-robot" && (
+            <RopewayRobotModel
+              customization={customization}
+              explosionLevel={explosionLevel}
+              selectedComponent={selectedComponent}
+              isolatedComponent={isolatedComponent}
+              hiddenComponents={hiddenComponents}
+              onSelect={onSelectComponent}
+              simulation={ropewaySimulation}
+              showCable={true}
             />
           )}
 

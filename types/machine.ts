@@ -1,7 +1,17 @@
-export type MachineId = "sports-car" | "electric-fan" | "walking-robot" | "robo-rumble" | "aero-450" | "drone-b" | "esp32-drone";
+export type MachineId = "sports-car" | "electric-fan" | "walking-robot" | "robo-rumble" | "aero-450" | "drone-b" | "esp32-drone" | "ropeway-robot";
 
 export type ViewMode = "view" | "exploded" | "components" | "customize" | "subassembly" | "arena" | "electronic";
 export type AppTheme = "dark" | "light";
+
+export type RopewayNavTab =
+  | "simulator"
+  | "how-it-works"
+  | "build-guide"
+  | "free-sourcing"
+  | "bom"
+  | "troubleshooting"
+  | "engineering-docs"
+  | "customizer";
 
 export type Esp32DroneNavTab =
   | "simulator"
@@ -211,6 +221,29 @@ export interface CustomizationSettings {
   // ESP32 Phone-Controlled Micro Drone Configuration
   esp32DroneFrameColor?: string;
   esp32DronePropsColor?: string;
+  // Ropeway Climbing Robot Configuration
+  ropewayChassisColor?: string;
+  ropewayArmColor?: string;
+  ropewayCrankColor?: string;
+  ropewayPulleyColor?: string;
+  ropewayHookColor?: string;
+  ropewayMotorType?: "n20-100rpm" | "bo-dual-60rpm" | "planetary-300rpm";
+  ropewayBatteryType?: "2s-liion" | "9v-alkaline" | "3s-lipo";
+  ropewayChassisMaterial?: "petg-3dprint" | "pla-plus" | "acrylic-laser" | "aluminum";
+  ropewayCableType?: "steel-wire-2mm" | "nylon-paracord-4mm" | "poly-rope-6mm";
+  ropewayPayload?: "camera-fpv" | "cargo-hook" | "cable-oiler" | "none";
+}
+
+export interface RopewaySimulationState {
+  running: boolean;
+  direction: "forward" | "reverse" | "stop";
+  speedPct: number; // 0 to 100
+  inclineAngleDeg: number; // 0 to 45 degrees
+  cableTensionN: number;
+  positionM: number; // position along cable in meters
+  isStalled: boolean;
+  limitReached: boolean;
+  clampingForceN: number;
 }
 
 export interface DroneSimulationState {

@@ -1,6 +1,6 @@
 "use client";
 
-import { Box, CarFront, Fan, Bot, RotateCcw, Bookmark, Sparkles, Swords, Plane, Hexagon, Smartphone, Sun, Moon } from "lucide-react";
+import { Box, CarFront, Fan, Bot, RotateCcw, Bookmark, Sparkles, Swords, Plane, Hexagon, Smartphone, Cable, Sun, Moon } from "lucide-react";
 import { MachineId, AppTheme } from "@/types/machine";
 
 interface NavbarProps {
@@ -236,6 +236,20 @@ export default function Navbar({
           >
             <Smartphone size={14} />
             <span className="hidden sm:inline">ESP32 Drone</span>
+          </button>
+          <button
+            onClick={() => onSelectMachine("ropeway-robot")}
+            title="Switch to Ropeway Robo (AeroClimb RC-1 Cable Inspection Climber)"
+            className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold transition ${
+              selectedMachineId === "ropeway-robot"
+                ? "bg-sky-600 text-white shadow-md shadow-sky-600/30"
+                : isLight
+                ? "text-gray-600 hover:text-gray-900"
+                : "text-gray-400 hover:text-white"
+            }`}
+          >
+            <Cable size={14} />
+            <span className="hidden sm:inline">Ropeway Robo</span>
           </button>
         </div>
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowRight, CheckCircle2, ChevronRight, Fan, CarFront, Bot, Palette, Sparkles, Layers, Cpu, Eye, Wrench, Swords, Plane, Hexagon, Smartphone } from "lucide-react";
+import { ArrowRight, CheckCircle2, ChevronRight, Fan, CarFront, Bot, Palette, Sparkles, Layers, Cpu, Eye, Wrench, Swords, Plane, Hexagon, Smartphone, Cable } from "lucide-react";
 import { MachineId } from "@/types/machine";
 
 interface HeroSectionProps {
@@ -91,6 +91,70 @@ export default function HeroSection({ onSelectAndLaunch }: HeroSectionProps) {
             <button
               onClick={() => onSelectAndLaunch("esp32-drone", "builder")}
               title="Customize Drone"
+              className="px-2.5 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-semibold text-gray-300 hover:text-white transition"
+            >
+              <Palette size={14} />
+            </button>
+          </div>
+        </div>
+
+        {/* ================= MODEL 0D: ROPEWAY ROBO — CABLE CLIMBING ROBOT ================= */}
+        <div className="group relative rounded-2xl border border-sky-500/50 bg-gradient-to-b from-[#0c182c] to-[#060a14] p-5 hover:border-sky-400 transition-all duration-300 shadow-2xl flex flex-col justify-between overflow-hidden">
+          <div className="absolute -top-12 -right-12 w-48 h-48 bg-sky-500/20 rounded-full blur-3xl pointer-events-none group-hover:bg-sky-500/35 transition" />
+
+          <div className="space-y-3 relative z-10">
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] font-mono font-bold tracking-widest text-sky-400 uppercase bg-sky-500/10 px-2 py-0.5 rounded border border-sky-500/25">
+                CABLE TRAVERSER / ₹840
+              </span>
+              <span className="text-xs text-sky-400 flex items-center gap-1 font-semibold">
+                <Cable size={13} /> Horizontal Rope
+              </span>
+            </div>
+
+            <div className="flex items-start gap-2.5 pt-1">
+              <div className="p-2.5 rounded-xl bg-sky-500/10 border border-sky-500/25 text-sky-400 group-hover:scale-110 transition">
+                <Cable size={22} />
+              </div>
+              <div>
+                <h3 className="text-base font-bold text-white group-hover:text-sky-400 transition leading-snug">
+                  AeroClimb Horizon-X1
+                </h3>
+                <p className="text-[11px] text-gray-400 mt-0.5 leading-relaxed">
+                  Autonomous horizontal cableway robot. Dual overhead V-sheaves, opposing spring pinch rollers, worm drive, and 4K inspection gimbal.
+                </p>
+              </div>
+            </div>
+
+            {/* Feature Pills */}
+            <div className="grid grid-cols-3 gap-1 pt-1 text-center">
+              <div className="bg-white/5 rounded-lg p-1.5 border border-white/5">
+                <span className="text-[8px] uppercase font-mono text-gray-400 block">Max Incline</span>
+                <span className="text-xs font-bold text-amber-400">45° Slope</span>
+              </div>
+              <div className="bg-white/5 rounded-lg p-1.5 border border-white/5">
+                <span className="text-[8px] uppercase font-mono text-gray-400 block">Drive</span>
+                <span className="text-xs font-bold text-sky-300">Worm Gear</span>
+              </div>
+              <div className="bg-white/5 rounded-lg p-1.5 border border-white/5">
+                <span className="text-[8px] uppercase font-mono text-gray-400 block">Cable</span>
+                <span className="text-xs font-bold text-emerald-400">2–6mm</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Launch Buttons */}
+          <div className="flex items-center gap-2 pt-4 relative z-10">
+            <button
+              onClick={() => onSelectAndLaunch("ropeway-robot", "explore")}
+              className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-gradient-to-r from-sky-600 to-blue-600 hover:from-sky-500 hover:to-blue-500 text-white font-bold text-xs shadow-xl shadow-sky-600/30 transition hover:scale-[1.02] active:scale-[0.98]"
+            >
+              <span>Launch 3D Climber</span>
+              <ArrowRight size={13} />
+            </button>
+            <button
+              onClick={() => onSelectAndLaunch("ropeway-robot", "builder")}
+              title="Customize Ropeway Climber"
               className="px-2.5 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-semibold text-gray-300 hover:text-white transition"
             >
               <Palette size={14} />

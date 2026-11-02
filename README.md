@@ -22,6 +22,7 @@
 | Machine | Class | Tech Stack & Features | Status |
 |---|---|---|---|
 | **AERO-ESP Phone Drone** | Nano Quadcopter (≤250g) | ESP32-WROOM, MPU6050 IMU, 8520 coreless motors, SI2302 MOSFETs, 1S LiPo, Wi-Fi UDP | ✅ Fully Operable |
+| **AeroClimb Horizon-X1 Cable Traverser** | Cableways & Inspection | Dual overhead V-sheaves, spring pinch rollers, non-reversing worm gear, 4K inspection gimbal | ✅ Fully Operable |
 | **Robo Rumble Battle Arena** | Combat Robot | Dual N20 high-torque gearmotors, L298N/DRV8833, kinetic weapon blade, dynamic arena | ✅ Fully Operable |
 | **AERO-450 Modular Drone** | Aerial Photography | 450mm carbon frame, 2212 920KV BLDCs, 30A ESCs, APM/Pixhawk telemetry, GPS mount | ✅ Fully Operable |
 | **Drone B Industrial Octocopter** | Heavy Payload | 8-rotor coaxial/radial lattice frame, dual battery redundancy, high-thrust BLDCs | ✅ Fully Operable |

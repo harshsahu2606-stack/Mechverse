@@ -234,7 +234,7 @@ export default function CustomizerPanel({
               </div>
             </section>
           </>
-        ) : (
+        ) : machineId === "electric-fan" ? (
           /* Fan Specific Customization */
           <>
             <section className="space-y-2.5 pt-1">
@@ -275,7 +275,97 @@ export default function CustomizerPanel({
               </div>
             </section>
           </>
-        )}
+        ) : machineId === "ropeway-robot" ? (
+          <>
+            <section className="space-y-2 pt-1 border-t border-white/10">
+              <span className="text-xs font-semibold text-gray-300">Kinematic Drive Cranks</span>
+              <div className="grid grid-cols-3 gap-1.5">
+                {[
+                  { name: "High-Grip Orange", value: "#ea580c" },
+                  { name: "Cyan Anodized", value: "#0284c7" },
+                  { name: "Stealth Slate", value: "#334155" },
+                ].map((col) => (
+                  <button
+                    key={col.value}
+                    onClick={() =>
+                      onChangeCustomization({
+                        ...customization,
+                        ropewayCrankColor: col.value,
+                        ropewayPulleyColor: col.value,
+                      })
+                    }
+                    className={`p-2 rounded-xl border text-center text-[10px] font-bold transition flex items-center justify-center gap-1.5 ${
+                      (customization.ropewayCrankColor || customization.ropewayPulleyColor || "#ea580c") === col.value
+                        ? "border-orange-400 bg-orange-500/20 text-white"
+                        : "border-white/10 bg-white/5 text-gray-400 hover:text-white"
+                    }`}
+                  >
+                    <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: col.value }} />
+                    <span>{col.name.split(" ")[0]}</span>
+                  </button>
+                ))}
+              </div>
+            </section>
+
+            <section className="space-y-2 pt-1 border-t border-white/10">
+              <span className="text-xs font-semibold text-gray-300">Climbing Arms & Hook Hands</span>
+              <div className="grid grid-cols-3 gap-1.5">
+                {[
+                  { name: "Safety Amber", value: "#eab308" },
+                  { name: "Cobalt Blue", value: "#2563eb" },
+                  { name: "Silver Metal", value: "#cbd5e1" },
+                ].map((col) => (
+                  <button
+                    key={col.value}
+                    onClick={() =>
+                      onChangeCustomization({
+                        ...customization,
+                        ropewayArmColor: col.value,
+                        ropewayHookColor: col.value,
+                      })
+                    }
+                    className={`p-2 rounded-xl border text-center text-[10px] font-bold transition flex items-center justify-center gap-1.5 ${
+                      (customization.ropewayArmColor || customization.ropewayHookColor || "#eab308") === col.value
+                        ? "border-amber-400 bg-amber-500/20 text-white"
+                        : "border-white/10 bg-white/5 text-gray-400 hover:text-white"
+                    }`}
+                  >
+                    <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: col.value }} />
+                    <span>{col.name.split(" ")[0]}</span>
+                  </button>
+                ))}
+              </div>
+            </section>
+
+            <section className="space-y-2 pt-1 border-t border-white/10">
+              <span className="text-xs font-semibold text-gray-300">Mission Payload</span>
+              <div className="grid grid-cols-3 gap-1.5">
+                {[
+                  { id: "camera-fpv", label: "FPV Camera" },
+                  { id: "cargo-hook", label: "Cargo Hook" },
+                  { id: "none", label: "Bare Airframe" },
+                ].map((p) => (
+                  <button
+                    key={p.id}
+                    onClick={() =>
+                      onChangeCustomization({
+                        ...customization,
+                        ropewayPayload: p.id as any,
+                      })
+                    }
+                    className={`py-1.5 px-2 rounded-lg text-[10px] font-medium transition border text-center ${
+                      (customization.ropewayPayload || "camera-fpv") === p.id
+                        ? "bg-sky-500 text-white font-bold border-sky-400"
+                        : "bg-white/5 border-white/10 text-gray-400 hover:text-white"
+                    }`}
+                  >
+                    {p.label}
+                  </button>
+                ))}
+              </div>
+            </section>
+          </>
+        ) : null}
 
         {/* 5. Save Design matching Screenshot 6 */}
         <section className="pt-2 border-t border-white/10 space-y-2">
