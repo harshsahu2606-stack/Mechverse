@@ -1,16 +1,10 @@
 "use client";
 
-import React, { useState, useRef, useEffect, Suspense } from "react";
-import { Canvas, useFrame } from "@react-three/fiber";
-import * as THREE from "three";
-import { ArrowRight, ChevronLeft, ChevronRight, CheckCircle2, ShieldCheck, Cpu } from "lucide-react";
-import { MachineId, CustomizationSettings } from "@/types/machine";
+import React, { useState } from "react";
+import Image from "next/image";
+import { ChevronLeft, ChevronRight, ArrowRight, Cpu, Radio, Zap, Scale, CheckCircle2 } from "lucide-react";
+import { MachineId } from "@/types/machine";
 import { TOKENS } from "@/constants/designTokens";
-import Esp32DroneModel from "@/components/3d/Esp32DroneModel";
-import RoboRumbleVehicleModel from "@/components/3d/RoboRumbleVehicleModel";
-import AeroDroneModel from "@/components/3d/AeroDroneModel";
-import DroneBModel from "@/components/3d/DroneBModel";
-import RoboRacerModel from "@/components/3d/RoboRacerModel";
 
 interface MachineShowcaseProps {
   onLaunchStudio: (machineId: MachineId) => void;
@@ -20,408 +14,317 @@ interface ShowcaseItem {
   id: MachineId;
   name: string;
   category: string;
-  headline: string;
+  image: string;
   description: string;
   price: string;
   priceStatus: "verified" | "estimated";
   supplierInfo: string;
-  specs: { label: string; value: string }[];
+  specs: {
+    flightController: string;
+    sensors: string;
+    motors: string;
+    weight: string;
+  };
 }
 
 const SHOWCASE_ITEMS: ShowcaseItem[] = [
   {
     id: "esp32-drone",
     name: "AERO-ESP Phone Drone",
-    category: "Nano Quadcopter (<250g)",
-    headline: "Zero RC Transmitter. 100% Smartphone Wi-Fi Controlled.",
+    category: "NANO QUADCOPTER (ESP32)",
+    image: "/images/landing/showcase-esp32.jpg",
     description:
-      "Engineered for students to build an authentic flying quadcopter in India for under ₹2,000 INR. Features direct UDP phone hotspot communication and 400Hz IMU attitude stabilization.",
+      "A beginner-friendly ESP32 quadcopter you can build and control using your smartphone. Perfect for learning flight control, sensors and real-time telemetry.",
     price: "₹1,955",
     priceStatus: "verified",
-    supplierInfo: "Robu.in & ElectronicsComp (Checked Oct 2026)",
-    specs: [
-      { label: "Flight Controller", value: "ESP32-WROOM-32D" },
-      { label: "Sensors", value: "MPU-6050 6-DOF IMU" },
-      { label: "Motors", value: "4× 8520 Coreless Brushed" },
-      { label: "All-Up Weight", value: "38 grams AUW" },
-    ],
-  },
-  {
-    id: "robo-racer",
-    name: "ROBO-RACER AI Vision & Sonar Bot",
-    category: "Autonomous AI Rover (SolidWorks CAD)",
-    headline: "Hikvision Optical Vision & Sub-Centimeter Sonar Reflex.",
-    description:
-      "Autonomous 4WD racing bot modeled from precision SolidWorks CAD assemblies. Integrates a top-mounted Hikvision DS-U02 1080p camera on an SG90 pan neck, front HC-SR04 ultrasonic rangefinder, and high-traction chevron tires.",
-    price: "₹2,888",
-    priceStatus: "verified",
-    supplierInfo: "Robu.in & ElectronicsComp (Checked Oct 2026)",
-    specs: [
-      { label: "Vision Camera", value: "Hikvision DS-U02 1080p" },
-      { label: "Obstacle Sonar", value: "HC-SR04 (2-400cm)" },
-      { label: "Drivetrain", value: "4WD Geared Bo-Motors" },
-      { label: "Chassis Feature", value: "Gullwing Dhakna Hood" },
-    ],
-  },
-  {
-    id: "robo-rumble",
-    name: "Robo Rumble Battle Car",
-    category: "Combat Robotics (1.5kg Beetleweight)",
-    headline: "High-Torque Dual Drive with Interchangeable Kinetic Weapons.",
-    description:
-      "Modular combat robot architecture featuring twin N20/BO gearmotors, high-friction silicon-spike tires, and invertible ramp-wedge armor designed for competition battle arenas.",
-    price: "₹2,500 – ₹13,500",
-    priceStatus: "estimated",
-    supplierInfo: "Calculated range from scrap/salvaged to competition kit",
-    specs: [
-      { label: "Drivetrain", value: "4WD Geared TT Motors" },
-      { label: "Motor Driver", value: "L298N / Dual H-Bridge" },
-      { label: "Chassis", value: "Laser-cut 3mm Acrylic / PETG" },
-      { label: "Power Source", value: "2S 7.4V Li-ion Pack" },
-    ],
+    supplierInfo: "Based on 4 Indian suppliers • Updated: Oct 2026",
+    specs: {
+      flightController: "ESP32-WROOM-32",
+      sensors: "MPU-6050 (6-DOF IMU)",
+      motors: "4× 8520 Coreless (8.5×20mm)",
+      weight: "~ 68 grams",
+    },
   },
   {
     id: "aero-450",
     name: "AERO-450 Modular Drone",
-    category: "Aerial Imaging & AI Platform",
-    headline: "Autonomous Navigation with Pixhawk Autopilot & 450mm Stance.",
+    category: "MODULAR DRONE (PIXHAWK)",
+    image: "/images/landing/reveal-aero450.jpg",
     description:
-      "Full-scale 450mm carbon-composite quadcopter with 2212 920KV brushless motors, 30A SimonK ESCs, GPS position-hold telemetry, and vibration-damped camera mounts.",
+      "Full-scale 450mm carbon quadcopter with Pixhawk autopilot, 2212 920KV BLDC motors, and GPS position-hold telemetry.",
     price: "₹12,000 – ₹13,000",
     priceStatus: "verified",
-    supplierInfo: "Robu.in Quad Kit BOM (Checked Oct 2026)",
-    specs: [
-      { label: "Airframe", value: "FlameWheel 450mm Glass/PA66" },
-      { label: "Brushless Motors", value: "4× 2212 920KV Outrunner" },
-      { label: "Speed Controllers", value: "4× 30A SimonK ESCs" },
-      { label: "Max Flight Time", value: "14 – 18 Minutes" },
-    ],
+    supplierInfo: "Robu.in F450 Quad Kit BOM • Updated: Oct 2026",
+    specs: {
+      flightController: "Pixhawk 2.4.8 / APM 2.8",
+      sensors: "NEO-M8N GPS + Compass",
+      motors: "4× 2212 920KV BLDC",
+      weight: "~ 850 grams",
+    },
+  },
+  {
+    id: "robo-racer",
+    name: "ROBO-RACER AI Vision Bot",
+    category: "AUTONOMOUS AI ROVER",
+    image: "/images/models/robo-racer.jpg",
+    description:
+      "Autonomous 4WD obstacle-racing rover with Hikvision 1080p camera on SG90 pan neck, HC-SR04 ultrasonic reflex, and high-traction tires.",
+    price: "₹2,888",
+    priceStatus: "verified",
+    supplierInfo: "SolidWorks CAD BOM (Robu & ElectronicsComp)",
+    specs: {
+      flightController: "ESP32 Dual-Core DevKit",
+      sensors: "HC-SR04 (2cm-400cm Sonar)",
+      motors: "4× 300 RPM Bo-Motors",
+      weight: "~ 520 grams",
+    },
+  },
+  {
+    id: "robo-rumble",
+    name: "Robo Rumble Battle Car",
+    category: "COMBAT BOT (1.5KG)",
+    image: "/images/models/robo-rumble.jpg",
+    description:
+      "High-torque 4WD combat robot with interchangeable kinetic armor, dual H-bridge driver, and battle telemetry.",
+    price: "₹2,500 – ₹13,500",
+    priceStatus: "estimated",
+    supplierInfo: "Recycled scrap sourcing to full competition kit",
+    specs: {
+      flightController: "L298N Dual H-Bridge + ESP32",
+      sensors: "Current Shunt & Hall Sensors",
+      motors: "4× High-Torque TT Geared",
+      weight: "~ 485 grams",
+    },
   },
   {
     id: "drone-b",
     name: "Drone B Industrial Octocopter",
-    category: "Heavy-Payload Multi-Rotor",
-    headline: "8-Motor Coaxial Redundancy for Commercial Payloads.",
+    category: "OCTOCOPTER (HEAVY LIFT)",
+    image: "/images/models/drone-b.jpg",
     description:
-      "Industrial-grade octocopter designed with carbon lattice arms, fail-safe motor redundancy (can lose up to 2 motors and land safely), and dual 6S battery bus distribution.",
+      "8-motor heavy payload industrial multi-rotor with dual battery redundancy and fail-safe recovery.",
     price: "₹11,955 – ₹35,000",
     priceStatus: "estimated",
-    supplierInfo: "Estimated industrial frame & powertrain components",
-    specs: [
-      { label: "Configuration", value: "Coaxial / Radial Octocopter" },
-      { label: "Payload Capacity", value: "Up to 3.5 kg" },
-      { label: "Telemetry", value: "915MHz Ground Station Link" },
-      { label: "Structure", value: "Carbon Fiber Lattice Tube" },
-    ],
+    supplierInfo: "Commercial frame & coaxial powertrain estimate",
+    specs: {
+      flightController: "Cube Orange+ Triple IMU",
+      sensors: "Dual RTK GPS & Telemetry",
+      motors: "8× Coaxial BLDC Outrunners",
+      weight: "~ 3.5 kg",
+    },
+  },
+  {
+    id: "sports-car",
+    name: "Apex GT-V6 Supercar",
+    category: "AUTOMOTIVE CAD (MID-ENGINE)",
+    image: "/images/models/sports-car.jpg",
+    description:
+      "Mid-engine track supercar featuring 3.0L twin-turbocharged V6 internal combustion engine sub-assembly with full CAD explosion.",
+    price: "₹8,500 – ₹14,000",
+    priceStatus: "estimated",
+    supplierInfo: "RC track telemetry & complete CAD disassembly model",
+    specs: {
+      flightController: "Telemetry ECU & Dyno Module",
+      sensors: "Crank Position & Knock Sensors",
+      motors: "Twin-Turbo 3.0L V6 Powertrain",
+      weight: "~ 1,320 kg (Scaled)",
+    },
+  },
+  {
+    id: "walking-robot",
+    name: "Strandbeest Kinetic Walker",
+    category: "LINKAGE ROBOTICS (8-BAR)",
+    image: "/images/models/walking-robot.jpg",
+    description:
+      "Chebyshev and Theo Jansen eight-bar mechanical linkage converting continuous motor rotation into smooth biological walking gait.",
+    price: "₹250 – ₹1,200",
+    priceStatus: "verified",
+    supplierInfo: "Direct BO motor & laser-cut craft materials",
+    specs: {
+      flightController: "Low-Power DC Motor Controller",
+      sensors: "Rotary Encoder Linkage Tachometer",
+      motors: "Dual-Shaft 60 RPM Geared BO Motor",
+      weight: "~ 210 grams",
+    },
   },
 ];
 
-function ShowcaseScene({ activeId, transitionProgress }: { activeId: MachineId; transitionProgress: number }) {
-  const groupRef = useRef<THREE.Group>(null);
-  const lightRef = useRef<THREE.DirectionalLight>(null);
-
-  useFrame((_, delta) => {
-    if (groupRef.current) {
-      groupRef.current.rotation.y += delta * 0.2;
-    }
-    if (lightRef.current) {
-      // Dims out during switch, ramps back up
-      lightRef.current.intensity = THREE.MathUtils.lerp(0.2, 1.4, transitionProgress);
-    }
-  });
-
-  return (
-    <>
-      <ambientLight intensity={0.25 + transitionProgress * 0.35} />
-      <directionalLight ref={lightRef} position={[4, 6, 3]} intensity={1.4} />
-      <spotLight
-        position={[-3, 2, -3]}
-        color={TOKENS.colors.accent}
-        intensity={2.2 * transitionProgress}
-        angle={0.6}
-        penumbra={0.8}
-      />
-
-      <group ref={groupRef} position={[0, -0.05, 0]}>
-        {activeId === "esp32-drone" && (
-          <Esp32DroneModel
-            customization={{}}
-            explosionLevel={0}
-            selectedComponent={null}
-            isolatedComponent={null}
-            hiddenComponents={[]}
-            onSelect={() => {}}
-            isArmed={true}
-            throttlePct={30}
-          />
-        )}
-
-        {activeId === "robo-racer" && (
-          <RoboRacerModel
-            customization={{}}
-            explosionLevel={0}
-            selectedComponent={null}
-            isolatedComponent={null}
-            hiddenComponents={[]}
-            onSelect={() => {}}
-            isDriving={true}
-            driveSpeed={30}
-            steeringAngle={0}
-            cameraPanAngle={0}
-            hoodOpen={false}
-          />
-        )}
-
-        {activeId === "robo-rumble" && (
-          <RoboRumbleVehicleModel
-            customization={
-              {
-                paintColor: "#dc2626",
-                finish: "metallic",
-                wheelStyle: "sport",
-                rimColor: "#e2e8f0",
-                bodyParts: { spoiler: true, sideSkirts: true, frontSplitter: true, rearDiffuser: true },
-              } as unknown as CustomizationSettings
-            }
-            explosionLevel={0}
-            selectedComponent={null}
-            isolatedComponent={null}
-            hiddenComponents={[]}
-            onSelect={() => {}}
-            wheelRotationSpeed={1.5}
-            position={[0, -0.05, 0]}
-            scale={0.9}
-          />
-        )}
-
-        {activeId === "aero-450" && (
-          <AeroDroneModel
-            customization={
-              {
-                paintColor: "#dc2626",
-                finish: "metallic",
-                wheelStyle: "sport",
-                rimColor: "#e2e8f0",
-                bodyParts: { spoiler: true, sideSkirts: true, frontSplitter: true, rearDiffuser: true },
-                droneFrameSize: 450,
-                droneArmColorFront: "#f8fafc",
-                droneArmColorRear: "#dc2626",
-                droneMotorModel: "2212-920kv",
-                dronePropeller: "1045-nylon",
-                droneEsc: "simonk-30a",
-                droneBattery: "3s-4200mah-35c",
-                droneFlightController: "pixhawk-2.4.8",
-                droneGps: "neo-m8n",
-                droneCamera: "runcam-split-hd",
-                droneLandingGear: "tall-arched",
-                dronePropGuards: false,
-              } as unknown as CustomizationSettings
-            }
-            explosionLevel={0}
-            selectedComponent={null}
-            isolatedComponent={null}
-            hiddenComponents={[]}
-            onSelect={() => {}}
-            isArmed={true}
-            throttlePct={20}
-          />
-        )}
-
-        {activeId === "drone-b" && (
-          <DroneBModel
-            explosionLevel={0}
-            selectedComponent={null}
-            isolatedComponent={null}
-            hiddenComponents={[]}
-            onSelect={() => {}}
-            isArmed={true}
-          />
-        )}
-      </group>
-
-      <gridHelper args={[7, 28, TOKENS.colors.accent, "#15181f"]} position={[0, -0.22, 0]} />
-    </>
-  );
-}
-
 export default function MachineShowcase({ onLaunchStudio }: MachineShowcaseProps) {
   const [currentIndex, setCurrentIndex] = useState<number>(0);
-  const [transitionProgress, setTransitionProgress] = useState<number>(1);
-  const isTransitioningRef = useRef<boolean>(false);
+  const activeItem = SHOWCASE_ITEMS[currentIndex];
 
-  const activeMachine = SHOWCASE_ITEMS[currentIndex];
-
-  const handleSwitchMachine = (nextIndex: number) => {
-    if (isTransitioningRef.current || nextIndex === currentIndex) return;
-    isTransitioningRef.current = true;
-
-    // Fade down
-    setTransitionProgress(0.1);
-
-    setTimeout(() => {
-      setCurrentIndex(nextIndex);
-      // Ramp back up
-      setTimeout(() => {
-        setTransitionProgress(1);
-        isTransitioningRef.current = false;
-      }, 50);
-    }, 350);
+  const handleNext = () => {
+    setCurrentIndex((prev) => (prev + 1) % SHOWCASE_ITEMS.length);
   };
 
   const handlePrev = () => {
-    const next = (currentIndex - 1 + SHOWCASE_ITEMS.length) % SHOWCASE_ITEMS.length;
-    handleSwitchMachine(next);
+    setCurrentIndex((prev) => (prev - 1 + SHOWCASE_ITEMS.length) % SHOWCASE_ITEMS.length);
   };
 
-  const handleNext = () => {
-    const next = (currentIndex + 1) % SHOWCASE_ITEMS.length;
-    handleSwitchMachine(next);
-  };
+  const currentNumStr = String(currentIndex + 1).padStart(2, "0");
+  const totalNumStr = String(SHOWCASE_ITEMS.length).padStart(2, "0");
 
   return (
     <section
       id="showcase"
-      className="relative w-full py-14 sm:py-20 px-4 sm:px-6 md:px-12 border-t border-white/5 overflow-hidden"
-      style={{ backgroundColor: TOKENS.colors.background }}
+      className="relative w-full py-16 sm:py-24 px-4 sm:px-6 md:px-12 border-t border-white/5 overflow-hidden"
+      style={{ backgroundColor: "#060709" }}
     >
-      <div className="max-w-7xl mx-auto flex flex-col space-y-8 sm:space-y-12">
-        {/* Section Header */}
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6">
-          <div className="space-y-2 sm:space-y-3">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/10 bg-[#0F1114]">
-              <Cpu size={12} style={{ color: TOKENS.colors.accent }} />
-              <span className="text-[10px] sm:text-[11px] font-mono tracking-widest text-[#9AA0A9] uppercase">
-                Machine Showcase
+      <div className="max-w-7xl mx-auto flex flex-col space-y-8 sm:space-y-10">
+        {/* Section Header with Badge & Pagination */}
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+          <div className="space-y-3">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-orange-500/25 bg-[#0F1114]">
+              <span className="w-2 h-2 rounded-full bg-[#FF6A1A]" />
+              <span className="text-[11px] font-mono tracking-widest text-[#9AA0A9] uppercase font-semibold">
+                MACHINE SHOWCASE
               </span>
             </div>
-            <h2 className="text-2xl sm:text-4xl font-light text-[#F4F5F7] tracking-tight">
+            <h2 className="text-2xl sm:text-4xl md:text-5xl font-light text-[#F4F5F7] tracking-tight">
               Hardware Engineering{" "}
-              <span className="font-semibold" style={{ color: TOKENS.colors.accent }}>
-                Showcase
-              </span>
-              .
+              <span className="font-semibold text-[#FF6A1A]">Showcase</span>.
             </h2>
             <p className="text-xs sm:text-sm text-[#9AA0A9] max-w-xl leading-relaxed">
-              Inspect each physical machine in continuous dark-room studio lighting. Every model is backed
-              by a real Bill of Materials and manufacturing guide.
+              Inspect real, physical machines with component details, live 3D models, real BOMs and step-by-step build guides.
             </p>
           </div>
 
-          {/* Stepper Controls */}
+          {/* Pagination Controls */}
           <div className="flex items-center gap-3">
-            <div className="text-xs font-mono text-[#9AA0A9] mr-2">
-              <span className="text-white font-semibold">0{currentIndex + 1}</span> / 0{SHOWCASE_ITEMS.length}
+            <span className="text-sm font-mono text-neutral-400 font-semibold tracking-wider">
+              {currentNumStr} / {totalNumStr}
+            </span>
+            <div className="flex items-center gap-1.5">
+              <button
+                onClick={handlePrev}
+                className="w-8 h-8 rounded-full border border-white/10 bg-[#0F1114] hover:bg-[#161A1F] hover:border-white/30 flex items-center justify-center text-neutral-300 transition-all cursor-pointer"
+                aria-label="Previous Machine"
+              >
+                <ChevronLeft size={16} />
+              </button>
+              <button
+                onClick={handleNext}
+                className="w-8 h-8 rounded-full border border-white/10 bg-[#0F1114] hover:bg-[#161A1F] hover:border-white/30 flex items-center justify-center text-neutral-300 transition-all cursor-pointer"
+                aria-label="Next Machine"
+              >
+                <ChevronRight size={16} />
+              </button>
             </div>
-            <button
-              onClick={handlePrev}
-              className="p-2 sm:p-2.5 rounded-xl border border-white/10 bg-[#0F1114] text-[#F4F5F7] hover:border-white/30 hover:bg-[#161A1F] transition-all cursor-pointer"
-              aria-label="Previous Machine"
-            >
-              <ChevronLeft size={16} />
-            </button>
-            <button
-              onClick={handleNext}
-              className="p-2 sm:p-2.5 rounded-xl border border-white/10 bg-[#0F1114] text-[#F4F5F7] hover:border-white/30 hover:bg-[#161A1F] transition-all cursor-pointer"
-              aria-label="Next Machine"
-            >
-              <ChevronRight size={16} />
-            </button>
           </div>
         </div>
 
-        {/* Main Showcase Stage */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 items-center">
-          {/* Left Column: 3D Stage */}
-          <div className="lg:col-span-7 h-[300px] sm:h-[480px] rounded-2xl border border-white/5 bg-[#0F1114]/70 overflow-hidden relative">
-            <div className="absolute top-4 left-4 z-20 flex items-center gap-2 pointer-events-none">
-              <span
-                className="w-2 h-2 rounded-full"
-                style={{ backgroundColor: TOKENS.colors.accent }}
-              />
-              <span className="text-[10px] font-mono tracking-widest text-[#9AA0A9] uppercase truncate max-w-[200px] sm:max-w-none">
-                {activeMachine.name} · Studio Turntable
+        {/* Two-Column Studio Card */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-stretch">
+          {/* Left Column: Studio Turntable Render */}
+          <div className="lg:col-span-7 rounded-2xl border border-white/10 bg-[#08090C] overflow-hidden relative min-h-[380px] sm:min-h-[460px] flex flex-col shadow-2xl">
+            {/* Top Left Badge */}
+            <div className="absolute top-4 left-4 z-20 flex items-center gap-2 bg-[#0B0D12]/90 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-white/10">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_8px_#34d399]" />
+              <span className="text-[10px] sm:text-xs font-mono text-[#E2E8F0] tracking-wider uppercase font-semibold">
+                {activeItem.name} • STUDIO TURNTABLE
               </span>
             </div>
 
-            <Canvas camera={{ position: [0.38, 0.28, 0.42], fov: 38 }} className="w-full h-full">
-              <Suspense fallback={null}>
-                <ShowcaseScene activeId={activeMachine.id} transitionProgress={transitionProgress} />
-              </Suspense>
-            </Canvas>
+            {/* Turntable Image */}
+            <div className="relative w-full h-full min-h-[380px] sm:min-h-[460px]">
+              <Image
+                src={activeItem.image}
+                alt={activeItem.name}
+                fill
+                priority
+                className="object-cover object-center transition-all duration-500 select-none"
+              />
+            </div>
           </div>
 
-          {/* Right Column: Specifications & Verified Sourcing */}
-          <div className="lg:col-span-5 flex flex-col justify-center space-y-5 sm:space-y-6">
-            <div className="space-y-1.5 sm:space-y-2">
-              <div className="text-[11px] sm:text-xs font-mono text-[#9AA0A9] uppercase tracking-wider">
-                {activeMachine.category}
+          {/* Right Column: Hardware Specs, BOM & Launch CTA */}
+          <div className="lg:col-span-5 rounded-2xl border border-white/10 bg-[#0A0D12] p-6 sm:p-8 flex flex-col justify-between shadow-xl space-y-6">
+            <div className="space-y-4">
+              <div className="text-[11px] font-mono tracking-widest text-[#FF6A1A] font-semibold uppercase">
+                {activeItem.category}
               </div>
-              <h3 className="text-xl sm:text-3xl font-light text-[#F4F5F7] tracking-tight">
-                {activeMachine.name}
+
+              <h3 className="text-2xl sm:text-3xl font-semibold text-white tracking-tight">
+                {activeItem.name}
               </h3>
-              <p className="text-xs sm:text-sm font-normal text-[#9AA0A9] leading-relaxed">
-                {activeMachine.description}
+
+              <p className="text-xs sm:text-sm text-[#9AA0A9] leading-relaxed">
+                {activeItem.description}
               </p>
-            </div>
 
-            {/* Price Badge with Verified / Estimated Status */}
-            <div className="p-3.5 sm:p-4 rounded-xl border border-white/5 bg-[#0F1114] flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
-              <div>
-                <div className="text-[9px] sm:text-[10px] font-mono text-[#5C626B] uppercase">Estimated Build Cost</div>
-                <div className="text-lg sm:text-xl font-mono font-semibold text-white mt-0.5">
-                  {activeMachine.price}
+              {/* Price / BOM Card */}
+              <div className="p-4 rounded-xl border border-white/10 bg-[#07080B] flex items-center justify-between gap-4">
+                <div>
+                  <div className="text-[10px] font-mono text-[#7B828F] tracking-wider uppercase">
+                    ESTIMATED BUILD COST
+                  </div>
+                  <div className="text-2xl font-mono font-bold text-white mt-0.5">
+                    {activeItem.price}
+                  </div>
+                </div>
+
+                <div className="text-right">
+                  <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-[10px] font-mono text-emerald-400 font-semibold uppercase tracking-wider">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                    VERIFIED SUPPLIERS
+                  </div>
+                  <div className="text-[9px] text-[#7B828F] mt-1 font-mono max-w-[180px]">
+                    {activeItem.supplierInfo}
+                  </div>
                 </div>
               </div>
 
-              <div className="text-left sm:text-right">
-                <span
-                  className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[9px] sm:text-[10px] font-mono uppercase tracking-wider font-medium"
-                  style={{
-                    backgroundColor:
-                      activeMachine.priceStatus === "verified"
-                        ? TOKENS.colors.status.verifiedGlow
-                        : TOKENS.colors.status.estimatedGlow,
-                    color:
-                      activeMachine.priceStatus === "verified"
-                        ? TOKENS.colors.status.verified
-                        : TOKENS.colors.status.estimated,
-                    border: `1px solid ${
-                      activeMachine.priceStatus === "verified"
-                        ? TOKENS.colors.status.verified
-                        : TOKENS.colors.status.estimated
-                    }`,
-                  }}
-                >
-                  <ShieldCheck size={12} />
-                  <span>{activeMachine.priceStatus === "verified" ? "Verified Supplier" : "Estimated Sourcing"}</span>
-                </span>
-                <div className="text-[9px] font-mono text-[#5C626B] mt-1">
-                  {activeMachine.supplierInfo}
+              {/* 2x2 Specs Grid */}
+              <div className="grid grid-cols-2 gap-3 pt-2">
+                <div className="p-3 rounded-xl border border-white/5 bg-[#0D1016]">
+                  <div className="flex items-center gap-1.5 text-[10px] font-mono text-[#7B828F] uppercase">
+                    <Cpu size={12} className="text-[#FF6A1A]" />
+                    <span>Flight Controller</span>
+                  </div>
+                  <div className="text-xs font-mono font-semibold text-[#E2E8F0] mt-1 truncate">
+                    {activeItem.specs.flightController}
+                  </div>
+                </div>
+
+                <div className="p-3 rounded-xl border border-white/5 bg-[#0D1016]">
+                  <div className="flex items-center gap-1.5 text-[10px] font-mono text-[#7B828F] uppercase">
+                    <Radio size={12} className="text-[#FF6A1A]" />
+                    <span>Sensors</span>
+                  </div>
+                  <div className="text-xs font-mono font-semibold text-[#E2E8F0] mt-1 truncate">
+                    {activeItem.specs.sensors}
+                  </div>
+                </div>
+
+                <div className="p-3 rounded-xl border border-white/5 bg-[#0D1016]">
+                  <div className="flex items-center gap-1.5 text-[10px] font-mono text-[#7B828F] uppercase">
+                    <Zap size={12} className="text-[#FF6A1A]" />
+                    <span>Motors</span>
+                  </div>
+                  <div className="text-xs font-mono font-semibold text-[#E2E8F0] mt-1 truncate">
+                    {activeItem.specs.motors}
+                  </div>
+                </div>
+
+                <div className="p-3 rounded-xl border border-white/5 bg-[#0D1016]">
+                  <div className="flex items-center gap-1.5 text-[10px] font-mono text-[#7B828F] uppercase">
+                    <Scale size={12} className="text-[#FF6A1A]" />
+                    <span>Weight (AUW)</span>
+                  </div>
+                  <div className="text-xs font-mono font-semibold text-[#E2E8F0] mt-1 truncate">
+                    {activeItem.specs.weight}
+                  </div>
                 </div>
               </div>
             </div>
 
-            {/* Verified Technical Specs Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
-              {activeMachine.specs.map((spec, i) => (
-                <div key={i} className="p-2.5 sm:p-3 rounded-lg border border-white/5 bg-[#0F1114]/50">
-                  <div className="text-[9px] sm:text-[10px] font-mono text-[#5C626B] uppercase">{spec.label}</div>
-                  <div className="text-xs font-mono font-medium text-[#F4F5F7] mt-0.5">{spec.value}</div>
-                </div>
-              ))}
-            </div>
-
-            {/* Direct Studio Launch CTA */}
+            {/* Solid Orange CTA */}
             <button
-              onClick={() => onLaunchStudio(activeMachine.id)}
-              className="w-full py-3 sm:py-3.5 rounded-xl text-xs font-semibold tracking-wider text-white flex items-center justify-center gap-2 transition-all transform active:scale-98 cursor-pointer uppercase font-mono"
-              style={{
-                backgroundColor: TOKENS.colors.accent,
-                boxShadow: `0 0 20px ${TOKENS.colors.accentGlow}`,
-              }}
+              onClick={() => onLaunchStudio(activeItem.id)}
+              className="w-full py-3.5 px-6 rounded-xl bg-[#FF6A1A] hover:bg-[#ff7b33] text-white font-mono font-bold text-xs sm:text-sm tracking-wider uppercase transition-all duration-200 flex items-center justify-center gap-2 shadow-[0_6px_25px_rgba(255,106,26,0.35)] cursor-pointer"
             >
-              <span>Launch in 3D Studio</span>
-              <ArrowRight size={14} />
+              <span>LAUNCH IN 3D STUDIO</span>
+              <ArrowRight size={16} />
             </button>
           </div>
         </div>

@@ -5,6 +5,7 @@ import { Plus, CheckCircle2, X } from "lucide-react";
 import { MachineId } from "@/types/machine";
 import { TOKENS } from "@/constants/designTokens";
 import MachineCard, { CatalogMachineItem } from "./MachineCard";
+import Quick3DModal from "./Quick3DModal";
 
 interface CatalogGridProps {
   onLaunchStudio: (machineId: MachineId) => void;
@@ -21,6 +22,8 @@ const CATALOG_ITEMS: CatalogMachineItem[] = [
     priceStatus: "verified",
     supplierInfo: "Robu.in & ElectronicsComp (Checked Oct 2026)",
     description: "DIY nano quadcopter (<250g) controlled via smartphone Wi-Fi hotspot with zero RC transmitter required.",
+    imageSrc: "/images/models/esp32-drone.jpg",
+    internalParts: ["ESP32-WROOM MCU", "MPU-6050 6-DOF", "4x 8520 Coreless", "1S LiPo"],
     specs: [
       { label: "MCU", value: "ESP32-WROOM" },
       { label: "Motors", value: "4× 8520 Coreless" },
@@ -38,6 +41,8 @@ const CATALOG_ITEMS: CatalogMachineItem[] = [
     priceStatus: "verified",
     supplierInfo: "Robu.in & ElectronicsComp (SolidWorks CAD BOM)",
     description: "Autonomous 4WD obstacle-racing rover with Hikvision 1080p camera on SG90 pan neck, HC-SR04 ultrasonic sonar, and gullwing hood ('Dhakna').",
+    imageSrc: "/images/models/robo-racer.jpg",
+    internalParts: ["Hikvision 1080p", "HC-SR04 Sonar", "SG90 Pan Servo", "L298N Driver", "2S Li-ion"],
     specs: [
       { label: "Vision", value: "Hikvision DS-U02" },
       { label: "Sonar", value: "HC-SR04 2cm-400cm" },
@@ -55,6 +60,8 @@ const CATALOG_ITEMS: CatalogMachineItem[] = [
     priceStatus: "estimated",
     supplierInfo: "Recycled scrap sourcing to full competition kit",
     description: "High-torque 4WD combat robot with interchangeable kinetic armor and obstacle course telemetry.",
+    imageSrc: "/images/models/robo-rumble.jpg",
+    internalParts: ["Hardened Wedge Blade", "4WD TT Motors", "L298N H-Bridge", "Spike Tires"],
     specs: [
       { label: "Drive", value: "4WD TT Geared" },
       { label: "Driver", value: "L298N Dual H-Bridge" },
@@ -72,6 +79,8 @@ const CATALOG_ITEMS: CatalogMachineItem[] = [
     priceStatus: "verified",
     supplierInfo: "Robu.in F450 Quad Kit BOM (Checked Oct 2026)",
     description: "Full-scale 450mm carbon quadcopter with Pixhawk autopilot, 2212 920KV BLDC motors, and GPS position hold.",
+    imageSrc: "/images/models/aero-450.jpg",
+    internalParts: ["Pixhawk APM 2.8", "4x 2212 920KV", "30A SimonK ESC", "U-Blox GPS Mast"],
     specs: [
       { label: "Airframe", value: "FlameWheel 450mm" },
       { label: "Motors", value: "4× 2212 920KV BLDC" },
@@ -89,6 +98,8 @@ const CATALOG_ITEMS: CatalogMachineItem[] = [
     priceStatus: "estimated",
     supplierInfo: "Commercial frame & coaxial power bus estimate",
     description: "8-motor heavy payload industrial multi-rotor with dual battery redundancy and fail-safe recovery.",
+    imageSrc: "/images/models/drone-b.jpg",
+    internalParts: ["8x Coaxial BLDC", "Carbon Mainframe", "915MHz Telemetry", "Dual Battery Bus"],
     specs: [
       { label: "Motors", value: "8× Coaxial BLDC" },
       { label: "Payload", value: "Up to 3.5 kg" },
@@ -106,6 +117,8 @@ const CATALOG_ITEMS: CatalogMachineItem[] = [
     priceStatus: "estimated",
     supplierInfo: "RC track telemetry & complete CAD disassembly model",
     description: "Mid-engine track supercar featuring 3.0L twin-turbocharged V6 internal combustion engine sub-assembly.",
+    imageSrc: "/images/models/sports-car.jpg",
+    internalParts: ["3.0L Twin-Turbo V6", "Pistons & Crankshaft", "Brembo Carbon Brakes", "Aero Diffuser"],
     specs: [
       { label: "Powertrain", value: "3.0L Twin-Turbo V6" },
       { label: "Sub-Assembly", value: "Pistons & Crankshaft" },
@@ -123,6 +136,8 @@ const CATALOG_ITEMS: CatalogMachineItem[] = [
     priceStatus: "verified",
     supplierInfo: "Direct BO motor & craft materials (Verified Oct 2026)",
     description: "Chebyshev and Theo Jansen eight-bar mechanical linkage converting continuous motor rotation into smooth walking gait.",
+    imageSrc: "/images/models/walking-robot.jpg",
+    internalParts: ["8-Bar Jansen Legs", "Dual-Shaft Motor", "Crankshaft Axle", "Laser Acrylic"],
     specs: [
       { label: "Linkage", value: "Strandbeest 8-Bar" },
       { label: "Actuator", value: "Dual-Shaft BO Motor" },
@@ -140,6 +155,8 @@ const CATALOG_ITEMS: CatalogMachineItem[] = [
     priceStatus: "estimated",
     supplierInfo: "Appliance motor components & CFD model",
     description: "BLDC table fan with dynamic oscillation gearbox, copper stator winding sub-assembly, and CFD airflow physics.",
+    imageSrc: "/images/models/electric-fan.jpg",
+    internalParts: ["Copper Stator Coil", "3-Blade Airfoil", "350:1 Worm Gearbox", "Thermal Fuse"],
     specs: [
       { label: "Motor", value: "4-Pole Shaded Induction" },
       { label: "Speeds", value: "850 / 1150 / 1450 RPM" },
@@ -154,6 +171,7 @@ type CategoryFilter = "all" | "drones" | "robotics" | "vehicles" | "aerial" | "i
 
 export default function CatalogGrid({ onLaunchStudio, onOpenAR }: CatalogGridProps) {
   const [filter, setFilter] = useState<CategoryFilter>("all");
+  const [quickPreviewId, setQuickPreviewId] = useState<MachineId | null>(null);
   const [showRequestModal, setShowRequestModal] = useState<boolean>(false);
   const [requestText, setRequestText] = useState<string>("");
   const [requestSubmitted, setRequestSubmitted] = useState<boolean>(false);
@@ -181,6 +199,8 @@ export default function CatalogGrid({ onLaunchStudio, onOpenAR }: CatalogGridPro
     }, 1800);
   };
 
+  const activeQuickItem = CATALOG_ITEMS.find((item) => item.id === quickPreviewId);
+
   return (
     <section
       id="catalog"
@@ -202,7 +222,7 @@ export default function CatalogGrid({ onLaunchStudio, onOpenAR }: CatalogGridPro
               .
             </h2>
             <p className="text-xs sm:text-sm text-[#9AA0A9] max-w-xl leading-relaxed">
-              Every project includes verified 3D CAD files, assembly explosion steps, real wiring diagrams,
+              Every project includes verified 3D CAD files, visual previews of internal parts, assembly explosion steps, real wiring diagrams,
               and BOM sourcing with verified Indian component prices.
             </p>
           </div>
@@ -233,6 +253,7 @@ export default function CatalogGrid({ onLaunchStudio, onOpenAR }: CatalogGridPro
               item={item}
               onLaunch={onLaunchStudio}
               onOpenAR={onOpenAR}
+              onOpenQuick3D={(id) => setQuickPreviewId(id)}
             />
           ))}
 
@@ -257,6 +278,20 @@ export default function CatalogGrid({ onLaunchStudio, onOpenAR }: CatalogGridPro
           </div>
         </div>
       </div>
+
+      {/* Interactive Quick 3D Preview Modal */}
+      {quickPreviewId && activeQuickItem && (
+        <Quick3DModal
+          machineId={quickPreviewId}
+          machineName={activeQuickItem.name}
+          onClose={() => setQuickPreviewId(null)}
+          onLaunchFullStudio={(id) => {
+            setQuickPreviewId(null);
+            onLaunchStudio(id);
+          }}
+          onOpenAR={onOpenAR}
+        />
+      )}
 
       {/* Request Modal */}
       {showRequestModal && (
@@ -298,12 +333,9 @@ export default function CatalogGrid({ onLaunchStudio, onOpenAR }: CatalogGridPro
                 <button
                   type="submit"
                   className="w-full py-2.5 rounded-xl text-xs font-mono font-semibold text-white tracking-wider uppercase transition-all"
-                  style={{
-                    backgroundColor: TOKENS.colors.accent,
-                    boxShadow: `0 0 15px ${TOKENS.colors.accentGlow}`,
-                  }}
+                  style={{ backgroundColor: TOKENS.colors.accent }}
                 >
-                  Submit Proposal
+                  Submit Hardware Proposal
                 </button>
               </form>
             )}
