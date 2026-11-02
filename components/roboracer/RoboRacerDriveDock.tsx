@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   Car,
   Camera,
@@ -13,8 +13,7 @@ import {
   RotateCcw,
   Gauge,
   Compass,
-  Sliders,
-  ShieldAlert,
+  Keyboard,
 } from "lucide-react";
 import { AppTheme } from "@/types/machine";
 
@@ -48,55 +47,142 @@ export default function RoboRacerDriveDock({
   const [cameraFps, setCameraFps] = useState<number>(30);
   const [isExpanded, setIsExpanded] = useState<boolean>(true);
 
-  // Autonomous Mode Simulation (Sonar reflex & AI Camera Sweeping)
+  // References to preserve values inside timer loops without causing re-renders
+  const stateRef = useRef({
+    isDriving,
+    driveMode,
+    speed,
+    steering,
+    cameraPan,
+  });
+
   useEffect(() => {
-    let animId: number;
-    let lastTime = performance.now();
+    stateRef.current = { isDriving, driveMode, speed, steering, cameraPan };
+  }, [isDriving, driveMode, speed, steering, cameraPan]);
 
-    const loop = (time: number) => {
-      const deltaSec = (time - lastTime) / 1000;
-      lastTime = time;
-
-      if (isDriving) {
-        // Battery voltage load simulation
-        const load = (Math.abs(speed !== 0 ? speed : 50) / 100) * 0.22;
-        setBatteryVoltage(Number((7.84 - load).toFixed(2)));
-
-        if (driveMode === "obstacle") {
-          // Sonar Reflex: Simulated distance pinging with obstacle reflex
-          const simulatedDist = Math.round(45 + Math.sin(time / 600) * 32);
-          setUltrasonicDistance(simulatedDist);
-
-          if (simulatedDist < 25) {
-            // Auto steer away from obstacle
-            onControlChange({
-              speed: 25,
-              steering: simulatedDist % 2 === 0 ? 30 : -30,
-              cameraPan,
-            });
-          }
-        } else if (driveMode === "ai-track") {
-          // AI Lane Track: Autonomous camera sweeping arc
-          const autoPan = Math.round(Math.sin(time / 900) * 45);
-          onControlChange({
-            speed: speed !== 0 ? speed : 40,
-            steering: Math.round(autoPan * 0.4),
-            cameraPan: autoPan,
-          });
-        } else {
-          setUltrasonicDistance(Math.round(48 + Math.sin(time / 1500) * 10));
-        }
-      } else {
+  // Autonomous Simulation Loop for Sonar Reflex & AI Lane Track
+  useEffect(() => {
+    let tickCount = 0;
+    const timer = setInterval(() => {
+      const { isDriving: driving, driveMode: mode, speed: curSpeed, cameraPan: curPan } = stateRef.current;
+      if (!driving) {
         setBatteryVoltage(7.84);
         setUltrasonicDistance(48);
+        return;
       }
 
-      animId = requestAnimationFrame(loop);
+      tickCount++;
+
+      // Simulated voltage draw under throttle
+      const effectiveSpd = curSpeed !== 0 ? Math.abs(curSpeed) : 45;
+      const load = (effectiveSpd / 100) * 0.22;
+      setBatteryVoltage(Number((7.84 - load).toFixed(2)));
+
+      if (mode === "obstacle") {
+        // Sonar Reflex: Simulated distance cycle every ~3 seconds
+        const cycle = tickCount % 30; // 30 ticks = 3.0 seconds
+        if (cycle < 12) {
+          // Approaching an obstacle: distance drops
+          const dist = Math.max(14, 52 - cycle * 3);
+          setUltrasonicDistance(dist);
+          if (dist < 28) {
+            // Auto-steer away and slow down
+            onControlChange({
+              speed: 25,
+              steering: 35,
+              cameraPan: -25,
+            });
+          }
+        } else if (cycle < 20) {
+          // Obstacle avoided: recovering
+          setUltrasonicDistance(38);
+          onControlChange({
+            speed: 40,
+            steering: 10,
+            cameraPan: 0,
+          });
+        } else {
+          // Clear path: straight ahead
+          setUltrasonicDistance(56);
+          onControlChange({
+            speed: 45,
+            steering: 0,
+            cameraPan: 0,
+          });
+        }
+      } else if (mode === "ai-track") {
+        // AI Lane Track: Smooth camera sweep (-40° to +40°) and gentle tracking steer
+        const angle = Math.round(Math.sin(tickCount / 8) * 40);
+        const autoSteer = Math.round(angle * 0.45);
+        setUltrasonicDistance(Math.round(48 + Math.sin(tickCount / 10) * 8));
+        onControlChange({
+          speed: curSpeed !== 0 ? curSpeed : 45,
+          steering: autoSteer,
+          cameraPan: angle,
+        });
+      } else {
+        // Manual mode: subtle telemetry fluctuation
+        setUltrasonicDistance(Math.round(48 + Math.sin(tickCount / 12) * 6));
+      }
+    }, 100);
+
+    return () => clearInterval(timer);
+  }, [onControlChange]);
+
+  // Master 4WD Engage / Disarm Toggle
+  const handleToggleDrive = () => {
+    onToggleDrive();
+  };
+
+  // Keyboard shortcut support: Spacebar to toggle 4WD, W/S for speed, A/D for steering, H for hood
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Don't intercept when user is typing in an input
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) {
+        return;
+      }
+
+      if (e.code === "Space") {
+        e.preventDefault();
+        handleToggleDrive();
+      } else if (e.key === "h" || e.key === "H") {
+        onToggleHood();
+      } else if (driveMode === "manual") {
+        if (e.key === "w" || e.key === "ArrowUp") {
+          e.preventDefault();
+          onControlChange({
+            speed: Math.min(100, speed + 15),
+            steering,
+            cameraPan,
+          });
+        } else if (e.key === "s" || e.key === "ArrowDown") {
+          e.preventDefault();
+          onControlChange({
+            speed: Math.max(-100, speed - 15),
+            steering,
+            cameraPan,
+          });
+        } else if (e.key === "a" || e.key === "ArrowLeft") {
+          e.preventDefault();
+          onControlChange({
+            speed,
+            steering: Math.max(-45, steering - 10),
+            cameraPan,
+          });
+        } else if (e.key === "d" || e.key === "ArrowRight") {
+          e.preventDefault();
+          onControlChange({
+            speed,
+            steering: Math.min(45, steering + 10),
+            cameraPan,
+          });
+        }
+      }
     };
 
-    animId = requestAnimationFrame(loop);
-    return () => cancelAnimationFrame(animId);
-  }, [isDriving, driveMode, speed, cameraPan, onControlChange]);
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [driveMode, speed, steering, cameraPan, onToggleHood, onControlChange, isDriving]);
 
   const handleResetControls = () => {
     onControlChange({ speed: 0, steering: 0, cameraPan: 0 });
@@ -130,12 +216,12 @@ export default function RoboRacerDriveDock({
             {/* Ultrasonic Sensor */}
             <div
               className={`flex items-center gap-1.5 shrink-0 ${
-                ultrasonicDistance < 25 ? "text-red-400 font-bold animate-pulse" : "text-emerald-400"
+                ultrasonicDistance < 28 ? "text-red-400 font-bold animate-pulse" : "text-emerald-400"
               }`}
             >
               <Radio size={14} className="shrink-0" />
               <span>
-                {ultrasonicDistance}cm {ultrasonicDistance < 25 && "(!)"}
+                {ultrasonicDistance}cm {ultrasonicDistance < 28 && "(!)"}
               </span>
             </div>
 
@@ -174,7 +260,7 @@ export default function RoboRacerDriveDock({
                   ? "bg-slate-200 border-slate-300 text-slate-700"
                   : "bg-white/5 border-white/10 text-slate-300 hover:text-white hover:border-white/25"
               }`}
-              title="Toggle Gullwing Hood (Dhakna) open or closed in 3D"
+              title="Toggle Gullwing Hood (Dhakna) open or closed [Key: H]"
             >
               <Layers size={13} />
               <span>{hoodOpen ? "Close Dhakna" : "Open Dhakna"}</span>
@@ -182,12 +268,13 @@ export default function RoboRacerDriveDock({
 
             {/* Master ENGAGE 4WD Button */}
             <button
-              onClick={onToggleDrive}
+              onClick={handleToggleDrive}
               className={`px-3.5 sm:px-4 py-1.5 rounded-xl font-mono font-bold text-xs shadow-lg transition flex items-center gap-1.5 cursor-pointer ${
                 isDriving
                   ? "bg-red-600 hover:bg-red-500 text-white shadow-red-600/30 animate-pulse"
                   : "bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-black shadow-amber-500/30"
               }`}
+              title="Toggle 4WD Power [Key: Spacebar]"
             >
               <Power size={13} />
               <span>{isDriving ? "DISARM 4WD" : "ENGAGE 4WD"}</span>
@@ -220,11 +307,16 @@ export default function RoboRacerDriveDock({
                 ).map((m) => (
                   <button
                     key={m.id}
-                    onClick={() => setDriveMode(m.id)}
+                    onClick={() => {
+                      setDriveMode(m.id);
+                      if (m.id === "manual") {
+                        handleResetControls();
+                      }
+                    }}
                     className={`px-2.5 py-1 rounded-lg text-xs font-bold transition cursor-pointer ${
                       driveMode === m.id
                         ? "bg-amber-500 text-black shadow-sm"
-                        : "text-slate-400 hover:text-white"
+                        : "text-slate-400 hover:text-white hover:bg-white/5"
                     }`}
                   >
                     {m.label}
@@ -232,15 +324,21 @@ export default function RoboRacerDriveDock({
                 ))}
               </div>
 
-              {/* Reset Controls Button */}
-              <button
-                onClick={handleResetControls}
-                className="px-2.5 py-1 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-[11px] font-mono text-slate-400 hover:text-white flex items-center gap-1.5 transition cursor-pointer"
-                title="Center throttle, steering, and camera pan"
-              >
-                <RotateCcw size={12} />
-                <span>Zero Trim</span>
-              </button>
+              {/* Reset Controls & Keyboard Hint */}
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] font-mono text-slate-500 hidden sm:flex items-center gap-1">
+                  <Keyboard size={11} />
+                  <span>W/S: Throttle • A/D: Steer • Space: 4WD</span>
+                </span>
+                <button
+                  onClick={handleResetControls}
+                  className="px-2.5 py-1 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-[11px] font-mono text-slate-400 hover:text-white flex items-center gap-1.5 transition cursor-pointer"
+                  title="Center throttle, steering, and camera pan"
+                >
+                  <RotateCcw size={12} />
+                  <span>Zero Trim</span>
+                </button>
+              </div>
             </div>
 
             {/* Responsive 3-Slider Grid */}
@@ -256,7 +354,9 @@ export default function RoboRacerDriveDock({
                     <Gauge size={13} className="text-amber-400" />
                     Throttle & Reverse
                   </span>
-                  <span className="font-mono font-bold text-amber-400">{speed}%</span>
+                  <span className="font-mono font-bold text-amber-400">
+                    {isDriving && speed === 0 ? "45% (Auto)" : `${speed}%`}
+                  </span>
                 </div>
                 <input
                   type="range"
@@ -264,6 +364,7 @@ export default function RoboRacerDriveDock({
                   max="100"
                   step="5"
                   value={speed}
+                  disabled={driveMode !== "manual"}
                   onChange={(e) =>
                     onControlChange({
                       speed: parseInt(e.target.value),
@@ -271,7 +372,9 @@ export default function RoboRacerDriveDock({
                       cameraPan,
                     })
                   }
-                  className="w-full accent-amber-500 cursor-pointer h-1.5 bg-white/10 rounded-lg"
+                  className={`w-full accent-amber-500 h-1.5 bg-white/10 rounded-lg ${
+                    driveMode !== "manual" ? "opacity-50 cursor-not-allowed" : "cursor-pointer"
+                  }`}
                 />
                 <div className="flex justify-between text-[9px] font-mono text-slate-500">
                   <span>-100% (Rev)</span>
@@ -299,6 +402,7 @@ export default function RoboRacerDriveDock({
                   max="45"
                   step="5"
                   value={steering}
+                  disabled={driveMode !== "manual"}
                   onChange={(e) =>
                     onControlChange({
                       speed,
@@ -306,7 +410,9 @@ export default function RoboRacerDriveDock({
                       cameraPan,
                     })
                   }
-                  className="w-full accent-orange-500 cursor-pointer h-1.5 bg-white/10 rounded-lg"
+                  className={`w-full accent-orange-500 h-1.5 bg-white/10 rounded-lg ${
+                    driveMode !== "manual" ? "opacity-50 cursor-not-allowed" : "cursor-pointer"
+                  }`}
                 />
                 <div className="flex justify-between text-[9px] font-mono text-slate-500">
                   <span>Left (-45°)</span>
@@ -334,6 +440,7 @@ export default function RoboRacerDriveDock({
                   max="90"
                   step="5"
                   value={cameraPan}
+                  disabled={driveMode === "ai-track"}
                   onChange={(e) =>
                     onControlChange({
                       speed,
@@ -341,7 +448,9 @@ export default function RoboRacerDriveDock({
                       cameraPan: parseInt(e.target.value),
                     })
                   }
-                  className="w-full accent-sky-500 cursor-pointer h-1.5 bg-white/10 rounded-lg"
+                  className={`w-full accent-sky-500 h-1.5 bg-white/10 rounded-lg ${
+                    driveMode === "ai-track" ? "opacity-50 cursor-not-allowed" : "cursor-pointer"
+                  }`}
                 />
                 <div className="flex justify-between text-[9px] font-mono text-slate-500">
                   <span>Left (-90°)</span>

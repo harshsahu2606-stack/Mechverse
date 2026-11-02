@@ -858,13 +858,47 @@ export default function CustomizerPanel({
         )}
 
         {/* =========================================================================
-            8. ROBO-RUMBLE BATTLE CAR (FALLBACK VIEW)
+            8. ROBO-RUMBLE BATTLE CAR CUSTOMIZATION
            ========================================================================= */}
         {machineId === "robo-rumble" && (
           <>
-            <section className="space-y-2.5">
+            {/* Combat Class Selector */}
+            <section className="space-y-2">
+              <span className="text-xs font-semibold text-gray-300">Combat Class Base</span>
+              <div className="grid grid-cols-3 gap-1.5">
+                {[
+                  { id: "striker", label: "Striker", icon: "🛡️" },
+                  { id: "titan", label: "Titan", icon: "⚡" },
+                  { id: "viper", label: "Viper", icon: "💨" },
+                ].map((c) => (
+                  <button
+                    key={c.id}
+                    onClick={() =>
+                      onChangeCustomization({
+                        ...customization,
+                        battleCarId: c.id as any,
+                      })
+                    }
+                    className={`py-2 px-1 rounded-xl text-xs font-bold text-center border transition cursor-pointer flex flex-col items-center gap-0.5 ${
+                      (customization.battleCarId || "striker") === c.id
+                        ? "bg-rose-600 text-white border-rose-500 shadow-md shadow-rose-600/30"
+                        : "bg-white/5 border-white/10 text-gray-400 hover:text-white"
+                    }`}
+                  >
+                    <span>{c.icon}</span>
+                    <span>{c.label}</span>
+                  </button>
+                ))}
+              </div>
+            </section>
+
+            {/* Body Armor Color */}
+            <section className="space-y-2.5 pt-1 border-t border-white/10">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold text-gray-300">Body Armor Color</span>
+                <span className="text-xs font-semibold text-gray-300">Armor Hull Color</span>
+                <span className="text-[10px] text-gray-400 font-mono">
+                  {CAR_COLORS.find((c) => c.value === customization.paintColor)?.name || "Custom"}
+                </span>
               </div>
               <div className="grid grid-cols-4 gap-2">
                 {CAR_COLORS.map((col) => {
@@ -890,6 +924,93 @@ export default function CustomizerPanel({
                     </button>
                   );
                 })}
+              </div>
+            </section>
+
+            {/* Chassis Material */}
+            <section className="space-y-2 pt-1 border-t border-white/10">
+              <span className="text-xs font-semibold text-gray-300">Chassis Material</span>
+              <div className="grid grid-cols-2 gap-2">
+                {[
+                  { id: "acrylic", label: "Polycarbonate" },
+                  { id: "aluminum", label: "6061-T6 Aluminum" },
+                  { id: "plywood", label: "Aero Birch Plywood" },
+                  { id: "3dprint-petg", label: "PETG 3D-Printed" },
+                ].map((mat) => (
+                  <button
+                    key={mat.id}
+                    onClick={() =>
+                      onChangeCustomization({
+                        ...customization,
+                        battleChassisMaterial: mat.id as any,
+                      })
+                    }
+                    className={`p-2 rounded-xl text-xs font-medium text-center border transition cursor-pointer ${
+                      (customization.battleChassisMaterial || "acrylic") === mat.id
+                        ? "bg-white text-black font-semibold border-white"
+                        : "bg-white/5 border-white/10 text-gray-400 hover:text-white"
+                    }`}
+                  >
+                    {mat.label}
+                  </button>
+                ))}
+              </div>
+            </section>
+
+            {/* Combat Front Attachment */}
+            <section className="space-y-2 pt-1 border-t border-white/10">
+              <span className="text-xs font-semibold text-gray-300">Front Combat Attachment</span>
+              <div className="grid grid-cols-2 gap-2">
+                {[
+                  { id: "wedge", label: "Wedge Blade (Under-Flip)" },
+                  { id: "ram-bumper", label: "Ram Bumper (High Impact)" },
+                ].map((att) => (
+                  <button
+                    key={att.id}
+                    onClick={() =>
+                      onChangeCustomization({
+                        ...customization,
+                        battleAttachment: att.id as any,
+                      })
+                    }
+                    className={`p-2 rounded-xl text-xs font-medium text-center border transition cursor-pointer ${
+                      (customization.battleAttachment || "wedge") === att.id
+                        ? "bg-orange-600 text-white font-semibold border-orange-500 shadow-sm"
+                        : "bg-white/5 border-white/10 text-gray-400 hover:text-white"
+                    }`}
+                  >
+                    {att.label}
+                  </button>
+                ))}
+              </div>
+            </section>
+
+            {/* Tire Grip Chemistry */}
+            <section className="space-y-2 pt-1 border-t border-white/10">
+              <span className="text-xs font-semibold text-gray-300">Wheel Grip Chemistry</span>
+              <div className="grid grid-cols-3 gap-1.5">
+                {[
+                  { id: "rubber-tread", label: "Rubber" },
+                  { id: "foam-slick", label: "Foam" },
+                  { id: "silicone-spike", label: "Silicone" },
+                ].map((grip) => (
+                  <button
+                    key={grip.id}
+                    onClick={() =>
+                      onChangeCustomization({
+                        ...customization,
+                        battleTireGrip: grip.id as any,
+                      })
+                    }
+                    className={`py-1.5 px-2 rounded-xl text-xs font-medium text-center border transition cursor-pointer ${
+                      (customization.battleTireGrip || "rubber-tread") === grip.id
+                        ? "bg-sky-600 text-white font-semibold border-sky-500 shadow-sm"
+                        : "bg-white/5 border-white/10 text-gray-400 hover:text-white"
+                    }`}
+                  >
+                    {grip.label}
+                  </button>
+                ))}
               </div>
             </section>
           </>

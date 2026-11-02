@@ -236,260 +236,32 @@ export default function RoboRacerWorkshopOverlay({
         </div>
       )}
 
-      {/* ================= TAB 1: SIMULATOR & TELEMETRY CONTROLLER ================= */}
+      {/* ================= TAB 1: 3D CAD SIMULATOR LAUNCHER ================= */}
       {activeTab === "simulator" && (
-        <div className="p-3 sm:p-4 space-y-3">
-          {/* Top Status Bar: Battery, Distance, Mode */}
+        <div className="p-4 sm:p-6 space-y-4">
           <div
-            className={`grid grid-cols-2 sm:grid-cols-4 gap-2 p-2.5 rounded-xl border ${
-              isLight ? "bg-gray-50 border-gray-200" : "bg-[#111726]/80 border-white/10"
+            className={`p-5 rounded-2xl border flex flex-col md:flex-row items-center justify-between gap-4 ${
+              isLight ? "bg-white border-gray-200 shadow-sm" : "bg-[#111726]/80 border-white/10"
             }`}
           >
-            {/* Battery Voltage */}
-            <div className="flex items-center gap-2">
-              <Zap size={16} className="text-amber-400 shrink-0" />
-              <div>
-                <span className="text-[10px] text-gray-400 uppercase font-mono block">2S Li-ion Battery</span>
-                <span className="text-xs font-bold font-mono text-amber-400">{batteryVoltage} V</span>
+            <div className="space-y-1.5 text-center md:text-left">
+              <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-amber-500/15 border border-amber-500/30 text-amber-400 font-mono text-[11px] font-bold">
+                <Car size={13} />
+                <span>ROBO-RACER 3D CAD SIMULATOR</span>
               </div>
+              <h3 className="text-lg font-bold text-white">Full-Screen Autonomous Proving Ground</h3>
+              <p className="text-xs text-gray-400 max-w-xl">
+                Experience real-time 4WD skid-steer kinematics, ultrasonic sonar obstacle avoidance, and Hikvision camera servo tracking with interactive exploded inspection and customization.
+              </p>
             </div>
 
-            {/* Ultrasonic Proximity */}
-            <div className="flex items-center gap-2">
-              <Radio
-                size={16}
-                className={
-                  ultrasonicDistance < 25
-                    ? "text-red-500 animate-pulse shrink-0"
-                    : "text-emerald-400 shrink-0"
-                }
-              />
-              <div>
-                <span className="text-[10px] text-gray-400 uppercase font-mono block">HC-SR04 Proximity</span>
-                <span
-                  className={`text-xs font-bold font-mono ${
-                    ultrasonicDistance < 25 ? "text-red-400 font-black" : "text-emerald-400"
-                  }`}
-                >
-                  {ultrasonicDistance} cm {ultrasonicDistance < 25 && "(!)"}
-                </span>
-              </div>
-            </div>
-
-            {/* AI Vision Stream */}
-            <div className="flex items-center gap-2">
-              <Camera size={16} className="text-sky-400 shrink-0" />
-              <div>
-                <span className="text-[10px] text-gray-400 uppercase font-mono block">Hikvision DS-U02</span>
-                <span className="text-xs font-bold font-mono text-sky-400">1080p @ {cameraFps} FPS</span>
-              </div>
-            </div>
-
-            {/* Engine Status */}
-            <div className="flex items-center gap-2">
-              <Power
-                size={16}
-                className={isDriving ? "text-emerald-400 animate-spin shrink-0" : "text-gray-500 shrink-0"}
-              />
-              <div>
-                <span className="text-[10px] text-gray-400 uppercase font-mono block">4WD Drivetrain</span>
-                <span
-                  className={`text-xs font-bold uppercase font-mono ${
-                    isDriving ? "text-emerald-400" : "text-gray-400"
-                  }`}
-                >
-                  {isDriving ? "Active (Armed)" : "Standby"}
-                </span>
-              </div>
-            </div>
+            <button
+              onClick={() => onChangeTab("how-it-works")}
+              className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-black font-bold text-xs shadow-lg shadow-amber-500/25 transition cursor-pointer shrink-0"
+            >
+              Explore Architecture & AI →
+            </button>
           </div>
-
-          {/* Drive Mode Switcher & Quick Actions */}
-          <div className="flex flex-wrap items-center justify-between gap-2">
-            <div className="flex items-center gap-1 bg-black/40 p-1 rounded-xl border border-white/10">
-              <span className="text-[10px] text-gray-400 font-mono px-2 uppercase">Mode:</span>
-              {(["manual", "obstacle", "ai-track"] as const).map((mode) => (
-                <button
-                  key={mode}
-                  onClick={() => setDriveMode(mode)}
-                  className={`px-2.5 py-1 rounded-lg text-xs font-bold uppercase transition ${
-                    driveMode === mode
-                      ? "bg-amber-500 text-black shadow-sm"
-                      : "text-gray-400 hover:text-white"
-                  }`}
-                >
-                  {mode === "manual" ? "Manual 4WD" : mode === "obstacle" ? "Sonar Reflex" : "AI Lane Track"}
-                </button>
-              ))}
-            </div>
-
-            <div className="flex items-center gap-2">
-              <button
-                onClick={onToggleHood}
-                className={`px-3 py-1.5 rounded-xl border text-xs font-bold transition flex items-center gap-1.5 ${
-                  hoodOpen
-                    ? "bg-amber-500/20 border-amber-500/50 text-amber-300"
-                    : isLight
-                    ? "bg-gray-100 border-gray-300 text-gray-700"
-                    : "bg-white/5 border-white/10 text-gray-300 hover:text-white"
-                }`}
-              >
-                <Layers size={13} />
-                <span>{hoodOpen ? "Close Hood (Dhakna)" : "Open Hood (Dhakna)"}</span>
-              </button>
-
-              <button
-                onClick={onToggleDrive}
-                className={`px-4 py-1.5 rounded-xl font-bold text-xs shadow-lg transition flex items-center gap-1.5 ${
-                  isDriving
-                    ? "bg-red-500 hover:bg-red-600 text-white shadow-red-500/20"
-                    : "bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-black shadow-amber-500/25"
-                }`}
-              >
-                <Power size={13} />
-                <span>{isDriving ? "DISARM 4WD" : "ENGAGE 4WD"}</span>
-              </button>
-            </div>
-          </div>
-
-          {/* Interactive Controls & Teleop Dashboard */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-            {/* Speed & Direction Controller */}
-            <div
-              className={`p-3 rounded-xl border space-y-2 ${
-                isLight ? "bg-white border-gray-200" : "bg-[#111726]/60 border-white/10"
-              }`}
-            >
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-gray-300 flex items-center gap-1.5">
-                  <Gauge size={14} className="text-amber-400" />
-                  Throttle & Reverse
-                </span>
-                <span className="text-xs font-mono font-bold text-amber-400">{speed}%</span>
-              </div>
-              <input
-                type="range"
-                min="-100"
-                max="100"
-                step="5"
-                value={speed}
-                onChange={(e) =>
-                  onControlChange({
-                    speed: parseInt(e.target.value),
-                    steering,
-                    cameraPan,
-                  })
-                }
-                className="w-full accent-amber-500 cursor-pointer"
-              />
-              <div className="flex justify-between text-[10px] font-mono text-gray-500">
-                <span>-100% (Rev)</span>
-                <span>0 (Stop)</span>
-                <span>+100% (Fwd)</span>
-              </div>
-            </div>
-
-            {/* Steering Yaw Controller */}
-            <div
-              className={`p-3 rounded-xl border space-y-2 ${
-                isLight ? "bg-white border-gray-200" : "bg-[#111726]/60 border-white/10"
-              }`}
-            >
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-gray-300 flex items-center gap-1.5">
-                  <Compass size={14} className="text-orange-400" />
-                  Skid-Steering Yaw
-                </span>
-                <span className="text-xs font-mono font-bold text-orange-400">{steering}°</span>
-              </div>
-              <input
-                type="range"
-                min="-45"
-                max="45"
-                step="5"
-                value={steering}
-                onChange={(e) =>
-                  onControlChange({
-                    speed,
-                    steering: parseInt(e.target.value),
-                    cameraPan,
-                  })
-                }
-                className="w-full accent-orange-500 cursor-pointer"
-              />
-              <div className="flex justify-between text-[10px] font-mono text-gray-500">
-                <span>Left (-45°)</span>
-                <span>Neutral (0°)</span>
-                <span>Right (+45°)</span>
-              </div>
-            </div>
-
-            {/* Camera Pan Servo Controller */}
-            <div
-              className={`p-3 rounded-xl border space-y-2 ${
-                isLight ? "bg-white border-gray-200" : "bg-[#111726]/60 border-white/10"
-              }`}
-            >
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-gray-300 flex items-center gap-1.5">
-                  <Camera size={14} className="text-sky-400" />
-                  Hikvision Camera Pan
-                </span>
-                <span className="text-xs font-mono font-bold text-sky-400">{cameraPan}°</span>
-              </div>
-              <input
-                type="range"
-                min="-90"
-                max="90"
-                step="5"
-                value={cameraPan}
-                onChange={(e) =>
-                  onControlChange({
-                    speed,
-                    steering,
-                    cameraPan: parseInt(e.target.value),
-                  })
-                }
-                className="w-full accent-sky-500 cursor-pointer"
-              />
-              <div className="flex justify-between text-[10px] font-mono text-gray-500">
-                <span>Left (-90°)</span>
-                <span>Center (0°)</span>
-                <span>Right (+90°)</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Exploded View Slider & Reset View */}
-          {onChangeExplosionLevel && (
-            <div
-              className={`p-2.5 rounded-xl border flex items-center gap-3 ${
-                isLight ? "bg-gray-50 border-gray-200" : "bg-black/40 border-white/10"
-              }`}
-            >
-              <span className="text-xs font-mono text-gray-400 shrink-0">CAD Exploded View:</span>
-              <input
-                type="range"
-                min="0"
-                max="1"
-                step="0.05"
-                value={explosionLevel}
-                onChange={(e) => onChangeExplosionLevel(parseFloat(e.target.value))}
-                className="w-full accent-amber-500 cursor-pointer"
-              />
-              <span className="text-xs font-mono font-bold text-amber-400 shrink-0">
-                {Math.round(explosionLevel * 100)}%
-              </span>
-              {onResetCamera && (
-                <button
-                  onClick={onResetCamera}
-                  className="px-2.5 py-1 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-xs text-gray-300 transition shrink-0"
-                >
-                  Reset View
-                </button>
-              )}
-            </div>
-          )}
         </div>
       )}
 

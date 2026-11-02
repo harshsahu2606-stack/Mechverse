@@ -254,7 +254,7 @@ export default function Home() {
 
   // Robo Rumble Dedicated Workshop, Arena & Track State
   const [roboRumbleProjectTab, setRoboRumbleProjectTab] = useState<RoboRumbleProjectTab>("simulator");
-  const [roboSimulatorMode, setRoboSimulatorMode] = useState<"arena" | "track" | "explorer" | "customizer" | "compare">("arena");
+  const [roboSimulatorMode, setRoboSimulatorMode] = useState<"explorer" | "arena" | "track" | "customizer" | "compare">("explorer");
   const [playerBattleCar, setPlayerBattleCar] = useState<BattleCarId>("striker");
   const [aiBattleCar, setAiBattleCar] = useState<BattleCarId>("titan");
   const [arenaCameraView, setArenaCameraView] = useState<CameraViewMode>("follow");
@@ -479,7 +479,7 @@ export default function Home() {
     setRobotProjectTab("simulator");
     if (id === "robo-rumble") {
       setRoboRumbleProjectTab("simulator");
-      setRoboSimulatorMode("arena");
+      setRoboSimulatorMode("explorer");
       setMatchState((prev) => ({ ...prev, status: "idle", winner: null }));
     }
     if (id === "esp32-drone") {
@@ -628,6 +628,8 @@ export default function Home() {
                     setRoboRumbleProjectTab(tab);
                     if (tab !== "simulator") {
                       setViewMode("view");
+                    } else {
+                      setRoboSimulatorMode("explorer");
                     }
                   }}
                 />
@@ -864,14 +866,14 @@ export default function Home() {
             ) : (
               /* ================= 3D SIMULATOR VIEWPORT ================= */
               <div className="flex-1 relative w-full h-full overflow-hidden">
-                {/* Robo Rumble Mode Sub-Bar (Arena / Track / Explorer / Customizer / Compare) */}
+                {/* Robo Rumble Mode Sub-Bar (Explorer / Arena / Track / Customizer / Compare) */}
                 {selectedMachineId === "robo-rumble" && (
                   <div className="absolute top-3 left-1/2 -translate-x-1/2 z-30 pointer-events-auto">
                     <div className="flex items-center gap-1 bg-black/80 border border-white/15 p-1 rounded-2xl backdrop-blur-xl shadow-2xl">
                       {[
+                        { id: "explorer", label: "3D CAD Explorer", icon: "🔍" },
                         { id: "arena", label: "Battle Arena", icon: "⚔️" },
                         { id: "track", label: "Obstacle Track", icon: "🏁" },
-                        { id: "explorer", label: "3D Explorer", icon: "🔍" },
                         { id: "customizer", label: "Customizer", icon: "🛠️" },
                         { id: "compare", label: "Compare", icon: "⚖️" },
                       ].map((m) => (
@@ -1178,9 +1180,10 @@ export default function Home() {
                       />
                     )}
 
-                    {/* Robo Rumble Explorer Controls */}
+                    {/* Robo Rumble Explorer Controls (Only in standard 3D view mode; zero overlap with Exploded controls) */}
                     {selectedMachineId === "robo-rumble" &&
                       roboSimulatorMode === "explorer" &&
+                      viewMode === "view" &&
                       !activeSubAssemblyId && (
                         <RoboRumbleExplorerControls
                           selectedCarId={customization.battleCarId || "striker"}
@@ -1191,8 +1194,6 @@ export default function Home() {
                           onEnterArena={() => setRoboSimulatorMode("arena")}
                           onEnterTrack={() => setRoboSimulatorMode("track")}
                           onReset={() => setCameraResetCount((c) => c + 1)}
-                          explosionLevel={explosionLevel}
-                          onChangeExplosionLevel={setExplosionLevel}
                         />
                       )}
 
@@ -1226,12 +1227,6 @@ export default function Home() {
                       <>
                         {selectedMachineId === "walking-robot" ? (
                           <RobotConfigPanel
-                            customization={customization}
-                            onChangeCustomization={setCustomization}
-                            onSaveDesign={handleSaveDesign}
-                          />
-                        ) : selectedMachineId === "robo-rumble" ? (
-                          <RoboRumbleCustomizer
                             customization={customization}
                             onChangeCustomization={setCustomization}
                             onSaveDesign={handleSaveDesign}

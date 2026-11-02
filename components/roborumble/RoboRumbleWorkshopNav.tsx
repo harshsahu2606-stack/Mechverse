@@ -115,7 +115,7 @@ export default function RoboRumbleWorkshopNav({
 
         <div className="flex items-center gap-1 sm:gap-1.5 overflow-x-auto no-scrollbar py-0.5">
           {[
-            { id: "simulator" as const, label: "3D Arena Simulator", icon: Compass },
+            { id: "simulator" as const, label: "3D CAD Explorer", icon: Compass },
             { id: "engineering" as const, label: "Engineering & Weapons", icon: Cpu },
             { id: "electronics" as const, label: "Electronics & Radio", icon: Zap },
             { id: "bom" as const, label: "Indian BOM (₹)", icon: ShoppingBag },
